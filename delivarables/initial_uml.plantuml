@@ -17,6 +17,17 @@ class Game {
     +initializeGame()
 }
 
+class Round {
+    playedCards : SortedMap<Player, AssistantCard>
+    clouds : ArrayList<Set<Student>[N]>[N]
+    actions : ArrayList<Action>
+    iterator() : Iterable<Player>
+}
+
+class Action {
+
+}
+
 class StudentsBag {
     students : ArrayList<Student>[120]
 }
@@ -49,14 +60,25 @@ class Island {
     +merge(anotherIsland : Island) : Island
 }
 
+abstract Card {}
+
 abstract CharacterCard {
     cost : Int
     used : Int
+    'same for everyone: cost + 1 * (used > 0)'
     +getCost : Int
 }
 
 class CharacterCard1 {
+    'redefine cost'
+}
 
+class CharacterCard2 {
+    'redefine cost'
+}
+
+class CharacterCard3 {
+    'redefine cost'
 }
 
 
@@ -141,11 +163,19 @@ Student --> PawnColor
 StudentsBag *-- Student
 CharacterCardDeck *-- CharacterCard
 
+Round --> AssistantCard
 
-StudentsBag --|> RandomPickable
-CharacterCardDeck --|> RandomPickable
+StudentsBag ..|> RandomPickable
+CharacterCardDeck ..|> RandomPickable
 
 Message ..|> Serializable
+
+CharacterCard --|> Card
+AssistantCard --|> Card
+
+CharacterCard1 --|> CharacterCard
+CharacterCard2 --|> CharacterCard
+CharacterCard3 --|> CharacterCard
 
 Client --> Message
 
