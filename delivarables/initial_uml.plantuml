@@ -1,0 +1,180 @@
+@startuml Eriantys
+
+class AssistantCard {
+    motherNatureMaxMoves : Int
+    turnPriority : Int
+
+    +getNewStandardDeck() : ArrayList<AssistantCard>
+}
+
+class Game {
+    players : Player[4]
+    islands : Island[12]
+    studentsBag : StudentsBag
+    motherNaturePosition : Int
+    currentInfluence
+
+    +initializeGame()
+}
+
+class StudentsBag {
+    students : ArrayList<Student>[120]
+}
+
+class Player {
+    entrance : Set<Student>[9]
+    towers : Set<Tower>[8]
+    'todo: use 5 different arrays'
+    students : Student[]
+    towers : Tower[]
+    deck : ArrayList<AssistantCard>
+    coins : Int
+    client : Client
+
+    +calculateInfluence(island : Island) : Int
+}
+
+interface RandomPickable {
+    +pickRandom(howMany : Int) : ArrayList<Student>
+}
+
+
+class GroupOfIsland {
+
+}
+
+class Island {
+    students : Student
+    towers : Tower[]
+    +merge(anotherIsland : Island) : Island
+}
+
+abstract CharacterCard {
+    cost : Int
+    used : Int
+    +getCost : Int
+}
+
+class CharacterCard1 {
+
+}
+
+
+class Tower {
+    color : TowerColor
+}
+
+enum TowerColor {
+    WHITE
+    BLACK
+    GREY
+}
+
+
+class Student {
+    color : PawnColor
+}
+
+enum PawnColor {
+    YELLOW
+    BLUE
+    GREEN
+    RED
+    PINK
+}
+
+class Client {
+    clientSocket : Socket
+
+    +sendMessage(message : Message)
+    +addMessageReceivedObserver()
+}
+
+interface MessageReceivedObserver {
+    onMessageReceived(message : Message)
+}
+
+
+class CharacterCardDeck {
+    characterCards : CharacterCard
+}
+
+class Server {
+    serverSocket : Socket
+    getInstance() : Server
+
+    +startServer()
+}
+
+class Main {
+    +{static} main
+}
+
+interface Serializable {
+    ...
+}
+
+abstract Message {
+    parse()
+}
+
+interface Exportable {
+    exportToJson() : String
+    importFromJson(json : String)
+}
+
+Game "2..4" *-- Player
+Game "1" *-- StudentsBag
+Game "12" *-- Island
+
+Player "10" *-- AssistantCard
+Player *-- Tower
+Player *-- Student
+
+Island *-- Student
+Island *-- Tower
+
+Tower --> TowerColor
+
+Student --> PawnColor
+
+StudentsBag *-- Student
+CharacterCardDeck *-- CharacterCard
+
+
+StudentsBag --|> RandomPickable
+CharacterCardDeck --|> RandomPickable
+
+Message ..|> Serializable
+
+Client --> Message
+
+Server --> Message
+
+Player --> Client
+
+Main --> Server
+Server --> Client
+
+/' questo va capito se serve
+
+class Log {
+    level : LogLevel
+
+    {static} +debug(message : String)
+    {static} +info(message : String)
+    {static} +error(message : String, killApp : Boolean)
+
+}
+
+enum LogLevel {
+    DEBUG,
+    INFO,
+    ERROR       
+}
+
+'/
+
+
+
+@enduml
