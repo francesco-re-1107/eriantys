@@ -4,14 +4,18 @@ class AssistantCard {
     motherNatureMaxMoves : Int
     turnPriority : Int
 
-    +getNewStandardDeck() : ArrayList<AssistantCard>
+    {static}+getDeck() : ArrayList<AssistantCard>[10]
 }
 
 class Game {
-    players : Player[4]
+    players : Player[3]
     islands : Island[12]
     studentsBag : StudentsBag
+    'relative to islands index, or alternatively we can link directly the island'
     motherNaturePosition : Int
+    rounds : ArrayList<Rounds>
+    characterCards : ArrayList<CharacterCard>[3]
+
     currentInfluence
 
     +initializeGame()
@@ -19,7 +23,7 @@ class Game {
 
 class Round {
     playedCards : SortedMap<Player, AssistantCard>
-    clouds : ArrayList<Set<Student>[N]>[N]
+    clouds : ArrayList<Set<Student>[N+1]>[N]
     actions : ArrayList<Action>
     iterator() : Iterable<Player>
 }
@@ -29,64 +33,106 @@ class Action {
 }
 
 class StudentsBag {
-    students : ArrayList<Student>[120]
+    'shuffled once, only when created'
+    -students : Set<Student>[120]
+
+    +pickRandom(howMany : Int) : Set<Student>[howMany]
 }
 
 class Player {
+    nickname : String
     entrance : Set<Student>[9]
     towers : Set<Tower>[8]
     'todo: use 5 different arrays'
     students : Student[]
     towers : Tower[]
     deck : ArrayList<AssistantCard>
-    coins : Int
+    coins : Int = 1
     client : Client
 
     +calculateInfluence(island : Island) : Int
 }
 
+/'
+useless and wrong
+
 interface RandomPickable {
     +pickRandom(howMany : Int) : ArrayList<Student>
 }
+'/
 
-
+/' removed for now
 class GroupOfIsland {
 
 }
+'/
 
 class Island {
-    students : Student
-    towers : Tower[]
+    students : ArrayList<Student>
+    towers : ArrayList<Tower>
+    --
+    //it's possible to determine the size of the island by simply looking at towers.size
     +merge(anotherIsland : Island) : Island
 }
 
-abstract Card {}
+'abstract Card {}'
 
 abstract CharacterCard {
     cost : Int
     used : Int
     'same for everyone: cost + 1 * (used > 0)'
-    +getCost : Int
+
+    +getCost() : Int
+    --
+    //used at the beginning of the game
+    {static}+generateRandomCards() : ArrayList<CharacterCard[3]>
 }
 
-class CharacterCard1 {
+class MonkCharacterCard {
     'redefine cost'
+    cost : Int = 1
 }
 
-class CharacterCard2 {
+class FarmerCharacterCard {
     'redefine cost'
+    cost : Int = 2
 }
 
-class CharacterCard3 {
+class HeraldCharacterCard {
     'redefine cost'
+    cost : Int = 3
 }
 
+class PostmanCharacterCard {
+    'redefine cost'
+    cost : Int = 1
+}
+
+class GrandmaCharacterCard {
+    'redefine cost'
+    cost : Int = 2
+}
+
+class CentaurCharacterCard {
+    'redefine cost'
+    cost : Int = 3
+}
+
+class JesterCharacterCard {
+    'redefine cost'
+    cost : Int = 1
+}
+
+class KnightCharacterCard {
+    'redefine cost'
+    cost : Int = 2
+}
 
 class Tower {
-    color : TowerColor
+    color : Tower.Color
 }
 
-enum TowerColor {
+enum Tower.Color {
     WHITE
     BLACK
     GREY
@@ -94,10 +140,10 @@ enum TowerColor {
 
 
 class Student {
-    color : PawnColor
+    color : Student.Color
 }
 
-enum PawnColor {
+enum Student.Color {
     YELLOW
     BLUE
     GREEN
@@ -116,19 +162,15 @@ interface MessageReceivedObserver {
     onMessageReceived(message : Message)
 }
 
-
-class CharacterCardDeck {
-    characterCards : CharacterCard
-}
-
 class Server {
     serverSocket : Socket
-    getInstance() : Server
+    activeGames : ArrayList<Game>
 
+    +getInstance() : Server
     +startServer()
 }
 
-class Main {
+class App {
     +{static} main
 }
 
@@ -148,6 +190,8 @@ interface Exportable {
 Game "2..4" *-- Player
 Game "1" *-- StudentsBag
 Game "12" *-- Island
+Game *-- Round
+Game "3" *-- CharacterCard
 
 Player "10" *-- AssistantCard
 Player *-- Tower
@@ -156,55 +200,43 @@ Player *-- Student
 Island *-- Student
 Island *-- Tower
 
-Tower --> TowerColor
+Tower --> Tower.Color
 
-Student --> PawnColor
+Student --> Student.Color
 
 StudentsBag *-- Student
-CharacterCardDeck *-- CharacterCard
 
-Round --> AssistantCard
+'Round --> AssistantCard'
 
+/'
 StudentsBag ..|> RandomPickable
 CharacterCardDeck ..|> RandomPickable
+'/
 
 Message ..|> Serializable
 
+/'
 CharacterCard --|> Card
 AssistantCard --|> Card
+'/
 
-CharacterCard1 --|> CharacterCard
-CharacterCard2 --|> CharacterCard
-CharacterCard3 --|> CharacterCard
+MonkCharacterCard --|> CharacterCard
+FarmerCharacterCard --|> CharacterCard
+HeraldCharacterCard --|> CharacterCard
+PostmanCharacterCard --|> CharacterCard
+GrandmaCharacterCard --|> CharacterCard
+CentaurCharacterCard --|> CharacterCard
+JesterCharacterCard --|> CharacterCard
+KnightCharacterCard --|> CharacterCard
+
 
 Client --> Message
 
 Server --> Message
 
-Player --> Client
+'Player --> Client'
 
-Main --> Server
+App --> Server
 Server --> Client
-
-/' questo va capito se serve
-
-class Log {
-    level : LogLevel
-
-    {static} +debug(message : String)
-    {static} +info(message : String)
-    {static} +error(message : String, killApp : Boolean)
-
-}
-
-enum LogLevel {
-    DEBUG,
-    INFO,
-    ERROR       
-}
-
-'/
-
-
 
 @enduml
