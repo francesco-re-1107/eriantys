@@ -16,16 +16,18 @@ class Game {
     rounds : ArrayList<Rounds>
     characterCards : ArrayList<CharacterCard>[3]
 
-    currentInfluence
+    currentProfessors : Map<Student, Player>
 
     +initializeGame()
     -checkAndMergeIslands(...)
     +addOnReceivedMessageListener(...)
+    +getProfessorsForPlayer(p: Player)
+    -updateProfessors()
 }
 
 class Round {
-    playedCards : SortedMap<Player, AssistantCard>
-    playedAssistantCards : SortedMap<Player, CharacterCard>
+    playedAssistantCards : SortedMap<Player, AssistantCard>
+    playedCharacterCards : SortedMap<Player, CharacterCard>
 
     clouds : ArrayList<StudentsContainer> //max students = 3 or 4
     iterator() : Iterable<Player>
