@@ -27,7 +27,7 @@ class Round {
     playedCards : SortedMap<Player, AssistantCard>
     playedAssistantCards : SortedMap<Player, CharacterCard>
 
-    clouds : StudentsContainer //max students = 3 or 4
+    clouds : ArrayList<StudentsContainer> //max students = 3 or 4
     iterator() : Iterable<Player>
 }
 
@@ -80,7 +80,7 @@ class GroupOfIsland {
 '/
 
 class Island {
-    students : ArrayList<Student>
+    students : StudentsContainer
     towersCount : int
     towerColor : Tower
 
@@ -213,6 +213,7 @@ Student --> AStudentsContainer
 
 /'Island *-- Student
 Island *-- Tower'/
+Island *-- StudentsContainer
 
 /'StudentsBag *-- Student'/
 
