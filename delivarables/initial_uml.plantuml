@@ -10,7 +10,7 @@ class AssistantCard {
 class Game {
     players : Player[3]
     islands : Island[12]
-    studentsBag : StudentsBag
+    studentsBag : RandomizedStudentsContainer
     'relative to islands index, or alternatively we can link directly the island'
     motherNaturePosition : Int
     rounds : ArrayList<Rounds>
@@ -19,33 +19,45 @@ class Game {
     currentInfluence
 
     +initializeGame()
+    -checkAndMergeIslands(...)
+    +addOnReceivedMessageListener(...)
 }
 
 class Round {
     playedCards : SortedMap<Player, AssistantCard>
-    clouds : ArrayList<Set<Student>[N+1]>[N]
-    actions : ArrayList<Action>
+    playedAssistantCards : SortedMap<Player, CharacterCard>
+
+    clouds : StudentsContainer //max students = 3 or 4
     iterator() : Iterable<Player>
 }
 
-class Action {
+abstract AStudentsContainer {
+    -students : Map<Student, Integer>
+    -maxStudents : int
 
+    +merge(anotherContainer : AStudentsContainer) throws NoMoreSpaceException
+    +getStudentsCopy() : Map<Student, Integer>
+    +getCount(student : Student) : int
 }
 
-class StudentsBag {
+class RandomizedStudentsContainer {
     'shuffled once, only when created'
-    -students : Set<Student>[120]
 
-    +pickRandom(howMany : Int) : Set<Student>[howMany]
+    +pickRandom(howMany : Integer) : StudentsContainer[howMany]
+}
+
+class StudentsContainer {
+    +addStudent(student : Student)
+    +removeStudent(student : Student) throws StudentNotFoundException
+    +addOnStudentNumberReachedListener(student : Student, count : int) //for coins
 }
 
 class Player {
     nickname : String
-    entrance : Set<Student>[9]
-    towers : Set<Tower>[8]
-    'todo: use 5 different arrays'
-    students : Student[]
-    towers : Tower[]
+    entrance : StudentsContainer
+    students : StudentsContainer
+    towersCount : int
+    towerColor : Tower
     deck : ArrayList<AssistantCard>
     coins : Int = 1
     client : Client
@@ -69,10 +81,14 @@ class GroupOfIsland {
 
 class Island {
     students : ArrayList<Student>
-    towers : ArrayList<Tower>
+    towersCount : int
+    towerColor : Tower
+
     --
-    //it's possible to determine the size of the island by simply looking at towers.size
-    +merge(anotherIsland : Island) : Island
+    + Island()
+    + Island(student : Student)
+    +getSize() : Int //it's determined by looking at towers.size
+    +merge(anotherIsland : Island) : Island //return a new merged island
 }
 
 'abstract Card {}'
@@ -128,22 +144,13 @@ class KnightCharacterCard {
     cost : Int = 2
 }
 
-class Tower {
-    color : Tower.Color
-}
-
-enum Tower.Color {
+enum Tower {
     WHITE
     BLACK
     GREY
 }
 
-
-class Student {
-    color : Student.Color
-}
-
-enum Student.Color {
+enum Student {
     YELLOW
     BLUE
     GREEN
@@ -151,6 +158,7 @@ enum Student.Color {
     PINK
 }
 
+/'
 class Client {
     clientSocket : Socket
 
@@ -186,25 +194,27 @@ interface Exportable {
     exportToJson() : String
     importFromJson(json : String)
 }
+'/
 
 Game "2..4" *-- Player
-Game "1" *-- StudentsBag
+Game "1" *-- StudentsContainer
 Game "12" *-- Island
 Game *-- Round
 Game "3" *-- CharacterCard
 
 Player "10" *-- AssistantCard
 Player *-- Tower
-Player *-- Student
+Player *-- StudentsContainer
 
-Island *-- Student
-Island *-- Tower
+StudentsContainer --|> AStudentsContainer
+RandomizedStudentsContainer --|> AStudentsContainer
 
-Tower --> Tower.Color
+Student --> AStudentsContainer
 
-Student --> Student.Color
+/'Island *-- Student
+Island *-- Tower'/
 
-StudentsBag *-- Student
+/'StudentsBag *-- Student'/
 
 'Round --> AssistantCard'
 
@@ -213,7 +223,6 @@ StudentsBag ..|> RandomPickable
 CharacterCardDeck ..|> RandomPickable
 '/
 
-Message ..|> Serializable
 
 /'
 CharacterCard --|> Card
@@ -229,14 +238,16 @@ CentaurCharacterCard --|> CharacterCard
 JesterCharacterCard --|> CharacterCard
 KnightCharacterCard --|> CharacterCard
 
-
+/'
 Client --> Message
 
 Server --> Message
 
-'Player --> Client'
+Message ..|> Serializable
+
+Player --> Client
 
 App --> Server
 Server --> Client
-
+'/
 @enduml
