@@ -6,9 +6,9 @@ import java.util.Map;
 
 public abstract class AStudentsContainer {
 
-    private Map<Student, Integer> students;
+    protected final Map<Student, Integer> students;
 
-    private int maxSize = Integer.MAX_VALUE;
+    protected int maxSize = Integer.MAX_VALUE;
 
     public AStudentsContainer() {
         this.students = new HashMap<>();
@@ -17,13 +17,6 @@ public abstract class AStudentsContainer {
     public AStudentsContainer(int maxSize) {
         this();
         this.maxSize = maxSize;
-    }
-
-    public void addAll(AStudentsContainer anotherContainer) {
-        if (getSize() + anotherContainer.getSize() > maxSize)
-            throw NoMoreSpaceException();
-
-        this.students.putAll(anotherContainer.students);
     }
 
     public int getSize(){
