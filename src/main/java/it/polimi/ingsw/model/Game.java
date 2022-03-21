@@ -2,9 +2,11 @@ package it.polimi.ingsw.model;
 
 import it.polimi.ingsw.Constants;
 import it.polimi.ingsw.exceptions.DuplicatedNicknameException;
+import it.polimi.ingsw.exceptions.InvalidOperationException;
 
 import java.sql.Array;
 import java.util.*;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class Game {
 
@@ -18,11 +20,11 @@ public class Game {
 
     private int motherNaturePosition = 0;
 
-    private ArrayList<Round> rounds;
+    private Round currentRound;
 
     private final ArrayList<CharacterCard> characterCards;
 
-    private Map<Student, Player> currentProfessors;
+    private final Map<Student, Player> professors;
 
     private boolean isGameStarted = false;
 
@@ -31,6 +33,7 @@ public class Game {
         this.studentsBag = new RandomizedStudentsContainer(Constants.STUDENTS_BAG_NUMBER_PER_COLOR);
         this.characterCards = CharacterCard.generateRandomDeck(3);
         this.players = new ArrayList<>();
+        this.professors = new HashMap<>();
 
         initializeIslands();
     }
@@ -59,9 +62,36 @@ public class Game {
         if (players.size() != numberOfPlayers || isGameStarted)
             return;
 
+        newRound();
 
         this.isGameStarted = true;
     }
+
+    private void newRound() {
+        //generate clouds
+        List<StudentsContainer> clouds = new ArrayList<>();
+        for(int i = 0; i < numberOfPlayers; i++)
+            clouds.add(studentsBag.pickManyRandom(
+                    numberOfPlayers == 2 ?
+                            Constants.TWO_PLAYERS.STUDENTS_PER_CLOUD :
+                            Constants.THREE_PLAYERS.STUDENTS_PER_CLOUD)
+            );
+
+        currentRound = new Round(clouds); //TODO pass card order maybe
+    }
+
+    public void selectCloud(StudentsContainer cloud, Player player) {
+        if(!currentRound.getClouds().contains(cloud))
+            throw new InvalidOperationException("Cannot find selected cloud");
+
+        if(!players.contains(player))
+            throw new InvalidOperationException("Player not found");
+
+        player.addCloudToEntrance(cloud);
+        currentRound.removeCloud(cloud);
+    }
+
+
 
     public void addPlayer(String nickname) throws DuplicatedNicknameException {
         if (players.size() >= numberOfPlayers || isGameStarted)
@@ -97,22 +127,48 @@ public class Game {
         Optional<Player> maxP = Optional.empty();
 
         for(Player p: players){
-            int infl = p.calculateInfluence(curr);
+            int infl = calculateInfluence(curr, p);
 
             if(infl > max){
                 max = infl;
                 maxP = Optional.of(p);
-            }else if(infl == max){ // if duplicate max
+            }else if(infl == max){ // if there are two or more maximums
                 maxP = Optional.empty();
             }
         }
 
         maxP.ifPresent(
                 player -> {
-                    curr.setIslandConquered(player.getTowerColor());
-                    player.setTowersCount(player.getTowersCount() - curr.getTowersCount());
+                    if(player.getTowerColor() != curr.getTowerColor()) { //only if island is not yet conquered
+                        curr.setIslandConquered(player.getTowerColor());
+                        player.setTowersCount(player.getTowersCount() - curr.getTowersCount());
+                    }
                 }
         );
+    }
+
+    /**
+     *
+     * @param island
+     * @param player
+     * @return
+     */
+    private int calculateInfluence(Island island, Player player) {
+        //atomic because it is used in lambda
+        AtomicInteger influence = new AtomicInteger();
+
+        //towers
+        if(island.isConquered())
+            if(island.getTowerColor() == player.getTowerColor())
+                influence.addAndGet(island.getTowersCount());
+
+        //students
+        this.professors.forEach((s, p) -> {
+            if (p.equals(player)) //if the player has the professor associated
+                influence.addAndGet(island.getStudents().getCountForStudent(s));
+        });
+
+        return influence.get();
     }
 
     private void checkAndMergeIslands() {
@@ -175,9 +231,8 @@ public class Game {
         return motherNaturePosition;
     }
 
-    public ArrayList<Round> getRounds() {
-        //return a copy
-        return new ArrayList<>(rounds);
+    public Round getCurrentRound() {
+        return currentRound;
     }
 
     public ArrayList<CharacterCard> getCharacterCards() {
@@ -185,9 +240,9 @@ public class Game {
         return new ArrayList<>(characterCards);
     }
 
-    public Map<Student, Player> getCurrentProfessors() {
+    public Map<Student, Player> getProfessors() {
         //return a copy
-        return new HashMap<>(currentProfessors);
+        return new HashMap<>(professors);
     }
 
     public boolean isGameStarted() {

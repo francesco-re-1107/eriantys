@@ -1,7 +1,7 @@
 package it.polimi.ingsw.model;
 
-import java.util.ArrayList;
-import java.util.Arrays;
+import it.polimi.ingsw.Constants;
+
 import java.util.HashMap;
 import java.util.Map;
 
@@ -26,9 +26,14 @@ public class Player {
             throw new NullPointerException();
         this.nickname = nickname;
         this.towerColor = towerColor;
-        this.towersCount = numberOfPlayers == 2 ? 8 : 6; //2 -> 8 towers, 3 -> 6 towers
+        this.towersCount = numberOfPlayers == 2 ?
+                Constants.TWO_PLAYERS.TOWERS_COUNT :
+                Constants.THREE_PLAYERS.TOWERS_COUNT;
 
-        this.entrance = new StudentsContainer(numberOfPlayers == 2 ? 7 : 9);
+        this.entrance =
+                new StudentsContainer(numberOfPlayers == 2 ?
+                        Constants.TWO_PLAYERS.ENTRANCE_SIZE :
+                        Constants.THREE_PLAYERS.ENTRANCE_SIZE);
         this.school = new StudentsContainer();
 
         this.deck = new HashMap<>();
@@ -36,8 +41,6 @@ public class Player {
                 (c) -> this.deck.put(c, false)
         );
     }
-
-
 
     public boolean buyCharacterCard(CharacterCard card){
         if (this.coins < card.getCost())
@@ -68,7 +71,7 @@ public class Player {
         return coins;
     }
 
-    public int calculateInfluence(Island island) {
-        return 0;
+    public void addCloudToEntrance(StudentsContainer cloud) {
+        this.entrance.addAll(cloud);
     }
 }

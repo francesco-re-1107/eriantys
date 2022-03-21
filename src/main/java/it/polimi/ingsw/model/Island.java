@@ -31,6 +31,10 @@ public class Island {
         return towersCount;
     }
 
+    public Tower getTowerColor() {
+        return towerColor;
+    }
+
     public StudentsContainer getStudents(){
         return new StudentsContainer(this.students);
     }
