@@ -1,5 +1,7 @@
 package it.polimi.ingsw.model;
 
+import it.polimi.ingsw.exceptions.IslandNotCompatibleException;
+
 public class Island {
 
     private final StudentsContainer students;
@@ -18,21 +20,14 @@ public class Island {
         this.students.addStudent(defaultStudent);
     }
 
-    /**
-     * Used by merge, create a new island starting from island1 and island2
-     * @param island1
-     * @param island2
-     */
-    private Island(Island island1, Island island2) {
-        this();
-
-        students.addAll(island1.students);
-        students.addAll(island2.students);
-        towerColor = island1.towerColor;
-        towersCount = island1.towersCount + island2.towersCount;
+    public int getSize() {
+        if(towersCount == 0)
+            return 1;
+        else
+            return towersCount;
     }
 
-    public int getSize() {
+    public int getTowersCount(){
         return towersCount;
     }
 
@@ -40,11 +35,12 @@ public class Island {
         return new StudentsContainer(this.students);
     }
 
-    public Island merge(Island anotherIsland) {
+    public void merge(Island anotherIsland) {
         if (this.towerColor != anotherIsland.towerColor)
             throw new IslandNotCompatibleException();
 
-        return new Island(this, anotherIsland);
+        students.addAll(anotherIsland.students);
+        towersCount += anotherIsland.towersCount;
     }
 
     public void setIslandConquered(Tower towerColor){
@@ -53,5 +49,14 @@ public class Island {
         //if island has no tower then add one
         if(this.towersCount == 0)
             this.towersCount = 1;
+    }
+
+    public boolean isConquered(){
+        return towersCount == 0;
+    }
+
+    public boolean checkMergeCompatibility(Island anotherIsland){
+        return this.isConquered() && anotherIsland.isConquered()
+                && this.towerColor == anotherIsland.towerColor;
     }
 }

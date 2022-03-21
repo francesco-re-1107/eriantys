@@ -25,10 +25,10 @@ public abstract class CharacterCard {
         return cost + (used == 0 ? 0 : 1);
     }
 
-    public static ArrayList<CharacterCard> generateRandomCards(int howMany) {
+    public static ArrayList<CharacterCard> generateRandomDeck(int howManyCards) {
         ArrayList<CharacterCard> deck = new ArrayList<>();
 
-        for(int i = 0; i < howMany; i++){
+        for(int i = 0; i < howManyCards; i++){
             //generate random number and pick a card
             switch (random.nextInt(8)){
                 case 0:

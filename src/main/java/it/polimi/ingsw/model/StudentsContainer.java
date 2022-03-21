@@ -23,7 +23,7 @@ public class StudentsContainer extends AStudentsContainer{
         this.students.put(student, count + 1);
     }
 
-    public void removeStudent(Student student) throws StudentNotFoundException{
+    public void removeStudent(Student student){
         int count =  this.students.getOrDefault(student, 0);
 
         if (count <= 0)
@@ -32,7 +32,7 @@ public class StudentsContainer extends AStudentsContainer{
         this.students.put(student, count - 1);
     }
 
-    public void addAll(AStudentsContainer anotherContainer) throws StudentsMaxReachedException {
+    public void addAll(AStudentsContainer anotherContainer) {
         if (getSize() + anotherContainer.getSize() > maxSize)
             throw new StudentsMaxReachedException();
 

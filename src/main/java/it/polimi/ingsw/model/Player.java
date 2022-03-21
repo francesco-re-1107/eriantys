@@ -9,13 +9,13 @@ public class Player {
 
     private String nickname;
 
-    private StudentsContainer entrance;
+    private final StudentsContainer entrance;
 
-    private StudentsContainer school;
+    private final StudentsContainer school;
 
     private int towersCount;
 
-    private Tower towerColor;
+    private final Tower towerColor;
 
     private Map<AssistantCard, Boolean> deck;
 
@@ -33,6 +33,37 @@ public class Player {
         AssistantCard.getDefaultDeck().forEach(
                 (c) -> this.deck.put(c, false)
         );
+    }
+
+
+
+    public boolean buyCharacterCard(CharacterCard card){
+        if (this.coins < card.getCost())
+            return false;
+
+        this.coins -= card.getCost();
+
+        return true;
+    }
+
+    public String getNickname() {
+        return nickname;
+    }
+
+    public int getTowersCount() {
+        return towersCount;
+    }
+
+    public void setTowersCount(int towersCount){
+        this.towersCount = towersCount;
+    }
+
+    public Tower getTowerColor() {
+        return towerColor;
+    }
+
+    public int getCoins() {
+        return coins;
     }
 
     public int calculateInfluence(Island island) {
