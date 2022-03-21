@@ -1,6 +1,7 @@
 package it.polimi.ingsw.model;
 
 import it.polimi.ingsw.Constants;
+import it.polimi.ingsw.exceptions.DuplicatedNicknameException;
 
 import java.sql.Array;
 import java.util.*;
@@ -62,9 +63,15 @@ public class Game {
         this.isGameStarted = true;
     }
 
-    public void addPlayer(String nickname) {
+    public void addPlayer(String nickname) throws DuplicatedNicknameException {
         if (players.size() >= numberOfPlayers || isGameStarted)
             return;
+
+        if (players
+                .stream()
+                .anyMatch(p -> p.getNickname().equals(nickname)))
+            throw new DuplicatedNicknameException();
+
 
         players.add(
                 new Player(

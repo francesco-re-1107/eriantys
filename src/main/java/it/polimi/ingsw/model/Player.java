@@ -22,6 +22,8 @@ public class Player {
     private int coins = 1;
 
     public Player(String nickname, Tower towerColor, int numberOfPlayers) {
+        if (nickname == null)
+            throw new NullPointerException();
         this.nickname = nickname;
         this.towerColor = towerColor;
         this.towersCount = numberOfPlayers == 2 ? 8 : 6; //2 -> 8 towers, 3 -> 6 towers
