@@ -4,7 +4,7 @@ import it.polimi.ingsw.Constants;
 import it.polimi.ingsw.exceptions.DuplicatedNicknameException;
 import it.polimi.ingsw.exceptions.InvalidOperationException;
 
-import java.sql.Array;
+import java.text.MessageFormat;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -26,7 +26,7 @@ public class Game {
 
     private final Map<Student, Player> professors;
 
-    private boolean isGameStarted = false;
+    private Status gameStatus = Status.CREATED;
 
     public Game(int numberOfPlayers) {
         this.numberOfPlayers = numberOfPlayers;
@@ -59,12 +59,17 @@ public class Game {
     }
 
     public void startGame() {
-        if (players.size() != numberOfPlayers || isGameStarted)
-            return;
+        if (players.size() != numberOfPlayers)
+            throw new InvalidOperationException("Number of players not reached yet");
+
+        if(gameStatus != Status.CREATED)
+            throw new InvalidOperationException(
+                    MessageFormat.format("Game already started (gameStatus is {0})", gameStatus)
+            );
 
         newRound();
 
-        this.isGameStarted = true;
+        this.gameStatus = Status.STARTED;
     }
 
     private void newRound() {
@@ -91,11 +96,14 @@ public class Game {
         currentRound.removeCloud(cloud);
     }
 
-
-
     public void addPlayer(String nickname) throws DuplicatedNicknameException {
-        if (players.size() >= numberOfPlayers || isGameStarted)
-            return;
+        if (players.size() >= numberOfPlayers)
+            throw new InvalidOperationException("Players lobby is already full");
+
+        if (gameStatus != Status.CREATED)
+            throw new InvalidOperationException(
+                    MessageFormat.format("Game already started (gameStatus is {0})", gameStatus)
+            );
 
         if (players
                 .stream()
@@ -147,12 +155,22 @@ public class Game {
         );
     }
 
-    /**
-     *
-     * @param island
-     * @param player
-     * @return
-     */
+    public void useCharacterCard(Player player, CharacterCard card){
+        if(!players.contains(player))
+            throw  new InvalidOperationException();
+
+        if(!characterCards.contains(card))
+            throw  new InvalidOperationException();
+
+        //TODO check if it's the player turn
+
+        if(!player.buyCharacterCard(card))
+            throw new InvalidOperationException("Player cannot buy the card");
+
+        //currentRound.useCharacterCard();
+    }
+
+
     private int calculateInfluence(Island island, Player player) {
         //atomic because it is used in lambda
         AtomicInteger influence = new AtomicInteger();
@@ -205,13 +223,13 @@ public class Game {
 
     }
 
-    public void getProfessorsForPlayer(Player player) {
-
+    /*public ArrayList<Student> getProfessorsForPlayer(Player player) {
+        return
     }
 
     public void updateProfessors() {
 
-    }
+    }*/
 
     public ArrayList<Player> getPlayers() {
         //return a copy
@@ -245,7 +263,14 @@ public class Game {
         return new HashMap<>(professors);
     }
 
-    public boolean isGameStarted() {
-        return isGameStarted;
+    public Status getGameStatus() {
+        return gameStatus;
+    }
+
+    enum Status {
+        CREATED,
+        STARTED,
+        PAUSED,
+        FINISHED
     }
 }
