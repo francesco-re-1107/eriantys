@@ -2,24 +2,47 @@ package it.polimi.ingsw.model;
 
 import it.polimi.ingsw.exceptions.IslandNotCompatibleException;
 
+/**
+ * This class represents an island of the game.
+ */
 public class Island {
 
+    /**
+     * Stores the students on this island
+     */
     private final StudentsContainer students;
 
+    /**
+     * Stores the number of towers on this island
+      */
     private int towersCount = 0;
 
+    /**
+     * Stores the tower color of this island if conquered
+     */
     private Tower towerColor;
 
+    /**
+     * Create an empty island
+     */
     public Island() {
         this.students = new StudentsContainer();
     }
 
+    /**
+     * Create an island with a starting student
+     * @param defaultStudent the initial student to put on th island
+     */
     public Island(Student defaultStudent) {
         this();
 
-        this.students.addStudent(defaultStudent);
+        addStudent(defaultStudent);
     }
 
+    /**
+     * Get the size of this island (e.g. 3 means that this island was created merging 3 different islands)
+     * @return the size of the island
+     */
     public int getSize() {
         if(towersCount == 0)
             return 1;
@@ -27,26 +50,52 @@ public class Island {
             return towersCount;
     }
 
+    /**
+     * @return the number of towers on this island
+     */
     public int getTowersCount(){
         return towersCount;
     }
 
+    /**
+     * @return the towers color of this island if conquered, null otherwise
+     */
     public Tower getTowerColor() {
         return towerColor;
     }
 
+    /**
+     * @return a copy of the students located on this island
+     */
     public StudentsContainer getStudents(){
         return new StudentsContainer(this.students);
     }
 
+    /**
+     * Add a student to this island
+     * @param student the student to add
+     */
+    public void addStudent(Student student){
+        this.students.addStudent(student);
+    }
+
+    /**
+     * Merge this island with anotherIsland. All students on anotherIsland will be merged with this island, the same for
+     * the towers. They need to be compatible (@see isMergeCompatible)
+     * @param anotherIsland the island to merge with
+     */
     public void merge(Island anotherIsland) {
-        if (this.towerColor != anotherIsland.towerColor)
+        if (!isMergeCompatible(anotherIsland))
             throw new IslandNotCompatibleException();
 
         students.addAll(anotherIsland.students);
         towersCount += anotherIsland.towersCount;
     }
 
+    /**
+     * Used when a player has the most influence on this island
+     * @param towerColor color of the tower of the player
+     */
     public void setIslandConquered(Tower towerColor){
         this.towerColor = towerColor;
 
@@ -55,11 +104,19 @@ public class Island {
             this.towersCount = 1;
     }
 
+    /**
+     * @return whether the island is conquered
+     */
     public boolean isConquered(){
         return towersCount == 0;
     }
 
-    public boolean checkMergeCompatibility(Island anotherIsland){
+    /**
+     * Check if two islands are merge-compatible
+     * @param anotherIsland the other island
+     * @return true if this island  and anotherIsland can be merged, false otherwise
+     */
+    public boolean isMergeCompatible(Island anotherIsland){
         return this.isConquered() && anotherIsland.isConquered()
                 && this.towerColor == anotherIsland.towerColor;
     }
