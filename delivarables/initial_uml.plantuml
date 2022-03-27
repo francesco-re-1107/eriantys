@@ -1,28 +1,59 @@
 @startuml Eriantys
 
 class AssistantCard {
-    motherNatureMaxMoves : Int
-    turnPriority : Int
+    -motherNatureMaxMoves : Int
+    -turnPriority : Int
 
-    {static}+getDeck() : ArrayList<AssistantCard>[10]
+    +AssistantCard(turnPriority : int, motherNatureMaxMoves : int)
+    +getMotherNatureMaxMoves() : int
+    +getTurnPriority() : int
+    {static}+getDefaultDeck() : List<AssistantCard>
 }
 
 class Game {
-    players : Player[3]
-    islands : Island[12]
-    studentsBag : RandomizedStudentsContainer
+    -players : List<Player>
+    -numberOfPlayers : int //todo: maybe change this
+    -islands : List<Island>
+    -studentsBag : RandomizedStudentsContainer
     'relative to islands index, or alternatively we can link directly the island'
-    motherNaturePosition : Int
-    rounds : ArrayList<Rounds>
-    characterCards : ArrayList<CharacterCard>[3]
+    -motherNaturePosition : int
+    -round : Round
+    -characterCards : List<CharacterCard> //3 cards selected for this game
+    -currentProfessors : Map<Student, Player>
+    -gameState : Game.State
 
-    currentProfessors : Map<Student, Player>
+    +Game(int numberOfPlayers)
+    -initializeIslands()
+    +startGame()
+    +newRound()
+    +selectCloud(cloud : StudentsContainer, player : Player)
+    +addPlayer(nickname : String) : Player
+    +moveMotherNature(int steps)
+    -calculateInfluenceOnCurrentIsland()
+    +calculateInfluenceOnIsland(island : Island)
+    +useCharacterCard(player : Player, card : CharacterCard)
+    -calculateInfluenceOfPlayer(island : Island, player : Player) : int
+    -checkAndMergeIslands()
+    +getCurrentIsland() : Island
+    -calculateMotherNatureIndex(int steps) : int
+    +getPlayers() : List<Player>
+    +getNumberOfPlayers() : int
+    +getCurrentNumberOfPlayers() : int
+    +getIslands() : List<Island>
+    +getMotherNaturePosition() : int
+    +getCurrentRound : Round
+    +getCharacterCards() : List<CharacterCard>
+    +getProfessors() : Map<Student, Player>
+    +getGameState() : Game.State
+    +pauseGame()
+    +restartGame()
+}
 
-    +initializeGame()
-    -checkAndMergeIslands(...)
-    +addOnReceivedMessageListener(...)
-    +getProfessorsForPlayer(p: Player)
-    -updateProfessors()
+enum Game.State {
+    CREATED,
+    STARTED,
+    PAUSED,
+    FINISHED
 }
 
 class Round {
@@ -35,115 +66,179 @@ class Round {
 
 abstract AStudentsContainer {
     -students : Map<Student, Integer>
-    -maxStudents : int
+    -maxSize : int
 
-    +merge(anotherContainer : AStudentsContainer) throws NoMoreSpaceException
-    +getStudentsCopy() : Map<Student, Integer>
-    +getCount(student : Student) : int
+    +AStudentsContainer()
+    +AStudentsContainer(maxSize : int)
+    +getSize() : int
+    +setMaxSize(maxSize : int)
+    +getStudents() : Map<Student, Integer>
+    +getCountForStudent(student : Student) : int
 }
 
 class RandomizedStudentsContainer {
-    'shuffled once, only when created'
+    -random : Random
 
-    +pickRandom(howMany : Integer) : StudentsContainer[howMany]
+    +RandomizedStudentsContainer(studentsPerColor : int)
+    +pickOneRandom() : Student
+    +pickManyRandom(howMany : Integer) : StudentsContainer
 }
 
 class StudentsContainer {
+    +StudentsContainer()
+    +StudentsContainer(maxSize : int)
+    +StudentsContainer(studentsContainer : AStudentsContainer)
+    +StudentsContainer(studentsContainer : AStudentsContainer, maxSize : int)
     +addStudent(student : Student)
-    +removeStudent(student : Student) throws StudentNotFoundException
-    +addOnStudentNumberReachedListener(student : Student, count : int) //for coins
+    +addStudents(student : Student, howMany : int)
+    +removeStudent(student : Student)
+    +addAll(anotherContainer : AStudentsContainer)
+    +removeAll(anotherContainer : AStudentsContainer)
+    '+addOnStudentNumberReachedListener(student : Student, count : int) //for coins'
 }
 
 class Player {
-    nickname : String
-    entrance : StudentsContainer
-    students : StudentsContainer
-    towersCount : int
-    towerColor : Tower
-    deck : ArrayList<AssistantCard>
-    coins : Int = 1
-    client : Client
+    -nickname : String
+    -entrance : StudentsContainer
+    -school : StudentsContainer
+    -towersCount : int
+    -towerColor : Tower
+    -deck : Map<AssistantCard, Boolean> //<card, usedOrNot>
+    -coins : int = 1
 
-    +calculateInfluence(island : Island) : Int
+    +Player(nickname : String, towerColor : Tower, numberOfPlayers : int)
+    +getNickname() : String
+    +getTowersCount() : int
+    +setTowersCount(towersCount : int)
+    +getTowerColor() : Tower
+    +setCoins(coins : int)
+    +getCoins() : int
+    +addCloudToEntrance(cloud : StudentsContainer)
 }
-
-/'
-useless and wrong
-
-interface RandomPickable {
-    +pickRandom(howMany : Int) : ArrayList<Student>
-}
-'/
-
-/' removed for now
-class GroupOfIsland {
-
-}
-'/
 
 class Island {
-    students : StudentsContainer
-    towersCount : int
-    towerColor : Tower
+    -students : StudentsContainer
+    -towersCount : int = 0
+    -towerColor : Tower
+    -noEntry : boolean = false
 
-    --
-    + Island()
-    + Island(student : Student)
-    +getSize() : Int //it's determined by looking at towers.size
-    +merge(anotherIsland : Island) : Island //return a new merged island
+    +Island()
+    +Island(defaultStudent : Student)
+    +getSize() : int //it's determined by looking at towers.size
+    +getTowersCount() : int
+    +getTowerColor() : int
+    +getStudents() : StudentsContainer
+    +addStudent(student : Student)
+    +merge(anotherIsland : Island)
+    +setConquered(towerColor : Tower)
+    +isConquered() : boolean
+    +isNoEntry() : boolean
+    +setNoEntry() : boolean
+    +isMergeCompatible(anotherIsland : Island) : boolean
 }
 
-'abstract Card {}'
+abstract InfluenceCalculator {
+    +calculateInfluence(island : Island, ... professors)
+    -calculateTowersInfluence() : int
+    -calculateStudentsInfluence() : int
+}
+
+class NoTowersInfluenceCalculator {
+    {method}@override
+    -calculateTowersInfluence() : int
+}
+
+class AdditionalPointsInfluenceCalculator {
+    -player : Player
+    {method}@override
+    +calculateInfluence() : int
+}
+
+class NoColorInfluenceCalculator {
+    -student : Student
+    {method}@override
+    +calculateStudentsInfluence() : int
+}
 
 abstract CharacterCard {
     cost : Int
-    used : Int
-    'same for everyone: cost + 1 * (used > 0)'
 
     +getCost() : Int
+    +getMotherNatureAdditionalMoves() : Int
+
     --
     //used at the beginning of the game
     {static}+generateRandomCards() : ArrayList<CharacterCard[3]>
 }
 
-class MonkCharacterCard {
-    'redefine cost'
-    cost : Int = 1
+abstract InfluenceCharacterCard {
+    +getInfluenceCalculator() : InfluenceCalculator
 }
 
 class FarmerCharacterCard {
+    //take control of the professors of a color if players
+    //have the same number of students for that color
     'redefine cost'
     cost : Int = 2
+
+    {method}@override
+    +getInfluenceCalculator() : InfluenceCalculator
 }
 
 class HeraldCharacterCard {
+    //choose an island and calculate influence on that island
     'redefine cost'
     cost : Int = 3
+    island : Island
 }
 
 class PostmanCharacterCard {
+    //2 additional moves for motehr nature
     'redefine cost'
     cost : Int = 1
 }
 
 class GrandmaCharacterCard {
+    //no entry on the selected island
     'redefine cost'
     cost : Int = 2
+    island : Island
 }
 
 class CentaurCharacterCard {
+    //no towers in influence
     'redefine cost'
     cost : Int = 3
+
+    {method}@override
+    +getInfluenceCalculator() : InfluenceCalculator
 }
 
-class JesterCharacterCard {
+class MinstrelCharacterCard {
+    //swap two students between school and entrance
+    studentsToRemove : StudentsContainer
+    studentsToAdd : StudentsContainer
+
     'redefine cost'
     cost : Int = 1
 }
 
 class KnightCharacterCard {
+    //2 additional points in influence
     'redefine cost'
     cost : Int = 2
+
+    {method}@override
+    +getInfluenceCalculator() : InfluenceCalculator
+}
+
+class MushroomManCharacterCard {
+    //no color in influence
+    'redefine cost'
+    cost : Int = 3
+
+    {method}@override
+    +getInfluenceCalculator() : InfluenceCalculator
 }
 
 enum Tower {
@@ -199,58 +294,40 @@ interface Exportable {
 '/
 
 Game "2..4" *-- Player
-Game "1" *-- StudentsContainer
+Game "1" *-- RandomizedStudentsContainer
 Game "12" *-- Island
 Game *-- Round
 Game "3" *-- CharacterCard
+Game "1" *-- Game.State
 
 Player "10" *-- AssistantCard
-Player *-- Tower
-Player *-- StudentsContainer
+'Player --> Tower'
+Player "2" *-- StudentsContainer
 
 StudentsContainer --|> AStudentsContainer
 RandomizedStudentsContainer --|> AStudentsContainer
 
-Student --> AStudentsContainer
+'Student --> AStudentsContainer'
 
-/'Island *-- Student
-Island *-- Tower'/
-Island *-- StudentsContainer
-
-/'StudentsBag *-- Student'/
-
-'Round --> AssistantCard'
-
-/'
-StudentsBag ..|> RandomPickable
-CharacterCardDeck ..|> RandomPickable
-'/
+Island "1" *-- StudentsContainer
 
 
-/'
-CharacterCard --|> Card
-AssistantCard --|> Card
-'/
+InfluenceCharacterCard --> InfluenceCalculator
+InfluenceCharacterCard --|> CharacterCard
 
-MonkCharacterCard --|> CharacterCard
-FarmerCharacterCard --|> CharacterCard
+FarmerCharacterCard --|> InfluenceCharacterCard
+CentaurCharacterCard --|> InfluenceCharacterCard
+KnightCharacterCard --|> InfluenceCharacterCard
+MushroomManCharacterCard --|> InfluenceCharacterCard
+
 HeraldCharacterCard --|> CharacterCard
 PostmanCharacterCard --|> CharacterCard
 GrandmaCharacterCard --|> CharacterCard
-CentaurCharacterCard --|> CharacterCard
-JesterCharacterCard --|> CharacterCard
-KnightCharacterCard --|> CharacterCard
+MinstrelCharacterCard --|> CharacterCard
 
-/'
-Client --> Message
 
-Server --> Message
+NoTowersInfluenceCalculator --|> InfluenceCalculator
+AdditionalPointsInfluenceCalculator --|> InfluenceCalculator
+NoColorInfluenceCalculator --|> InfluenceCalculator
 
-Message ..|> Serializable
-
-Player --> Client
-
-App --> Server
-Server --> Client
-'/
 @enduml
