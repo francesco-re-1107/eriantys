@@ -1,6 +1,8 @@
 package it.polimi.ingsw.model;
 
 import it.polimi.ingsw.Constants;
+import it.polimi.ingsw.exceptions.InvalidOperationException;
+import it.polimi.ingsw.exceptions.StudentNotFoundException;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -78,7 +80,7 @@ public class Player {
      * @param card the card to check
      * @return true if this player can afford the card
      */
-    public boolean canBuyCharacterCard(CharacterCard card){
+    public boolean canAffordCharacterCard(CharacterCard card){
         return this.coins >= card.getCost();
     }
 
@@ -88,12 +90,23 @@ public class Player {
      * @return true if the card was bought (so the player could afford it), false otherwise
      */
     public boolean buyCharacterCard(CharacterCard card){
-        if(!canBuyCharacterCard(card))
+        if(!canAffordCharacterCard(card))
             return false;
 
         this.coins -= card.getCost();
 
         return true;
+    }
+
+    public boolean canPlayAssistantCard(AssistantCard card){
+        return !deck.get(card);
+    }
+
+    public void playAssistantCard(AssistantCard card){
+        if(deck.get(card))
+            throw new InvalidOperationException("Card already used by this user");
+
+       deck.put(card, true);
     }
 
     /**
@@ -131,6 +144,18 @@ public class Player {
      */
     public int getCoins() {
         return coins;
+    }
+
+    public StudentsContainer getEntrance() {
+        return new StudentsContainer(entrance);
+    }
+
+    public StudentsContainer getSchool() {
+        return new StudentsContainer(school);
+    }
+
+    public Map<AssistantCard, Boolean> getDeck() {
+        return new HashMap<>(deck);
     }
 
     /**

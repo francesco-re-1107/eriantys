@@ -2,6 +2,7 @@ package it.polimi.ingsw.model;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * This card represents an assistant card used by players in the planning stage of the round
@@ -74,5 +75,18 @@ public class AssistantCard {
             new AssistantCard(8, 9, 5),
             new AssistantCard(9, 10, 5)
         );
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        AssistantCard that = (AssistantCard) o;
+        return motherNatureMaxMoves == that.motherNatureMaxMoves && turnPriority == that.turnPriority;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(motherNatureMaxMoves, turnPriority);
     }
 }

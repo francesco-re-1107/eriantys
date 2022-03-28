@@ -3,7 +3,6 @@ package it.polimi.ingsw.model;
 import it.polimi.ingsw.Constants;
 import it.polimi.ingsw.exceptions.DuplicatedNicknameException;
 import it.polimi.ingsw.exceptions.InvalidOperationException;
-
 import java.text.MessageFormat;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -131,7 +130,15 @@ public class Game {
                             Constants.THREE_PLAYERS.STUDENTS_PER_CLOUD)
             );
 
-        currentRound = new Round(clouds); //TODO pass card order maybe
+        List<Player> tmpPlayers;
+
+        //if it's not the first round, use the previous players order for the new round
+        if(currentRound != null)
+            tmpPlayers = currentRound.getPlayers();
+        else
+            tmpPlayers = new ArrayList<>(players);
+
+        currentRound = new Round(tmpPlayers, clouds);
     }
 
     /**
@@ -188,26 +195,37 @@ public class Game {
     public void moveMotherNature(int steps){
         this.motherNaturePosition = calculateMotherNatureIndex(steps);
 
-        //after moving mother nature calculate influence on the island she just reached
-        this.calculateInfluenceOnCurrentIsland();
+        // if there's a no entry on the island then remove it and don't calculate influence
+        if(getCurrentIsland().isNoEntry()) {
+            getCurrentIsland().setNoEntry(false);
+        } else {
+            //after moving mother nature calculate influence on the island she just reached
+            this.calculateInfluenceOnCurrentIsland();
 
-        //After influence calculation a player may have conquered a new island.
-        //It's necessary to check if islands could be merged
-        this.checkAndMergeIslands();
+            //After influence calculation a player may have conquered a new island.
+            //It's necessary to check if islands could be merged
+            this.checkAndMergeIslands();
+        }
     }
 
-
     /**
-     * Calculate which player has the most influence on the current island change the towers on that island
+     * Calculate which player has the most influence on the givcurrenten island
+     * and change the towers on that island respectively
      */
     private void calculateInfluenceOnCurrentIsland(){
-        Island curr = getCurrentIsland();
+        this.calculateInfluenceOnIsland(getCurrentIsland());
+    }
 
+    /**
+     * Calculate which player has the most influence on the given island
+     * and change the towers on that island respectively
+     */
+    public void calculateInfluenceOnIsland(Island island){
         int max = -1;
         Optional<Player> maxP = Optional.empty();
 
         for(Player p: players){
-            int infl = calculateInfluence(curr, p);
+            int infl = calculateInfluenceOfPlayer(island, p);
 
             if(infl > max){
                 max = infl;
@@ -221,9 +239,9 @@ public class Game {
         maxP.ifPresent(
                 player -> {
                     //only if island is not yet conquered by this player
-                    if(player.getTowerColor() != curr.getTowerColor()) {
-                        curr.setIslandConquered(player.getTowerColor());
-                        player.setTowersCount(player.getTowersCount() - curr.getTowersCount());
+                    if(player.getTowerColor() != island.getTowerColor()) {
+                        island.setConquered(player.getTowerColor());
+                        player.setTowersCount(player.getTowersCount() - island.getTowersCount());
                     }
                 }
         );
@@ -234,14 +252,28 @@ public class Game {
      * @param player
      * @param card
      */
-    public void useCharacterCard(Player player, CharacterCard card){
+    public void playAssistantCard(Player player, AssistantCard card){
+        if(!players.contains(player))
+            throw new InvalidOperationException();
+
+        if(player.canPlayAssistantCard(card))
+            throw new InvalidOperationException();
+
+        player.playAssistantCard(card);
+        currentRound.playAssistantCard(player, card);
+    }
+
+    /**
+     *
+     * @param player
+     * @param card
+     */
+    public void playCharacterCard(Player player, CharacterCard card){
         if(!players.contains(player))
             throw  new InvalidOperationException();
 
         if(!characterCards.contains(card))
             throw  new InvalidOperationException();
-
-        //TODO check if it's the player turn
 
         if(!player.buyCharacterCard(card))
             throw new InvalidOperationException("Player cannot buy the card");
@@ -255,7 +287,7 @@ public class Game {
      * @param player
      * @return calculate influence as int >= 0
      */
-    private int calculateInfluence(Island island, Player player) {
+    private int calculateInfluenceOfPlayer(Island island, Player player) {
         //atomic because it is used in lambda
         AtomicInteger influence = new AtomicInteger();
 
@@ -330,7 +362,7 @@ public class Game {
     /**
      * @return a copy of the players list of this game
      */
-    public ArrayList<Player> getPlayers() {
+    public List<Player> getPlayers() {
         //return a copy
         return new ArrayList<>(players);
     }
@@ -376,7 +408,7 @@ public class Game {
     /**
      * @return a copy of the character cards selected for this game
      */
-    public ArrayList<CharacterCard> getCharacterCards() {
+    public List<CharacterCard> getCharacterCards() {
         //return a copy
         return new ArrayList<>(characterCards);
     }
@@ -394,6 +426,14 @@ public class Game {
      */
     public State getGameState() {
         return gameState;
+    }
+
+    public void pauseGame(){
+        this.gameState = State.PAUSED;
+    }
+
+    public void restartGame(){
+        this.gameState = State.STARTED;
     }
 
     /**

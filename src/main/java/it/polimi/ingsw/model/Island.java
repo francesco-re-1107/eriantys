@@ -23,6 +23,11 @@ public class Island {
     private Tower towerColor;
 
     /**
+     * Whether a No Entry tile is positioned on this island
+     */
+    private boolean noEntry = false;
+
+    /**
      * Create an empty island
      */
     public Island() {
@@ -96,7 +101,7 @@ public class Island {
      * Used when a player has the most influence on this island
      * @param towerColor color of the tower of the player
      */
-    public void setIslandConquered(Tower towerColor){
+    public void setConquered(Tower towerColor){
         this.towerColor = towerColor;
 
         //if island has no tower then add one
@@ -109,6 +114,21 @@ public class Island {
      */
     public boolean isConquered(){
         return towersCount == 0;
+    }
+
+    /**
+     * @return true if on this island is present a no entry tile
+     */
+    public boolean isNoEntry() {
+        return noEntry;
+    }
+
+    /**
+     * Set whether on this island is present a No Entry tile
+     * @param noEntry
+     */
+    public void setNoEntry(boolean noEntry) {
+        this.noEntry = noEntry;
     }
 
     /**

@@ -58,7 +58,7 @@ public class StudentsContainer extends AStudentsContainer{
     }
 
     /**
-     * Add howMany student to this container
+     * Add howMany students to this container
      * if the container is full then a StudentsMaxReachedException will be thrown
      * @param student the student to add
      * @param howMany number of students of this type to add to the container
