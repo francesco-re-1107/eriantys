@@ -12,17 +12,20 @@ class AssistantCard {
 
 class Game {
     -players : List<Player>
-    -numberOfPlayers : int //todo: maybe change this
+    -numberOfPlayers : int
+    -expertMode : boolean
     -islands : List<Island>
     -studentsBag : RandomizedStudentsContainer
     'relative to islands index, or alternatively we can link directly the island'
     -motherNaturePosition : int
     -round : Round
-    -characterCards : List<CharacterCard> //3 cards selected for this game
+    -characterCards : Map<String, Integer> //3 cards selected for this game and counter
     -currentProfessors : Map<Student, Player>
     -gameState : Game.State
+    -defaultInfluenceCalculator : InfluenceCalculator
+    -temporaryInfluenceCalculator : InfluenceCalculator
 
-    +Game(int numberOfPlayers)
+    +Game(int numberOfPlayers, boolean expertMode)
     -initializeIslands()
     +startGame()
     +newRound()
@@ -32,7 +35,6 @@ class Game {
     -calculateInfluenceOnCurrentIsland()
     +calculateInfluenceOnIsland(island : Island)
     +useCharacterCard(player : Player, card : CharacterCard)
-    -calculateInfluenceOfPlayer(island : Island, player : Player) : int
     -checkAndMergeIslands()
     +getCurrentIsland() : Island
     -calculateMotherNatureIndex(int steps) : int
@@ -41,9 +43,10 @@ class Game {
     +getCurrentNumberOfPlayers() : int
     +getIslands() : List<Island>
     +getMotherNaturePosition() : int
-    +getCurrentRound : Round
+    +getCurrentRound() : Round
     +getCharacterCards() : List<CharacterCard>
     +getProfessors() : Map<Student, Player>
+    +updateProfessors()
     +getGameState() : Game.State
     +pauseGame()
     +restartGame()
@@ -57,11 +60,27 @@ enum Game.State {
 }
 
 class Round {
-    playedAssistantCards : SortedMap<Player, AssistantCard>
-    playedCharacterCards : SortedMap<Player, CharacterCard>
+    -stage : Stage = Stage.PLAN
+    -players : List<Players>
+    -playedAssistantCards : List<AssistantCard>
+    -clouds : List<StudentsContainer> //max students = 3 or 4
+    -currentPlayer : int = 0
 
-    clouds : ArrayList<StudentsContainer> //max students = 3 or 4
-    iterator() : Iterable<Player>
+    +Round(players : List<Players>, clouds : List<StudentsContainer>)
+    -nextStage()
+    +playAssistantCard(player : Player, card : AssistantCard)
+    +nextPlayer()
+    +getStage() : Stage
+    +getPlayers() : List<Player>
+    +getCardPlayedBy(Player player) : Optional<AssistantCard>
+    +getCurrentPlayer() : Player
+    +getClouds() : List<StudentsContainer>
+    +removeCloud(cloud : StudentsContainer)
+}
+
+enum Round.Stage {
+    PLAN,
+    ATTACK
 }
 
 abstract AStudentsContainer {
@@ -113,6 +132,9 @@ class Player {
     +getTowerColor() : Tower
     +setCoins(coins : int)
     +getCoins() : int
+    +playAssistantCard(card : AssistantCard)
+    +canPlayAssistantCard(card : AssistantCard)
+    +swap(studentsToAdd : StudentsContainer, studentsToRemove : StudentsContainer) //used by a character card
     +addCloudToEntrance(cloud : StudentsContainer)
 }
 
@@ -137,8 +159,12 @@ class Island {
     +isMergeCompatible(anotherIsland : Island) : boolean
 }
 
-abstract InfluenceCalculator {
-    +calculateInfluence(island : Island, ... professors)
+interface InfluenceCalculator {
+    +calculateInfluence(island : Island, player : Player, professors : Map<Student, Player>)
+}
+
+class DefaultInfluenceCalculator {
+    +calculateInfluence(island : Island, player : Player, professors : Map<Student, Player>)
     -calculateTowersInfluence() : int
     -calculateStudentsInfluence() : int
 }
@@ -160,15 +186,17 @@ class NoColorInfluenceCalculator {
     +calculateStudentsInfluence() : int
 }
 
+class ProfessorsControlInfluenceCalculator{
+    -player : Player
+    {method}@override
+    +calculateStudentsInfluence() : int
+}
+
 abstract CharacterCard {
     cost : Int
 
     +getCost() : Int
     +getMotherNatureAdditionalMoves() : Int
-
-    --
-    //used at the beginning of the game
-    {static}+generateRandomCards() : ArrayList<CharacterCard[3]>
 }
 
 abstract InfluenceCharacterCard {
@@ -187,22 +215,27 @@ class FarmerCharacterCard {
 
 class HeraldCharacterCard {
     //choose an island and calculate influence on that island
+    -island : Island
     'redefine cost'
     cost : Int = 3
-    island : Island
+
+    +getIsland() : Island
 }
 
 class PostmanCharacterCard {
-    //2 additional moves for motehr nature
+    //2 additional moves for mother nature
     'redefine cost'
     cost : Int = 1
+
+    +getAdditionalMoves() : int
 }
 
 class GrandmaCharacterCard {
     //no entry on the selected island
+    -island : Island
     'redefine cost'
     cost : Int = 2
-    island : Island
+    +getIsland() : Island
 }
 
 class CentaurCharacterCard {
@@ -216,11 +249,13 @@ class CentaurCharacterCard {
 
 class MinstrelCharacterCard {
     //swap two students between school and entrance
-    studentsToRemove : StudentsContainer
-    studentsToAdd : StudentsContainer
-
+    -studentsToRemove : StudentsContainer
+    -studentsToAdd : StudentsContainer
     'redefine cost'
     cost : Int = 1
+
+    +getStudentsToRemove() : StudentsContainer
+    +getStudentsToAdd() : StudentsContainer
 }
 
 class KnightCharacterCard {
@@ -254,6 +289,24 @@ enum Student {
     RED
     PINK
 }
+
+class Error {}
+class InvalidOperationError {
+    +InvalidOperationError()
+    +InvalidOperationError(message : String)
+}
+
+class Exception {}
+class DuplicateException {}
+class IslandNotCompatibleException {}
+class StudentNotFoundException {}
+class StudentsMaxReachedException {}
+
+InvalidOperationError --|> Error
+DuplicateException --|> Exception
+IslandNotCompatibleException --|> Exception
+StudentNotFoundException --|> Exception
+StudentsMaxReachedException --|> Exception
 
 /'
 class Client {
@@ -311,6 +364,7 @@ RandomizedStudentsContainer --|> AStudentsContainer
 
 Island "1" *-- StudentsContainer
 
+Round "1" *-- Round.Stage
 
 InfluenceCharacterCard --> InfluenceCalculator
 InfluenceCharacterCard --|> CharacterCard
@@ -325,9 +379,11 @@ PostmanCharacterCard --|> CharacterCard
 GrandmaCharacterCard --|> CharacterCard
 MinstrelCharacterCard --|> CharacterCard
 
+DefaultInfluenceCalculator ..|> InfluenceCalculator
 
-NoTowersInfluenceCalculator --|> InfluenceCalculator
-AdditionalPointsInfluenceCalculator --|> InfluenceCalculator
-NoColorInfluenceCalculator --|> InfluenceCalculator
+NoTowersInfluenceCalculator --|> DefaultInfluenceCalculator
+AdditionalPointsInfluenceCalculator --|> DefaultInfluenceCalculator
+NoColorInfluenceCalculator --|> DefaultInfluenceCalculator
+ProfessorsControlInfluenceCalculator --|> DefaultInfluenceCalculator
 
 @enduml
