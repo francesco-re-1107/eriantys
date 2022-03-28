@@ -3,9 +3,11 @@ package it.polimi.ingsw.model;
 import it.polimi.ingsw.Constants;
 import it.polimi.ingsw.exceptions.DuplicatedNicknameException;
 import it.polimi.ingsw.exceptions.InvalidOperationException;
+import it.polimi.ingsw.model.charactercards.*;
+import it.polimi.ingsw.model.influencecalculators.DefaultInfluenceCalculator;
+
 import java.text.MessageFormat;
 import java.util.*;
-import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * This class represents a game. When a new game is created it is in the State.CREATED state.
@@ -60,6 +62,10 @@ public class Game {
      * Stores the current game state (@see Game.State)
      */
     private State gameState = State.CREATED;
+
+    private InfluenceCalculator defaultInfluenceCalculator = new DefaultInfluenceCalculator();
+
+    private Optional<InfluenceCalculator> temporaryInfluenceCalculator = Optional.empty();
 
     /**
      * Create a new game
@@ -192,7 +198,9 @@ public class Game {
      * Move mother nature on the islands
      * @param steps number of steps that mother nature needs to be moved
      */
-    public void moveMotherNature(int steps){
+    public void moveMotherNature(Player player, int steps){
+        //TODO: check if player can move steps
+
         this.motherNaturePosition = calculateMotherNatureIndex(steps);
 
         // if there's a no entry on the island then remove it and don't calculate influence
@@ -209,7 +217,7 @@ public class Game {
     }
 
     /**
-     * Calculate which player has the most influence on the givcurrenten island
+     * Calculate which player has the most influence on the current island
      * and change the towers on that island respectively
      */
     private void calculateInfluenceOnCurrentIsland(){
@@ -223,9 +231,10 @@ public class Game {
     public void calculateInfluenceOnIsland(Island island){
         int max = -1;
         Optional<Player> maxP = Optional.empty();
+        InfluenceCalculator calc = temporaryInfluenceCalculator.orElse(defaultInfluenceCalculator);
 
         for(Player p: players){
-            int infl = calculateInfluenceOfPlayer(island, p);
+            int infl = calc.calculateInfluence(p, island, getProfessors());
 
             if(infl > max){
                 max = infl;
@@ -245,6 +254,9 @@ public class Game {
                     }
                 }
         );
+
+        //remove temporary after use
+        temporaryInfluenceCalculator = Optional.empty();
     }
 
     /**
@@ -270,39 +282,26 @@ public class Game {
      */
     public void playCharacterCard(Player player, CharacterCard card){
         if(!players.contains(player))
-            throw  new InvalidOperationException();
+            throw new InvalidOperationException();
 
         if(!characterCards.contains(card))
-            throw  new InvalidOperationException();
+            throw new InvalidOperationException();
 
         if(!player.buyCharacterCard(card))
             throw new InvalidOperationException("Player cannot buy the card");
 
-        //currentRound.useCharacterCard();
-    }
+        if(card instanceof InfluenceCharacterCard){
+            temporaryInfluenceCalculator = Optional.of(((InfluenceCharacterCard) card).getInfluenceCalculator());
+        } else if (card instanceof HeraldCharacterCard){
+            Island island = ((HeraldCharacterCard)card).getIsland();
+            calculateInfluenceOnIsland(island);
+        } else if (card instanceof PostmanCharacterCard) {
+            currentRound.setAdditionalMotherNatureMoves(((PostmanCharacterCard)card).getAdditionalMoves());
+        } else if (card instanceof GrandmaCharacterCard) {
+            ((GrandmaCharacterCard) card).getIsland().setNoEntry(true);
+        } else if (card instanceof MinstrelCharacterCard) {
 
-    /**
-     * Calculate the influence of a player on a specific island
-     * @param island
-     * @param player
-     * @return calculate influence as int >= 0
-     */
-    private int calculateInfluenceOfPlayer(Island island, Player player) {
-        //atomic because it is used in lambda
-        AtomicInteger influence = new AtomicInteger();
-
-        //towers
-        if(island.isConquered())
-            if(island.getTowerColor() == player.getTowerColor())
-                influence.addAndGet(island.getTowersCount());
-
-        //students
-        this.professors.forEach((s, p) -> {
-            if (p.equals(player)) //if the player has the professor associated
-                influence.addAndGet(island.getStudents().getCountForStudent(s));
-        });
-
-        return influence.get();
+        }
     }
 
     /**

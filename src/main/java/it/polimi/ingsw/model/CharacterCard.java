@@ -49,49 +49,4 @@ public abstract class CharacterCard {
     public int getCost() {
         return cost + (used == 0 ? 0 : 1);
     }
-
-    /**
-     * Generate a random deck of character cards without duplicates (TODO: fix duplicates)
-     * @param howManyCards
-     * @return the generated deck
-     */
-    public static ArrayList<CharacterCard> generateRandomDeck(int howManyCards) {
-        if(howManyCards > 8)
-            throw new InvalidOperationException("Too many cards");
-
-        ArrayList<CharacterCard> deck = new ArrayList<>();
-
-        while(deck.size() < howManyCards){
-
-            //generate random number and pick a card
-            switch (random.nextInt(8)){
-                case 0:
-                    deck.add(new MonkCharacterCard());
-                    break;
-                case 1:
-                    deck.add(new FarmerCharacterCard());
-                    break;
-                case 2:
-                    deck.add(new HeraldCharacterCard());
-                    break;
-                case 3:
-                    deck.add(new PostmanCharacterCard());
-                    break;
-                case 4:
-                    deck.add(new GrandmaCharacterCard());
-                    break;
-                case 5:
-                    deck.add(new CentaurCharacterCard());
-                    break;
-                case 6:
-                    deck.add(new JesterCharacterCard());
-                    break;
-                case 7:
-                    deck.add(new KnightCharacterCard());
-                    break;
-            }
-        }
-
-        return deck;
-    }
 }

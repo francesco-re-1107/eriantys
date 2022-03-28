@@ -1,0 +1,32 @@
+package it.polimi.ingsw.model.influencecalculators;
+
+import it.polimi.ingsw.model.Island;
+import it.polimi.ingsw.model.Player;
+import it.polimi.ingsw.model.Student;
+import it.polimi.ingsw.model.influencecalculators.DefaultInfluenceCalculator;
+
+import java.util.Map;
+import java.util.concurrent.atomic.AtomicInteger;
+
+public class NoColorInfluenceCalculator extends DefaultInfluenceCalculator {
+
+    private Student studentColorNotInfluencing;
+
+    public NoColorInfluenceCalculator(Student studentColorNotInfluencing) {
+        this.studentColorNotInfluencing = studentColorNotInfluencing;
+    }
+
+    @Override
+    protected int calculateStudentsInfluence(Player player, Island island, Map<Student, Player> professors) {
+        //atomic because it is used in lambda
+        AtomicInteger influence = new AtomicInteger();
+
+        professors.forEach((s, p) -> {
+            if (p.equals(player) && s != studentColorNotInfluencing) //if the player has the professor associated
+                influence.addAndGet(island.getStudents().getCountForStudent(s));
+        });
+
+        return influence.get();
+    }
+
+}
