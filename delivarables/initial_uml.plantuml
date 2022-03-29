@@ -47,16 +47,20 @@ class Game {
     +getCharacterCards() : List<CharacterCard>
     +getProfessors() : Map<Student, Player>
     +updateProfessors()
+    +putStudents(inSchool : StudentsContainer, inIslands : Map<Island, StudentsContainer>)
+    +addGameUpdateListener(...)
+    -notifyUpdate()
     +getGameState() : Game.State
     +pauseGame()
     +restartGame()
 }
 
 enum Game.State {
-    CREATED,
-    STARTED,
-    PAUSED,
-    FINISHED
+    CREATED //game was created but never started
+    STARTED //game is currently played
+    PAUSED //when a client disconnects, the game is paused
+    FINISHED //game finished, there's a winner
+    TERMINATED //game terminated before finish (e.g. a player left the game)
 }
 
 class Round {
@@ -113,7 +117,7 @@ class StudentsContainer {
     +removeStudent(student : Student)
     +addAll(anotherContainer : AStudentsContainer)
     +removeAll(anotherContainer : AStudentsContainer)
-    '+addOnStudentNumberReachedListener(student : Student, count : int) //for coins'
+    +addOnStudentNumberReachedListener(student : Student, count : int) //for coins
 }
 
 class Player {
@@ -132,6 +136,7 @@ class Player {
     +getTowerColor() : Tower
     +setCoins(coins : int)
     +getCoins() : int
+    +addStudentsInSchool(students : StudentsContainer)
     +playAssistantCard(card : AssistantCard)
     +canPlayAssistantCard(card : AssistantCard)
     +swap(studentsToAdd : StudentsContainer, studentsToRemove : StudentsContainer) //used by a character card
@@ -151,6 +156,7 @@ class Island {
     +getTowerColor() : int
     +getStudents() : StudentsContainer
     +addStudent(student : Student)
+    +addStudents(students : StudentsContainer)
     +merge(anotherIsland : Island)
     +setConquered(towerColor : Tower)
     +isConquered() : boolean
