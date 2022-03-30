@@ -166,4 +166,16 @@ public class Player {
     public void addCloudToEntrance(StudentsContainer cloud) {
         this.entrance.addAll(cloud);
     }
+
+    public void addStudentsInSchool(StudentsContainer inSchool) {
+        entrance.removeAll(inSchool);
+        school.addAll(inSchool);
+    }
+
+    public int getAssistantCardsLeftCount() {
+        return (int) deck.values()
+                .stream()
+                .filter(used -> !used) //only cards not used
+                .count();
+    }
 }

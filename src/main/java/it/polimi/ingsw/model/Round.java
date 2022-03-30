@@ -39,7 +39,7 @@ public class Round {
         if (stage == Stage.ATTACK)
             throw new InvalidOperationException("Already in ATTACK stage");
 
-        //TODO: sort players and cards accordingly by assistant card played
+        //TODO: sort players and cards accordingly by assistant card played maybe using Pair
 
         stage = Stage.ATTACK;
         currentPlayer = 0;

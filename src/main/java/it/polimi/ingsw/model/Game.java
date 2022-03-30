@@ -6,6 +6,7 @@ import it.polimi.ingsw.exceptions.InvalidOperationException;
 import java.text.MessageFormat;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.stream.Collectors;
 
 /**
  * This class represents a game. When a new game is created it is in the State.CREATED state.
@@ -60,6 +61,8 @@ public class Game {
      * Stores the current game state (@see Game.State)
      */
     private State gameState = State.CREATED;
+
+    private Optional<Player> winner = Optional.empty();
 
     /**
      * Create a new game
@@ -121,6 +124,14 @@ public class Game {
      * Generate automatically the clouds.
      */
     private void newRound() {
+        //if the bag is empty the game is finished
+        if(studentsBag.getSize() == 0)
+            setGameFinished(calculateCurrentWinner());
+
+        //check if players have any card left (checking only player0 because they're all the same)
+        if(players.get(0).getAssistantCardsLeftCount() == 0)
+            setGameFinished(calculateCurrentWinner());
+
         //generate clouds
         List<StudentsContainer> clouds = new ArrayList<>();
         for(int i = 0; i < numberOfPlayers; i++)
@@ -192,7 +203,19 @@ public class Game {
      * Move mother nature on the islands
      * @param steps number of steps that mother nature needs to be moved
      */
-    public void moveMotherNature(int steps){
+    public void moveMotherNature(Player player, int steps){
+        if(!currentRound.getCurrentPlayer().equals(player))
+            throw new InvalidOperationException("");
+
+        if(currentRound.getStage() != Round.Stage.ATTACK)
+            throw new InvalidOperationException("");
+
+        //use get directly cause in attack stage every player has played its card
+        AssistantCard card = currentRound.getCardPlayedBy(player).get();
+
+        if(steps > card.getMotherNatureMaxMoves())
+            throw new InvalidOperationException("Cannot move mother nature that far");
+
         this.motherNaturePosition = calculateMotherNatureIndex(steps);
 
         // if there's a no entry on the island then remove it and don't calculate influence
@@ -242,6 +265,10 @@ public class Game {
                     if(player.getTowerColor() != island.getTowerColor()) {
                         island.setConquered(player.getTowerColor());
                         player.setTowersCount(player.getTowersCount() - island.getTowersCount());
+
+                        //TODO maybe use an observer
+                        if(player.getTowersCount() <= 0)
+                            setGameFinished(player);
                     }
                 }
         );
@@ -279,6 +306,26 @@ public class Game {
             throw new InvalidOperationException("Player cannot buy the card");
 
         //currentRound.useCharacterCard();
+    }
+
+    public void putStudents(Player player, StudentsContainer inSchool, Map<Island,StudentsContainer> inIsland){
+        if(!currentRound.getCurrentPlayer().equals(player))
+            throw new InvalidOperationException();
+
+        if(currentRound.getStage() != Round.Stage.ATTACK)
+            throw new InvalidOperationException();
+
+        int studentsMoved = inSchool.getSize() + inIsland.values().stream().mapToInt(StudentsContainer::getSize).sum();
+
+        int studentsToMove = numberOfPlayers == 3 ?
+                Constants.THREE_PLAYERS.STUDENTS_TO_MOVE :
+                Constants.TWO_PLAYERS.STUDENTS_TO_MOVE;
+
+        if(studentsMoved != studentsToMove)
+            throw new InvalidOperationException();
+
+        player.addStudentsInSchool(inSchool);
+        inIsland.forEach(Island::addStudents);
     }
 
     /**
@@ -326,8 +373,34 @@ public class Game {
             islands.remove(next);
         }
 
+        if(islands.size() <= 3)
+            setGameFinished(calculateCurrentWinner());
+
         //adjust motherNatureIndex
         this.motherNaturePosition = islands.indexOf(curr);
+    }
+
+    private Player calculateCurrentWinner() {
+        //order players by placed towers
+        List<Player> orderedPlayers = players.stream()
+                .sorted(Comparator.comparingInt(Player::getTowersCount).reversed())
+                .collect(Collectors.toList());
+
+        Player firstPlayer =
+                orderedPlayers.get(0);
+
+        Player secondPlayer =
+                orderedPlayers.get(1);
+
+        if(firstPlayer.getTowersCount() < secondPlayer.getTowersCount()) //there's a winner
+            return firstPlayer;
+
+        //otherwise, look at the professors
+        if(getProfessorsForPlayer(firstPlayer).size() >
+                getProfessorsForPlayer(secondPlayer).size())
+            return firstPlayer;
+        else
+            return secondPlayer;
     }
 
     /**
@@ -346,18 +419,45 @@ public class Game {
         return (this.motherNaturePosition + steps) % islands.size();
     }
 
-    /*
-    public void addOnReceivedMessageListener() {
 
+    public void addGameUpdateListener() {
+        //TODO implement
     }
 
-    public ArrayList<Student> getProfessorsForPlayer(Player player) {
-        return
+    private void notifyUpdate(){
+        //TODO implement
     }
 
     public void updateProfessors() {
+        Arrays.stream(Student.values()).forEach(s -> {
+            List<Player> sortedPlayers = players.stream()
+                    .sorted(
+                            Comparator.comparingInt(p -> p.getSchool().getCountForStudent(s))
+                    )
+                    .collect(Collectors.toList());
 
-    }*/
+            Player firstPlayer = sortedPlayers.get(0);
+            Player secondPlayer = sortedPlayers.get(0);
+
+            if(firstPlayer.getSchool().getCountForStudent(s) >
+                    secondPlayer.getSchool().getCountForStudent(s))
+                professors.put(s, firstPlayer);
+        });
+    }
+
+    public List<Student> getProfessorsForPlayer(Player player) {
+        return professors.entrySet()
+                .stream()
+                .filter(e -> e.getValue().equals(player))
+                .map(Map.Entry::getKey)
+                .collect(Collectors.toList());
+    }
+
+    private void setGameFinished(Player winner) {
+        gameState = State.FINISHED;
+
+        this.winner = Optional.of(winner);
+    }
 
     /**
      * @return a copy of the players list of this game
@@ -436,13 +536,18 @@ public class Game {
         this.gameState = State.STARTED;
     }
 
+    public Optional<Player> getWinner() {
+        return winner;
+    }
+
     /**
      * this enum represents all the possible states of a game
      */
     enum State {
-        CREATED,
-        STARTED,
-        PAUSED,
-        FINISHED
+        CREATED, //game was created but never started
+        STARTED, //game is currently played
+        PAUSED, //when a client disconnects, the game is paused
+        FINISHED, //game finished, there's a winner
+        TERMINATED //game terminated before finish (e.g. a player left the game)
     }
 }

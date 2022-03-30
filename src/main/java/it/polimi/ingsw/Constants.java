@@ -17,6 +17,7 @@ public final class Constants {
 
         public static final int STUDENTS_PER_CLOUD = 3;
 
+        public static final int STUDENTS_TO_MOVE = 3;
     }
 
     public static final class THREE_PLAYERS {
@@ -26,6 +27,8 @@ public final class Constants {
         public static final int ENTRANCE_SIZE = 9;
 
         public static final int STUDENTS_PER_CLOUD = 4;
+
+        public static final int STUDENTS_TO_MOVE = 4;
     }
 
 }

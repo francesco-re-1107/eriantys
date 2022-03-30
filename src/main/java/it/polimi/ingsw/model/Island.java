@@ -85,6 +85,14 @@ public class Island {
     }
 
     /**
+     * Add a student to this island
+     * @param student the student to add
+     */
+    public void addStudents(StudentsContainer studentsContainer){
+        this.students.addAll(studentsContainer);
+    }
+
+    /**
      * Merge this island with anotherIsland. All students on anotherIsland will be merged with this island, the same for
      * the towers. They need to be compatible (@see isMergeCompatible)
      * @param anotherIsland the island to merge with
