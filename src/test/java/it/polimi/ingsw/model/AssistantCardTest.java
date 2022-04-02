@@ -8,10 +8,11 @@ class AssistantCardTest {
 
     @Test
     void getters() {
-        AssistantCard assistantCard = new AssistantCard(2, 4, 3);
-        assertEquals(2, assistantCard.getId());
-        assertEquals(4, assistantCard.getMotherNatureMaxMoves());
-        assertEquals(3, assistantCard.getTurnPriority());
+        AssistantCard assistantCard = AssistantCard.getDefaultDeck().get(0);
+
+        //assertEquals(0, assistantCard.getId());
+        assertEquals(1, assistantCard.getMotherNatureMaxMoves());
+        assertEquals(1, assistantCard.getTurnPriority());
     }
 
     @Test

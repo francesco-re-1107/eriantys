@@ -41,7 +41,7 @@ public class Player {
     /**
      * Stores the assistant cards of this player and whether they're already used
      */
-    private Map<AssistantCard, Boolean> deck;
+    private final Map<AssistantCard, Boolean> deck;
 
     /**
      * Stores the number of coins this player currently has, 1 coin is given to everyone by default
@@ -55,8 +55,6 @@ public class Player {
      * @param numberOfPlayers used to determine the number of towers and the max size of the entrance
      */
     public Player(String nickname, Tower towerColor, int numberOfPlayers) {
-        if (nickname == null)
-            throw new NullPointerException();
         this.nickname = nickname;
         this.towerColor = towerColor;
         this.towersCount = numberOfPlayers == 2 ?
@@ -103,6 +101,7 @@ public class Player {
     }
 
     public void playAssistantCard(AssistantCard card){
+        //TODO: find a better way to handle this
         if(deck.get(card))
             throw new InvalidOperationException("Card already used by this user");
 
@@ -167,15 +166,15 @@ public class Player {
         this.entrance.addAll(cloud);
     }
 
-    public void addStudentsInSchool(StudentsContainer inSchool) {
-        entrance.removeAll(inSchool);
-        school.addAll(inSchool);
+    public void addStudentsToSchool(StudentsContainer toSchool) {
+        entrance.removeAll(toSchool);
+        school.addAll(toSchool);
     }
 
     public int getAssistantCardsLeftCount() {
-        return (int) deck.values()
+        return (int) deck.entrySet()
                 .stream()
-                .filter(used -> !used) //only cards not used
+                .filter((e) -> !e.getValue()) //only cards not used
                 .count();
     }
 }

@@ -21,6 +21,10 @@ class StudentsContainerTest {
         StudentsContainer anotherContainer =
                 new StudentsContainer(container, 1);
 
+        //testing equals for AStudentsContainer
+        assertNotEquals(container, containerWithMaxSize);
+        assertEquals(containerWithMaxSize, anotherContainer);
+
         assertEquals(1, anotherContainer.getMaxSize());
     }
 

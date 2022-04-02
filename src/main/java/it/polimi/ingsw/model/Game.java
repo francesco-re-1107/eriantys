@@ -324,7 +324,7 @@ public class Game {
         if(studentsMoved != studentsToMove)
             throw new InvalidOperationException();
 
-        player.addStudentsInSchool(inSchool);
+        player.addStudentsToSchool(inSchool);
         inIsland.forEach(Island::addStudents);
     }
 
