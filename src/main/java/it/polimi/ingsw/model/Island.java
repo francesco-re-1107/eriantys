@@ -121,7 +121,7 @@ public class Island {
      * @return whether the island is conquered
      */
     public boolean isConquered(){
-        return towersCount == 0;
+        return towersCount != 0;
     }
 
     /**

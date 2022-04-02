@@ -56,6 +56,10 @@ public abstract class AStudentsContainer {
         this.maxSize = maxSize;
     }
 
+    public int getMaxSize() {
+        return maxSize;
+    }
+
     /**
      * @return a copy of the private map used for storing students
      */

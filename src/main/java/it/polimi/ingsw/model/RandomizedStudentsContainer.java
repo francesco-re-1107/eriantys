@@ -22,11 +22,9 @@ public class RandomizedStudentsContainer extends AStudentsContainer{
      */
     public RandomizedStudentsContainer(int studentsPerColor) {
         super();
-        students.put(Student.BLUE, studentsPerColor);
-        students.put(Student.GREEN, studentsPerColor);
-        students.put(Student.PINK, studentsPerColor);
-        students.put(Student.RED, studentsPerColor);
-        students.put(Student.YELLOW, studentsPerColor);
+
+        for(Student s : Student.values())
+            students.put(s, studentsPerColor);
     }
 
     /**
@@ -40,7 +38,7 @@ public class RandomizedStudentsContainer extends AStudentsContainer{
         Student pickedStudent;
 
         do{
-            pickedStudent = Student.values()[random.nextInt(5)];
+            pickedStudent = Student.values()[random.nextInt(Student.values().length)];
         } while(getCountForStudent(pickedStudent) <= 0);
 
         //remove student from the bag
@@ -56,8 +54,11 @@ public class RandomizedStudentsContainer extends AStudentsContainer{
      * @return multiple random students picked from this bag
      */
     public StudentsContainer pickManyRandom(int howMany) {
-        if(howMany >= getSize())
-            return new StudentsContainer(this); //return all this bag
+        if(howMany >= getSize()) {
+            StudentsContainer pickAll = new StudentsContainer(this);
+            this.students.clear();
+            return pickAll; //return all this bag
+        }
 
         StudentsContainer picked = new StudentsContainer();
 
