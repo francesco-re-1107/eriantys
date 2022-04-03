@@ -107,6 +107,10 @@ public class Round {
         this.additionalMotherNatureMoves = additionalMoves;
     }
 
+    public int getAdditionalMotherNatureMoves() {
+        return additionalMotherNatureMoves;
+    }
+
     enum Stage {
         PLAN,
         ATTACK

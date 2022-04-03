@@ -119,6 +119,12 @@ class RoundTest {
     }
 
     @Test
+    void setAdditionalMotherNatureMoves(){
+        r.setAdditionalMotherNatureMoves(3);
+        assertEquals(3, r.getAdditionalMotherNatureMoves());
+    }
+
+    @Test
     void removeCloud() {
         r.removeCloud(clouds.get(0));
 

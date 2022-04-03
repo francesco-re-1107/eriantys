@@ -82,10 +82,4 @@ public abstract class AStudentsContainer {
         AStudentsContainer that = (AStudentsContainer) o;
         return maxSize == that.maxSize && students.equals(that.students);
     }
-
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(students, maxSize);
-    }
 }

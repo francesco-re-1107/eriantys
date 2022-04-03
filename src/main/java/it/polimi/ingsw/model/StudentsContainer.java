@@ -49,12 +49,14 @@ public class StudentsContainer extends AStudentsContainer{
      * if the container is full then a StudentsMaxReachedException will be thrown
      * @param student the student to add
      */
-    public void addStudent(Student student) {
+    public StudentsContainer addStudent(Student student) {
         if (getSize() + 1 > maxSize)
             throw new StudentsMaxReachedException();
 
         int count =  this.students.getOrDefault(student, 0);
         this.students.put(student, count + 1);
+
+        return this;
     }
 
     /**
@@ -63,12 +65,14 @@ public class StudentsContainer extends AStudentsContainer{
      * @param student the student to add
      * @param howMany number of students of this type to add to the container
      */
-    public void addStudents(Student student, int howMany) {
+    public StudentsContainer addStudents(Student student, int howMany) {
         if (getSize() + howMany > maxSize)
             throw new StudentsMaxReachedException();
 
         int count =  this.students.getOrDefault(student, 0);
         this.students.put(student, count + howMany);
+
+        return this;
     }
 
     /**
@@ -76,13 +80,15 @@ public class StudentsContainer extends AStudentsContainer{
      * if the container does not contain the sutend then a StudentNotFoundException will be thrown
      * @param student the student to remove
      */
-    public void removeStudent(Student student){
+    public StudentsContainer removeStudent(Student student){
         int count =  this.students.getOrDefault(student, 0);
 
         if (count <= 0)
             throw new StudentNotFoundException();
 
         this.students.put(student, count - 1);
+
+        return this;
     }
 
     /**
@@ -90,11 +96,13 @@ public class StudentsContainer extends AStudentsContainer{
      * if the container is full then a StudentsMaxReachedException will be thrown
      * @param anotherContainer
      */
-    public void addAll(AStudentsContainer anotherContainer) {
+    public StudentsContainer addAll(AStudentsContainer anotherContainer) {
         if (getSize() + anotherContainer.getSize() > maxSize)
             throw new StudentsMaxReachedException();
 
         anotherContainer.students.forEach(this::addStudents);
+
+        return this;
     }
 
     /**
