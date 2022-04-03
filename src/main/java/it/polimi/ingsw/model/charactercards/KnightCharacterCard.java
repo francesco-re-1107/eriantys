@@ -7,7 +7,7 @@ import it.polimi.ingsw.model.influencecalculators.AdditionalPointsInfluenceCalcu
 
 public class KnightCharacterCard extends InfluenceCharacterCard {
 
-    private Player player;
+    private final Player player;
 
     public KnightCharacterCard(Player player) {
         super(2);

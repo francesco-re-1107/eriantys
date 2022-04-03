@@ -8,9 +8,9 @@ import java.util.Map;
 
 public class AdditionalPointsInfluenceCalculator extends DefaultInfluenceCalculator {
 
-    private Player player;
+    private final Player player;
 
-    private final int ADDITIONAL_INFLUENCE = 2;
+    private static final int ADDITIONAL_INFLUENCE = 2;
 
     public AdditionalPointsInfluenceCalculator(Player player) {
         this.player = player;

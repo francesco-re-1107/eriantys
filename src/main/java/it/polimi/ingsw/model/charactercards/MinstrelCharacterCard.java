@@ -6,9 +6,9 @@ import it.polimi.ingsw.model.StudentsContainer;
 public class MinstrelCharacterCard extends CharacterCard {
 
     //with respect to the school
-    private StudentsContainer studentsToRemove;
+    private final StudentsContainer studentsToRemove;
 
-    private StudentsContainer studentsToAdd;
+    private final StudentsContainer studentsToAdd;
 
     public MinstrelCharacterCard(StudentsContainer studentsToRemove, StudentsContainer studentsToAdd) {
         super(1);

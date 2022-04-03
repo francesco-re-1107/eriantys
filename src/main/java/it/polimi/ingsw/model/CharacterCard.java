@@ -3,29 +3,28 @@ package it.polimi.ingsw.model;
 import it.polimi.ingsw.exceptions.InvalidOperationException;
 import it.polimi.ingsw.model.charactercards.*;
 
-import java.util.ArrayList;
-import java.util.Random;
+import java.util.*;
 
 /**
  * This class is used to represent a generic character card
  */
 public abstract class CharacterCard {
 
+    private static final List<String> availableCards = Arrays.asList(
+            "CentaurCharacterCard",
+            "FarmerCharacterCard",
+            "GrandmaCharacterCard",
+            "HeraldCharacterCard",
+            "KnightCharacterCard",
+            "MinstrelCharacterCard",
+            "MushroomManCharacterCard",
+            "PostmanCharacterCard"
+    );
+
     /**
      * This is the initial cost of the card, it will change when the card is used
      */
     private final int cost;
-
-    /**
-     * Random object used to generate random cards deck
-     * TODO: store the seed for persistance
-     */
-    private final static Random random = new Random();
-
-    /**
-     * Store the number of times the card is used (used for calculating final cost)
-     */
-    private int used = 0;
 
     /**
      * Create a generic character card
@@ -36,10 +35,17 @@ public abstract class CharacterCard {
     }
 
     /**
-     * Increment the used counter, called whenever the card is used by some player
+     * Generate a random deck of character cards without duplicates (TODO: fix duplicates)
+     * @param howManyCards
+     * @return the generated deck
      */
-    public void incrementUsedCounter(){
-        this.used++;
+    public static List<String> generateRandomDeck(int howManyCards) {
+        if(howManyCards > availableCards.size())
+            throw new InvalidOperationException("Too many cards");
+
+        Collections.shuffle(availableCards);
+
+        return availableCards.subList(0, howManyCards);
     }
 
     /**
@@ -47,6 +53,10 @@ public abstract class CharacterCard {
      * @return the initial cost if card was not used, initial cost +1 otherwise
      */
     public int getCost() {
-        return cost + (used == 0 ? 0 : 1);
+        return cost;
+    }
+
+    public String getName() {
+        return this.getClass().getSimpleName();
     }
 }

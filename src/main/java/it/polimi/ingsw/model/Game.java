@@ -49,9 +49,9 @@ public class Game {
     private Round currentRound;
 
     /**
-     * Stores the 3 character cards selected for this game
+     * Stores the 3 character cards selected for this game and the number of times they've been used
      */
-    private final ArrayList<CharacterCard> characterCards;
+    private final Map<String, Integer> characterCards = new HashMap<>();;
 
     /**
      * Stores for each student color which player has the professor, it is empty when the game is started
@@ -63,7 +63,7 @@ public class Game {
      */
     private State gameState = State.CREATED;
 
-    private InfluenceCalculator defaultInfluenceCalculator = new DefaultInfluenceCalculator();
+    private final InfluenceCalculator defaultInfluenceCalculator = new DefaultInfluenceCalculator();
 
     private Optional<InfluenceCalculator> temporaryInfluenceCalculator = Optional.empty();
 
@@ -74,9 +74,11 @@ public class Game {
     public Game(int numberOfPlayers) {
         this.numberOfPlayers = numberOfPlayers;
         this.studentsBag = new RandomizedStudentsContainer(Constants.STUDENTS_BAG_NUMBER_PER_COLOR);
-        this.characterCards = CharacterCard.generateRandomDeck(3);
         this.players = new ArrayList<>();
         this.professors = new HashMap<>();
+
+        CharacterCard.generateRandomDeck(Constants.NUMBER_OF_CHARACTER_CARD)
+                .forEach(s -> this.characterCards.put(s, 0));
 
         initializeIslands();
     }
@@ -284,7 +286,7 @@ public class Game {
         if(!players.contains(player))
             throw new InvalidOperationException();
 
-        if(!characterCards.contains(card))
+        if(!characterCards.containsKey(card.getName()))
             throw new InvalidOperationException();
 
         if(!player.buyCharacterCard(card))
@@ -407,9 +409,9 @@ public class Game {
     /**
      * @return a copy of the character cards selected for this game
      */
-    public List<CharacterCard> getCharacterCards() {
+    public Map<String, Integer> getCharacterCards() {
         //return a copy
-        return new ArrayList<>(characterCards);
+        return new HashMap<>(characterCards);
     }
 
     /**

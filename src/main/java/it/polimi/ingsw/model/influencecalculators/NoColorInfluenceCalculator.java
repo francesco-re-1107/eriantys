@@ -10,7 +10,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 public class NoColorInfluenceCalculator extends DefaultInfluenceCalculator {
 
-    private Student studentColorNotInfluencing;
+    private final Student studentColorNotInfluencing;
 
     public NoColorInfluenceCalculator(Student studentColorNotInfluencing) {
         this.studentColorNotInfluencing = studentColorNotInfluencing;

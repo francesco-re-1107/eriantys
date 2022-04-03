@@ -5,7 +5,7 @@ import it.polimi.ingsw.model.Island;
 
 public class GrandmaCharacterCard extends CharacterCard {
 
-    private Island island;
+    private final Island island;
 
     public GrandmaCharacterCard(Island island) {
         super(2);

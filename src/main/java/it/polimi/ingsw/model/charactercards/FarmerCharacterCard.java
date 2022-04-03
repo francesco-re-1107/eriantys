@@ -7,7 +7,7 @@ import it.polimi.ingsw.model.influencecalculators.ProfessorsControlInfluenceCalc
 
 public class FarmerCharacterCard extends InfluenceCharacterCard {
 
-    private Player player;
+    private final Player player;
 
     public FarmerCharacterCard(Player player) {
         super(2);
