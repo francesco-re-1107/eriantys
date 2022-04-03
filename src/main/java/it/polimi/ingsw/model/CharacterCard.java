@@ -45,7 +45,7 @@ public abstract class CharacterCard {
 
         Collections.shuffle(availableCards);
 
-        return availableCards.subList(0, howManyCards);
+        return new LinkedList<>(availableCards.subList(0, howManyCards));
     }
 
     /**
@@ -61,7 +61,7 @@ public abstract class CharacterCard {
      * @return the initial cost if card was not used, initial cost +1 otherwise
      */
     public int getCost(int usedTimes) {
-        return usedTimes <= 0 ? cost : cost + usedTimes;
+        return usedTimes <= 0 ? cost : cost + 1;
     }
 
     public String getName() {

@@ -115,4 +115,15 @@ class StudentsContainerTest {
         assertEquals(4, container.getSize());
     }
 
+    @Test
+    void setMaxSize() {
+        container.setMaxSize(3);
+        assertEquals(3, container.getMaxSize());
+    }
+
+    @Test
+    void getStudents() {
+        assertNotNull(container.getStudents());
+    }
+
 }
