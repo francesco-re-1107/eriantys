@@ -17,6 +17,8 @@ public class Round {
 
     private int currentPlayer = 0;
 
+    private int additionalMotherNatureMoves = 0;
+
     /**
      *
      * @param players list of players ordered with respect to the assistant cards played in the previous round
@@ -99,6 +101,10 @@ public class Round {
 
     public void removeCloud(StudentsContainer cloud) {
         clouds.remove(cloud);
+    }
+
+    public void setAdditionalMotherNatureMoves(int additionalMoves) {
+        this.additionalMotherNatureMoves = additionalMoves;
     }
 
     enum Stage {

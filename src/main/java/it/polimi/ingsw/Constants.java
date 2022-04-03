@@ -9,6 +9,8 @@ public final class Constants {
 
     public static final int ISLANDS_STUDENTS_BAG_NUMBER_PER_COLOR = 10/5;
 
+    public static final int NUMBER_OF_CHARACTER_CARD = 3;
+
     public static final class TWO_PLAYERS {
 
         public static final int TOWERS_COUNT = 8;

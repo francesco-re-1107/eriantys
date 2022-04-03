@@ -3,6 +3,9 @@ package it.polimi.ingsw.model;
 import it.polimi.ingsw.Constants;
 import it.polimi.ingsw.exceptions.DuplicatedNicknameException;
 import it.polimi.ingsw.exceptions.InvalidOperationException;
+import it.polimi.ingsw.model.charactercards.*;
+import it.polimi.ingsw.model.influencecalculators.DefaultInfluenceCalculator;
+
 import java.text.MessageFormat;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -48,9 +51,9 @@ public class Game {
     private Round currentRound;
 
     /**
-     * Stores the 3 character cards selected for this game
+     * Stores the 3 character cards selected for this game and the number of times they've been used
      */
-    private final ArrayList<CharacterCard> characterCards;
+    private final Map<String, Integer> characterCards = new HashMap<>();;
 
     /**
      * Stores for each student color which player has the professor, it is empty when the game is started
@@ -62,6 +65,10 @@ public class Game {
      */
     private State gameState = State.CREATED;
 
+    private final InfluenceCalculator defaultInfluenceCalculator = new DefaultInfluenceCalculator();
+
+    private Optional<InfluenceCalculator> temporaryInfluenceCalculator = Optional.empty();
+
     private Optional<Player> winner = Optional.empty();
 
     /**
@@ -71,9 +78,11 @@ public class Game {
     public Game(int numberOfPlayers) {
         this.numberOfPlayers = numberOfPlayers;
         this.studentsBag = new RandomizedStudentsContainer(Constants.STUDENTS_BAG_NUMBER_PER_COLOR);
-        this.characterCards = CharacterCard.generateRandomDeck(3);
         this.players = new ArrayList<>();
         this.professors = new HashMap<>();
+
+        CharacterCard.generateRandomDeck(Constants.NUMBER_OF_CHARACTER_CARD)
+                .forEach(s -> this.characterCards.put(s, 0));
 
         initializeIslands();
     }
@@ -232,7 +241,7 @@ public class Game {
     }
 
     /**
-     * Calculate which player has the most influence on the givcurrenten island
+     * Calculate which player has the most influence on the current island
      * and change the towers on that island respectively
      */
     private void calculateInfluenceOnCurrentIsland(){
@@ -246,9 +255,10 @@ public class Game {
     public void calculateInfluenceOnIsland(Island island){
         int max = -1;
         Optional<Player> maxP = Optional.empty();
+        InfluenceCalculator calc = temporaryInfluenceCalculator.orElse(defaultInfluenceCalculator);
 
         for(Player p: players){
-            int infl = calculateInfluenceOfPlayer(island, p);
+            int infl = calc.calculateInfluence(p, island, getProfessors());
 
             if(infl > max){
                 max = infl;
@@ -272,6 +282,9 @@ public class Game {
                     }
                 }
         );
+
+        //remove temporary after use
+        temporaryInfluenceCalculator = Optional.empty();
     }
 
     /**
@@ -297,16 +310,24 @@ public class Game {
      */
     public void playCharacterCard(Player player, CharacterCard card){
         if(!players.contains(player))
-            throw  new InvalidOperationException();
+            throw new InvalidOperationException();
 
-        if(!characterCards.contains(card))
-            throw  new InvalidOperationException();
+        if(!characterCards.containsKey(card.getName()))
+            throw new InvalidOperationException();
 
         if(!player.buyCharacterCard(card))
             throw new InvalidOperationException("Player cannot buy the card");
 
-        //currentRound.useCharacterCard();
-    }
+        if(card instanceof InfluenceCharacterCard){
+            temporaryInfluenceCalculator = Optional.of(((InfluenceCharacterCard) card).getInfluenceCalculator());
+        } else if (card instanceof HeraldCharacterCard){
+            Island island = ((HeraldCharacterCard)card).getIsland();
+            calculateInfluenceOnIsland(island);
+        } else if (card instanceof PostmanCharacterCard) {
+            currentRound.setAdditionalMotherNatureMoves(((PostmanCharacterCard)card).getAdditionalMoves());
+        } else if (card instanceof GrandmaCharacterCard) {
+            ((GrandmaCharacterCard) card).getIsland().setNoEntry(true);
+        } else if (card instanceof MinstrelCharacterCard) {
 
     public void putStudents(Player player, StudentsContainer inSchool, Map<Island,StudentsContainer> inIsland){
         if(!currentRound.getCurrentPlayer().equals(player))
@@ -350,6 +371,7 @@ public class Game {
         });
 
         return influence.get();
+        }
     }
 
     /**
@@ -508,9 +530,9 @@ public class Game {
     /**
      * @return a copy of the character cards selected for this game
      */
-    public List<CharacterCard> getCharacterCards() {
+    public Map<String, Integer> getCharacterCards() {
         //return a copy
-        return new ArrayList<>(characterCards);
+        return new HashMap<>(characterCards);
     }
 
     /**
