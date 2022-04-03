@@ -24,21 +24,14 @@ public class Round {
      */
     public Round(List<Player> players, List<StudentsContainer> clouds) {
         this.clouds = clouds;
-        this.players =players;
+        this.players = players;
         this.playedAssistantCards = new ArrayList<>();
     }
 
     /**
      *
      */
-    public void nextStage(){
-        // only if all players have played cards
-        if(playedAssistantCards.size() != players.size())
-            throw new InvalidOperationException("Cannot go in ATTACK stage, not all players have played cards");
-
-        if (stage == Stage.ATTACK)
-            throw new InvalidOperationException("Already in ATTACK stage");
-
+    private void nextStage(){
         //TODO: sort players and cards accordingly by assistant card played maybe using Pair
 
         stage = Stage.ATTACK;
@@ -99,7 +92,6 @@ public class Round {
     public Player getCurrentPlayer() {
         return players.get(currentPlayer);
     }
-
 
     public List<StudentsContainer> getClouds() {
         return new ArrayList<>(clouds);
