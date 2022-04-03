@@ -59,12 +59,10 @@ class StudentsContainerTest {
 
     @Test
     void removeStudent() {
-        try{
-            container.removeStudent(Student.BLUE);
-            fail();
-        }catch(StudentNotFoundException e){
-            assertTrue(true);
-        }
+        assertThrows(
+                StudentNotFoundException.class,
+                () -> container.removeStudent(Student.BLUE)
+        );
 
         container.addStudent(Student.BLUE);
         int prevSize = container.getCountForStudent(Student.BLUE);
@@ -72,6 +70,22 @@ class StudentsContainerTest {
         int currSize = container.getCountForStudent(Student.BLUE);
 
         assertEquals(prevSize - 1, currSize);
+    }
+
+    @Test
+    void removeStudents() {
+        assertThrows(
+                StudentNotFoundException.class,
+                () -> container.removeStudents(Student.BLUE, 3)
+        );
+
+        container.addStudents(Student.BLUE, 10);
+
+        int prevSize = container.getCountForStudent(Student.BLUE);
+        container.removeStudents(Student.BLUE, 5);
+        int currSize = container.getCountForStudent(Student.BLUE);
+
+        assertEquals(prevSize - 5, currSize);
     }
 
     @Test
@@ -102,6 +116,26 @@ class StudentsContainerTest {
 
     @Test
     void removeAll() {
+        StudentsContainer anotherContainer = new StudentsContainer();
+
+        container.addStudents(Student.GREEN, 4);
+        container.addStudents(Student.BLUE, 1);
+
+        anotherContainer.addStudents(Student.GREEN, 2);
+        anotherContainer.addStudents(Student.BLUE, 1);
+
+        int prevSize = container.getSize();
+
+        container.removeAll(anotherContainer);
+        assertEquals(prevSize - anotherContainer.getSize(), container.getSize());
+
+        assertEquals(container.getCountForStudent(Student.GREEN), 2);
+        assertEquals(container.getCountForStudent(Student.BLUE), 0);
+
+        assertThrows(
+                StudentNotFoundException.class,
+                () -> container.removeAll(anotherContainer)
+        );
     }
 
     @Test

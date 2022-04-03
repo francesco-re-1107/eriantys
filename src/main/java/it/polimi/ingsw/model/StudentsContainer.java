@@ -48,6 +48,7 @@ public class StudentsContainer extends AStudentsContainer{
      * Add a student to this container
      * if the container is full then a StudentsMaxReachedException will be thrown
      * @param student the student to add
+     * @return this container for chaining
      */
     public StudentsContainer addStudent(Student student) {
         if (getSize() + 1 > maxSize)
@@ -60,10 +61,11 @@ public class StudentsContainer extends AStudentsContainer{
     }
 
     /**
-     * Add howMany students to this container
+     * Add howMany students of type student to this container
      * if the container is full then a StudentsMaxReachedException will be thrown
      * @param student the student to add
      * @param howMany number of students of this type to add to the container
+     * @return this container for chaining
      */
     public StudentsContainer addStudents(Student student, int howMany) {
         if (getSize() + howMany > maxSize)
@@ -76,9 +78,10 @@ public class StudentsContainer extends AStudentsContainer{
     }
 
     /**
-     * Add a student to this container
-     * if the container does not contain the sutend then a StudentNotFoundException will be thrown
+     * Remove a student from this container
+     * if the container does not contain the student then a StudentNotFoundException will be thrown
      * @param student the student to remove
+     * @return this container for chaining
      */
     public StudentsContainer removeStudent(Student student){
         int count =  this.students.getOrDefault(student, 0);
@@ -92,9 +95,27 @@ public class StudentsContainer extends AStudentsContainer{
     }
 
     /**
+     * Remove howMany students of type student from this container
+     * if the container does not contain the students then a StudentNotFoundException will be thrown
+     * @param student the student to remove
+     * @param howMany number of students of this type to remove from the container
+     * @return this container for chaining
+     */
+    public StudentsContainer removeStudents(Student student, int howMany) {
+        if(getCountForStudent(student) < howMany)
+            throw new StudentNotFoundException();
+
+        int count =  this.students.getOrDefault(student, 0);
+        this.students.put(student, count - howMany);
+
+        return this;
+    }
+
+    /**
      * Add all students of anotherContainer to this container
      * if the container is full then a StudentsMaxReachedException will be thrown
-     * @param anotherContainer
+     * @param anotherContainer students to add to this container
+     * @return this container for chaining
      */
     public StudentsContainer addAll(AStudentsContainer anotherContainer) {
         if (getSize() + anotherContainer.getSize() > maxSize)
@@ -107,10 +128,13 @@ public class StudentsContainer extends AStudentsContainer{
 
     /**
      * Remove all students contained in anotherContainer from this container
-     * @param anotherContainer
+     * @param anotherContainer students to remove from this container
+     * @return this container for chaining
      */
-    public void removeAll(AStudentsContainer anotherContainer) {
-        //TODO: implement
+    public StudentsContainer removeAll(AStudentsContainer anotherContainer) {
+        anotherContainer.students.forEach(this::removeStudents);
+
+        return this;
     }
 
     /*

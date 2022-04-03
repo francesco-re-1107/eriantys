@@ -80,7 +80,24 @@ class PlayerTest {
 
     @Test
     void addStudentsToSchool() {
-        //TODO: implement
+        p1.addCloudToEntrance(
+                new StudentsContainer()
+                        .addStudents(Student.BLUE,3)
+                        .addStudents(Student.GREEN,2)
+                        .addStudents(Student.RED,1)
+        );
+
+        int entrancePrevSize = p1.getEntrance().getSize();
+        int schoolPrevSize = p1.getSchool().getSize();
+
+        p1.addStudentsToSchool(
+                new StudentsContainer()
+                        .addStudents(Student.BLUE,1)
+                        .addStudents(Student.GREEN,2)
+        );
+
+        assertEquals(entrancePrevSize - 3, p1.getEntrance().getSize());
+        assertEquals(schoolPrevSize + 3, p1.getSchool().getSize());
     }
 
     @Test
