@@ -315,8 +315,12 @@ public class Game {
         if(!characterCards.containsKey(card.getName()))
             throw new InvalidOperationException();
 
-        if(!player.buyCharacterCard(card))
+        int cost = card.getCost(characterCards.get(card.getName()));
+
+        if(player.getCoins() < cost)
             throw new InvalidOperationException("Player cannot buy the card");
+
+        player.useCoins(cost);
 
         if(card instanceof InfluenceCharacterCard){
             temporaryInfluenceCalculator = Optional.of(((InfluenceCharacterCard) card).getInfluenceCalculator());
@@ -328,6 +332,10 @@ public class Game {
         } else if (card instanceof GrandmaCharacterCard) {
             ((GrandmaCharacterCard) card).getIsland().setNoEntry(true);
         } else if (card instanceof MinstrelCharacterCard) {
+            MinstrelCharacterCard c = ((MinstrelCharacterCard) card);
+            //player.swapStudents(c.getStudentsToRemove(), c.getStudentsToAdd());
+        }
+    }
 
     public void putStudents(Player player, StudentsContainer inSchool, Map<Island,StudentsContainer> inIsland){
         if(!currentRound.getCurrentPlayer().equals(player))
@@ -371,7 +379,6 @@ public class Game {
         });
 
         return influence.get();
-        }
     }
 
     /**
@@ -440,7 +447,6 @@ public class Game {
     private int calculateMotherNatureIndex(int steps){
         return (this.motherNaturePosition + steps) % islands.size();
     }
-
 
     public void addGameUpdateListener() {
         //TODO implement

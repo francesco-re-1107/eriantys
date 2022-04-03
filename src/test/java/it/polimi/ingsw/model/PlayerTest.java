@@ -1,8 +1,8 @@
 package it.polimi.ingsw.model;
 
 import it.polimi.ingsw.exceptions.InvalidOperationException;
-import it.polimi.ingsw.model.charactercards.JesterCharacterCard;
 import it.polimi.ingsw.model.charactercards.KnightCharacterCard;
+import it.polimi.ingsw.model.charactercards.MinstrelCharacterCard;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -20,21 +20,6 @@ class PlayerTest {
 
         //test constructor three players
         Player _p1 = new Player("_player1", Tower.BLACK, 3);
-    }
-
-    @Test
-    void canAffordCharacterCard() {
-        assertFalse(p1.canAffordCharacterCard(new KnightCharacterCard()));
-        assertTrue(p1.canAffordCharacterCard(new JesterCharacterCard()));
-    }
-
-    @Test
-    void buyCharacterCard() {
-        p1.buyCharacterCard(new JesterCharacterCard());
-        assertEquals(0, p1.getCoins());
-
-        //should not buy
-        assertFalse(p1.buyCharacterCard(new JesterCharacterCard()));
     }
 
     @Test
@@ -106,5 +91,16 @@ class PlayerTest {
         p1.playAssistantCard(card);
 
         assertEquals(9, p1.getAssistantCardsLeftCount());
+    }
+
+    @Test
+    void useCoins() {
+        p1.useCoins(1);
+        assertEquals(0, p1.getCoins());
+
+        assertThrows(
+                InvalidOperationException.class,
+                () -> p1.useCoins(1)
+        );
     }
 }

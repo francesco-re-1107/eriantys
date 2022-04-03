@@ -73,29 +73,6 @@ public class Player {
         );
     }
 
-    /**
-     * Check if the user can afford a character card
-     * @param card the card to check
-     * @return true if this player can afford the card
-     */
-    public boolean canAffordCharacterCard(CharacterCard card){
-        return this.coins >= card.getCost();
-    }
-
-    /**
-     * Buy a character card
-     * @param card the card to buy
-     * @return true if the card was bought (so the player could afford it), false otherwise
-     */
-    public boolean buyCharacterCard(CharacterCard card){
-        if(!canAffordCharacterCard(card))
-            return false;
-
-        this.coins -= card.getCost();
-
-        return true;
-    }
-
     public boolean canPlayAssistantCard(AssistantCard card){
         return !deck.get(card);
     }
@@ -176,5 +153,12 @@ public class Player {
                 .stream()
                 .filter((e) -> !e.getValue()) //only cards not used
                 .count();
+    }
+
+    public void useCoins(int howMany) {
+        if(howMany > coins)
+            throw new InvalidOperationException();
+
+        coins -= howMany;
     }
 }

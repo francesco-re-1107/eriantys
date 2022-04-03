@@ -49,11 +49,19 @@ public abstract class CharacterCard {
     }
 
     /**
-     * Calculate current cost based on how many times the card was used
-     * @return the initial cost if card was not used, initial cost +1 otherwise
+     * @return the initial cost of the card
      */
     public int getCost() {
         return cost;
+    }
+
+    /**
+     * Calculate current cost based on how many times the card was used
+     * @param usedTimes number of times the card was used
+     * @return the initial cost if card was not used, initial cost +1 otherwise
+     */
+    public int getCost(int usedTimes) {
+        return usedTimes <= 0 ? cost : cost + usedTimes;
     }
 
     public String getName() {
