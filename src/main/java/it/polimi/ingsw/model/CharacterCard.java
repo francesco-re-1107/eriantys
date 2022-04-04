@@ -35,7 +35,7 @@ public abstract class CharacterCard {
     }
 
     /**
-     * Generate a random deck of character cards without duplicates (TODO: fix duplicates)
+     * Generate a random deck of character cards without duplicates
      * @param howManyCards
      * @return the generated deck
      */

@@ -60,7 +60,7 @@ enum Game.State {
     STARTED //game is currently played
     PAUSED //when a client disconnects, the game is paused
     FINISHED //game finished, there's a winner
-    TERMINATED //game terminated before finish (e.g. a player left the game)
+    {field}TERMINATED //game terminated before finish (e.g. a player left the game)
 }
 
 class Round {
@@ -202,7 +202,7 @@ abstract CharacterCard {
     cost : Int
 
     +getCost() : Int
-    +getMotherNatureAdditionalMoves() : Int
+    +getCost(int usedTimes) : Int
 }
 
 abstract InfluenceCharacterCard {
@@ -214,6 +214,7 @@ class FarmerCharacterCard {
     //have the same number of students for that color
     'redefine cost'
     cost : Int = 2
+    player : Player
 
     {method}@override
     +getInfluenceCalculator() : InfluenceCalculator
@@ -233,7 +234,7 @@ class PostmanCharacterCard {
     'redefine cost'
     cost : Int = 1
 
-    +getAdditionalMoves() : int
+    +getAdditionalMotherNatureMoves() : int
 }
 
 class GrandmaCharacterCard {
@@ -268,6 +269,7 @@ class KnightCharacterCard {
     //2 additional points in influence
     'redefine cost'
     cost : Int = 2
+    player : Player
 
     {method}@override
     +getInfluenceCalculator() : InfluenceCalculator
@@ -277,6 +279,7 @@ class MushroomManCharacterCard {
     //no color in influence
     'redefine cost'
     cost : Int = 3
+    studentColorNotInfluencing: Student
 
     {method}@override
     +getInfluenceCalculator() : InfluenceCalculator

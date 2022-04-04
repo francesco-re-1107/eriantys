@@ -328,7 +328,7 @@ public class Game {
             Island island = ((HeraldCharacterCard)card).getIsland();
             calculateInfluenceOnIsland(island);
         } else if (card instanceof PostmanCharacterCard) {
-            currentRound.setAdditionalMotherNatureMoves(((PostmanCharacterCard)card).getAdditionalMoves());
+            currentRound.setAdditionalMotherNatureMoves(((PostmanCharacterCard)card).getAdditionalMotherNatureMoves());
         } else if (card instanceof GrandmaCharacterCard) {
             ((GrandmaCharacterCard) card).getIsland().setNoEntry(true);
         } else if (card instanceof MinstrelCharacterCard) {

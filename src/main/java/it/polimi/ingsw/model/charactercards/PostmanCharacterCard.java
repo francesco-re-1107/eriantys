@@ -10,7 +10,7 @@ public class PostmanCharacterCard extends CharacterCard {
         super(1);
     }
 
-    public int getAdditionalMoves(){
+    public int getAdditionalMotherNatureMoves(){
         return ADDITIONAL_MOTHER_NATURE_MOVES;
     }
 }

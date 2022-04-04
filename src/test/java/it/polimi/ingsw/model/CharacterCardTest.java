@@ -61,6 +61,6 @@ class CharacterCardTest {
         assertNotNull(c7.getInfluenceCalculator());
 
         PostmanCharacterCard c8 = new PostmanCharacterCard();
-        c8.getAdditionalMoves();
+        c8.getAdditionalMotherNatureMoves();
     }
 }
