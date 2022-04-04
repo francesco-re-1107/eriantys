@@ -10,6 +10,7 @@ import java.text.MessageFormat;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
+import java.util.logging.Logger;
 
 /**
  * This class represents a game. When a new game is created it is in the State.CREATED state.
@@ -18,7 +19,7 @@ import java.util.stream.Collectors;
  * with the method startGame(). At this point the game state is State.STARTED.
  */
 public class Game {
-
+    Logger logger = Logger.getLogger(Game.class.getName());
     /**
      * Stores the players of this game
      */
@@ -76,6 +77,7 @@ public class Game {
      * @param numberOfPlayers number of players chose at the creation of the game
      */
     public Game(int numberOfPlayers) {
+        logger.info(MessageFormat.format("creating game with {0} players", numberOfPlayers));
         this.numberOfPlayers = numberOfPlayers;
         this.studentsBag = new RandomizedStudentsContainer(Constants.STUDENTS_BAG_NUMBER_PER_COLOR);
         this.players = new ArrayList<>();
@@ -108,6 +110,8 @@ public class Game {
                 new Island(bag.pickOneRandom()),
                 new Island(bag.pickOneRandom())
         );
+
+        logger.fine("initialized islands");
     }
 
     /**
@@ -123,6 +127,7 @@ public class Game {
                     MessageFormat.format("Game already started (gameStatus is {0})", gameState)
             );
 
+        logger.info("game starting...");
         newRound();
 
         this.gameState = State.STARTED;
@@ -133,6 +138,7 @@ public class Game {
      * Generate automatically the clouds.
      */
     private void newRound() {
+        logger.info("round started");
         //if the bag is empty the game is finished
         if(studentsBag.getSize() == 0)
             setGameFinished(calculateCurrentWinner());
@@ -204,6 +210,7 @@ public class Game {
                 numberOfPlayers
         );
 
+        logger.info(MessageFormat.format("added player {0}", p.getNickname()));
         players.add(p);
         return p;
     }
@@ -393,11 +400,13 @@ public class Game {
         next = islands.get(calculateMotherNatureIndex(1));
 
         if(curr.isMergeCompatible(prev)){
+            logger.info("island merged with previous one");
             curr.merge(prev);
             islands.remove(prev);
         }
 
         if(curr.isMergeCompatible(next)){
+            logger.info("island merged with next one");
             curr.merge(next);
             islands.remove(next);
         }
@@ -482,6 +491,7 @@ public class Game {
     }
 
     private void setGameFinished(Player winner) {
+        logger.info(MessageFormat.format("game finished! {1} won", winner.getNickname()));
         gameState = State.FINISHED;
 
         this.winner = Optional.of(winner);
