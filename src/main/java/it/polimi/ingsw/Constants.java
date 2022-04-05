@@ -5,23 +5,50 @@ package it.polimi.ingsw;
  */
 public final class Constants {
 
+    /**
+     * Number of students per color to put the main bag of the game
+     */
     public static final int STUDENTS_BAG_NUMBER_PER_COLOR = 120/5;
 
+    /**
+     * Number of students per color to put in the bag used when populating island
+     */
     public static final int ISLANDS_STUDENTS_BAG_NUMBER_PER_COLOR = 10/5;
 
+    /**
+     * Number of character cards selected at the beginning of the game
+     */
     public static final int NUMBER_OF_CHARACTER_CARD = 3;
 
+    /**
+     * These constants are used in a game with 2 players (commented only once)
+     */
     public static final class TWO_PLAYERS {
 
+        /**
+         * Number of towers given to every player at the beginning of the game
+         */
         public static final int TOWERS_COUNT = 8;
 
+        /**
+         * Max size of the entrance
+         */
         public static final int ENTRANCE_SIZE = 7;
 
+        /**
+         * Number of students to put on a cloud
+         */
         public static final int STUDENTS_PER_CLOUD = 3;
 
+        /**
+         * Number of students that a player must move in its turn
+         */
         public static final int STUDENTS_TO_MOVE = 3;
     }
 
+    /**
+     * These constants are used in a game with 3 players
+     */
     public static final class THREE_PLAYERS {
 
         public static final int TOWERS_COUNT = 6;

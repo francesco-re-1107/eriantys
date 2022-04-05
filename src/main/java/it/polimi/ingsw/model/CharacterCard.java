@@ -10,6 +10,9 @@ import java.util.*;
  */
 public abstract class CharacterCard {
 
+    /**
+     * This list holds all the available character cards that can be randomly extracted
+     */
     private static final List<String> availableCards = Arrays.asList(
             "CentaurCharacterCard",
             "FarmerCharacterCard",
@@ -36,7 +39,7 @@ public abstract class CharacterCard {
 
     /**
      * Generate a random deck of character cards without duplicates
-     * @param howManyCards
+     * @param howManyCards number of cards to pick randomly
      * @return the generated deck
      */
     public static List<String> generateRandomDeck(int howManyCards) {
@@ -64,6 +67,9 @@ public abstract class CharacterCard {
         return usedTimes <= 0 ? cost : cost + 1;
     }
 
+    /**
+     * @return the name (simple class name) of the card
+     */
     public String getName() {
         return this.getClass().getSimpleName();
     }

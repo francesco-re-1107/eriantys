@@ -85,8 +85,8 @@ public class Island {
     }
 
     /**
-     * Add a student to this island
-     * @param student the student to add
+     * Add many students to this island
+     * @param studentsContainer the students to add
      */
     public void addStudents(StudentsContainer studentsContainer){
         this.students.addAll(studentsContainer);

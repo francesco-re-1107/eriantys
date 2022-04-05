@@ -7,6 +7,10 @@ import it.polimi.ingsw.model.Student;
 import java.util.Arrays;
 import java.util.Map;
 
+/**
+ * This calculator lets the selected player take professor for a student color if the number
+ * of students is >= of other players (by default it is only >)
+ */
 public class ProfessorsControlInfluenceCalculator extends DefaultInfluenceCalculator {
 
     private final Player player;

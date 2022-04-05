@@ -7,6 +7,9 @@ import it.polimi.ingsw.model.influencecalculators.DefaultInfluenceCalculator;
 
 import java.util.Map;
 
+/**
+ * This calculator ignores the towers in the influence calculator process
+ */
 public class NoTowersInfluenceCalculator extends DefaultInfluenceCalculator {
 
     @Override

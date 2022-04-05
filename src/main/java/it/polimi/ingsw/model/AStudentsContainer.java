@@ -36,7 +36,6 @@ public abstract class AStudentsContainer {
         this.maxSize = maxSize;
     }
 
-
     /**
      * @return the number of students (every color) held in this container
      */
@@ -56,6 +55,9 @@ public abstract class AStudentsContainer {
         this.maxSize = maxSize;
     }
 
+    /**
+     * @return max size set for this container
+     */
     public int getMaxSize() {
         return maxSize;
     }

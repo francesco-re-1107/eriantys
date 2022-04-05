@@ -66,11 +66,21 @@ public class Game {
      */
     private State gameState = State.CREATED;
 
+    /**
+     * InfluenceCalculator used by default when calculating influence of a player on an island
+     */
     private final InfluenceCalculator defaultInfluenceCalculator = new DefaultInfluenceCalculator();
 
+    /**
+     * One shot InfluenceCalculator used when calculating influence of a player on an island
+     * under a character card effect. It has higher priority than defaultInfluenceCalculator
+     */
     private Optional<InfluenceCalculator> temporaryInfluenceCalculator = Optional.empty();
 
-    private Optional<Player> winner = Optional.empty();
+    /**
+     * Used to retrieve the winner of this game, it is null until the game comes in the FINISHED state
+     */
+    private Player winner;
 
     /**
      * Create a new game
@@ -231,6 +241,8 @@ public class Game {
 
         if(steps > card.getMotherNatureMaxMoves() + currentRound.getAdditionalMotherNatureMoves())
             throw new InvalidOperationException("Cannot move mother nature that far");
+        //reset additional moves after use
+        currentRound.setAdditionalMotherNatureMoves(0);
 
         this.motherNaturePosition = calculateMotherNatureIndex(steps);
 
@@ -344,6 +356,14 @@ public class Game {
         }
     }
 
+    /**
+     * TODO: find a better name for this method
+     * Move students of a player from entrance to school or islands
+     *
+     * @param player
+     * @param inSchool students to add to school
+     * @param inIsland students to add to the relative island
+     */
     public void putStudents(Player player, StudentsContainer inSchool, Map<Island,StudentsContainer> inIsland){
         if(!currentRound.getCurrentPlayer().equals(player))
             throw new InvalidOperationException();
@@ -418,6 +438,13 @@ public class Game {
         this.motherNaturePosition = islands.indexOf(curr);
     }
 
+    /**
+     * TODO: fix if 3 players have the same towers and the last one has the most professors
+     * Calculate player that is winning right now, based on the number of towers left.
+     * If there's a draw, the player with most professors wins
+     * If there's a draw, TODO: the instructions don't handle this case
+     * @return the winning player
+     */
     private Player calculateCurrentWinner() {
         //order players by placed towers
         List<Player> orderedPlayers = players.stream()
@@ -465,6 +492,11 @@ public class Game {
         //TODO implement
     }
 
+    /**
+     * TODO: maybe make this private
+     * Calculate current professors
+     * If two players have the same number of students nothing changes for that student
+     */
     public void updateProfessors() {
         Arrays.stream(Student.values()).forEach(s -> {
             List<Player> sortedPlayers = players.stream()
@@ -482,6 +514,11 @@ public class Game {
         });
     }
 
+    /**
+     * Utility method to retrieve the professors of a given player
+     * @param player
+     * @return a list of student for which the player has the professor
+     */
     public List<Student> getProfessorsForPlayer(Player player) {
         return professors.entrySet()
                 .stream()
@@ -490,11 +527,15 @@ public class Game {
                 .collect(Collectors.toList());
     }
 
+    /**
+     * End this game and set a winner
+     * @param winner the winner of the game
+     */
     private void setGameFinished(Player winner) {
         logger.info(MessageFormat.format("game finished! {1} won", winner.getNickname()));
         gameState = State.FINISHED;
 
-        this.winner = Optional.of(winner);
+        this.winner = winner;
     }
 
     /**
@@ -566,6 +607,7 @@ public class Game {
         return gameState;
     }
 
+    //TODO maybe these will be substituted with setClientOffline(), setClientOnline(), setClientQuit()...
     public void pauseGame(){
         this.gameState = State.PAUSED;
     }
@@ -574,8 +616,12 @@ public class Game {
         this.gameState = State.STARTED;
     }
 
+    /**
+     * Return
+     * @return the winner of the game, if the game was ended
+     */
     public Optional<Player> getWinner() {
-        return winner;
+        return Optional.of(winner);
     }
 
     /**

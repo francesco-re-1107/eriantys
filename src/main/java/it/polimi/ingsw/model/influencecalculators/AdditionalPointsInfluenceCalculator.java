@@ -6,6 +6,9 @@ import it.polimi.ingsw.model.Student;
 
 import java.util.Map;
 
+/**
+ * This calculator provides additional points to the given player in the influence calculation
+ */
 public class AdditionalPointsInfluenceCalculator extends DefaultInfluenceCalculator {
 
     private final Player player;

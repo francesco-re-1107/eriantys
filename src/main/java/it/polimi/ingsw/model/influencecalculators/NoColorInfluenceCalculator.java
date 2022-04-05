@@ -8,6 +8,9 @@ import it.polimi.ingsw.model.influencecalculators.DefaultInfluenceCalculator;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 
+/**
+ * This calculator ignores the selected student color in the influence calculation process
+ */
 public class NoColorInfluenceCalculator extends DefaultInfluenceCalculator {
 
     private final Student studentColorNotInfluencing;

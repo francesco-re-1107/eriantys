@@ -10,7 +10,7 @@ import java.util.Objects;
 public class AssistantCard {
 
     /**
-     * TODO: check if it's needed
+     * TODO: check if it's really needed
      * Globally identify a card
      */
     private final int id;
@@ -26,10 +26,10 @@ public class AssistantCard {
     private final int turnPriority;
 
     /**
-     *
-     * @param id
-     * @param motherNatureMaxMoves
-     * @param turnPriority
+     * Create an assistant card
+     * @param id ...
+     * @param motherNatureMaxMoves number of moves that mother nature can do
+     * @param turnPriority priority number of this card
      */
     private AssistantCard(int id, int turnPriority, int motherNatureMaxMoves) {
         this.id = id;

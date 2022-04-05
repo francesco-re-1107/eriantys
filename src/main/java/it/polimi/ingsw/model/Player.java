@@ -73,10 +73,20 @@ public class Player {
         );
     }
 
+    /**
+     * Check if this player can play the given card.
+     * In other words return true if the player hasn't played the card yet.
+     * @param card the card to test
+     * @return whether this user can play the given card
+     */
     public boolean canPlayAssistantCard(AssistantCard card){
         return !deck.get(card);
     }
 
+    /**
+     * Play the given assistant card and set it as used
+     * @param card the card to play
+     */
     public void playAssistantCard(AssistantCard card){
         //TODO: find a better way to handle this
         if(deck.get(card))
@@ -122,14 +132,23 @@ public class Player {
         return coins;
     }
 
+    /**
+     * @return a copy of the entrance students container
+     */
     public StudentsContainer getEntrance() {
         return new StudentsContainer(entrance);
     }
 
+    /**
+     * @return a copy of the school students container
+     */
     public StudentsContainer getSchool() {
         return new StudentsContainer(school);
     }
 
+    /**
+     * @return a copy of the assistant cards deck
+     */
     public Map<AssistantCard, Boolean> getDeck() {
         return new HashMap<>(deck);
     }
@@ -143,11 +162,18 @@ public class Player {
         this.entrance.addAll(cloud);
     }
 
+    /**
+     * Move students from entrance to school
+     * @param toSchool the students to move
+     */
     public void addStudentsToSchool(StudentsContainer toSchool) {
         entrance.removeAll(toSchool);
         school.addAll(toSchool);
     }
 
+    /**
+     * @return the number of assistant cards left to use
+     */
     public int getAssistantCardsLeftCount() {
         return (int) deck.entrySet()
                 .stream()
@@ -155,6 +181,10 @@ public class Player {
                 .count();
     }
 
+    /**
+     * Decrement coins count by howMany
+     * @param howMany the number of coins to use
+     */
     public void useCoins(int howMany) {
         if(howMany > coins)
             throw new InvalidOperationException();
