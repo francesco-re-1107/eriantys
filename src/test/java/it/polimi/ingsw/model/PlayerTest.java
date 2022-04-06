@@ -142,6 +142,15 @@ class PlayerTest {
         int schoolPrevSize = p1.getSchool().getSize();
         int entrancePrevSize = p1.getEntrance().getSize();
 
+        //different size containers
+        assertThrows(
+                InvalidOperationException.class,
+                () -> p1.swapStudents(
+                        new StudentsContainer(),
+                        new StudentsContainer().addStudent(Student.BLUE)
+                )
+        );
+
         p1.swapStudents(
                 new StudentsContainer()
                         .addStudents(Student.BLUE,1)
