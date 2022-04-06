@@ -37,6 +37,14 @@ public abstract class AStudentsContainer {
     }
 
     /**
+     * Create a new AStudentsContainer starting from another AStudentsContainer
+     * @param studentsContainer the students container used for creating this new container
+     */
+    public AStudentsContainer(AStudentsContainer studentsContainer) {
+        this.students = new HashMap<>(studentsContainer.students);
+    }
+
+    /**
      * @return the number of students (every color) held in this container
      */
     public int getSize(){

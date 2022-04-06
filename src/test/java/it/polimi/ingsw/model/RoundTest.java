@@ -18,10 +18,10 @@ class RoundTest {
 
     @BeforeEach
     void setUp() {
-        players = Arrays.asList(
-                new Player("p1", Tower.BLACK, 2),
-                new Player("p2", Tower.WHITE, 2)
-        );
+        players = new LinkedList<>(Arrays.asList(
+                new Player("p1", Tower.BLACK, 8, new StudentsContainer()),
+                new Player("p2", Tower.WHITE, 8, new StudentsContainer())
+        ));
 
         StudentsContainer c1, c2, c3;
 

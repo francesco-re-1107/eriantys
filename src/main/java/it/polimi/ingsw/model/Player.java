@@ -54,17 +54,11 @@ public class Player {
      * @param towerColor color of the towers of this player
      * @param numberOfPlayers used to determine the number of towers and the max size of the entrance
      */
-    public Player(String nickname, Tower towerColor, int numberOfPlayers) {
+    public Player(String nickname, Tower towerColor, int towersCount, StudentsContainer entrance) {
         this.nickname = nickname;
         this.towerColor = towerColor;
-        this.towersCount = numberOfPlayers == 2 ?
-                Constants.TWO_PLAYERS.TOWERS_COUNT :
-                Constants.THREE_PLAYERS.TOWERS_COUNT;
-
-        this.entrance =
-                new StudentsContainer(numberOfPlayers == 2 ?
-                        Constants.TWO_PLAYERS.ENTRANCE_SIZE :
-                        Constants.THREE_PLAYERS.ENTRANCE_SIZE);
+        this.towersCount = towersCount;
+        this.entrance = entrance;
         this.school = new StudentsContainer();
 
         this.deck = new HashMap<>();
@@ -190,5 +184,10 @@ public class Player {
             throw new InvalidOperationException();
 
         coins -= howMany;
+    }
+
+    public void addStudentsToIsland(Island island, StudentsContainer students) {
+        entrance.removeAll(students);
+        island.addStudents(students);
     }
 }

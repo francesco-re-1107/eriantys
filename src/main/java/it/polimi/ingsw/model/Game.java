@@ -19,7 +19,7 @@ import java.util.logging.Logger;
  * with the method startGame(). At this point the game state is State.STARTED.
  */
 public class Game {
-    Logger logger = Logger.getLogger(Game.class.getName());
+
     /**
      * Stores the players of this game
      */
@@ -83,15 +83,23 @@ public class Game {
     private Player winner;
 
     /**
+     * Whether the game is played with experto mode on
+     */
+    private final boolean expertMode;
+
+    Logger logger = Logger.getLogger(Game.class.getName());
+
+    /**
      * Create a new game
      * @param numberOfPlayers number of players chose at the creation of the game
      */
-    public Game(int numberOfPlayers) {
+    public Game(int numberOfPlayers, boolean expertMode) {
         logger.info(MessageFormat.format("creating game with {0} players", numberOfPlayers));
         this.numberOfPlayers = numberOfPlayers;
         this.studentsBag = new RandomizedStudentsContainer(Constants.STUDENTS_BAG_NUMBER_PER_COLOR);
         this.players = new ArrayList<>();
         this.professors = new HashMap<>();
+        this.expertMode = expertMode;
 
         CharacterCard.generateRandomDeck(Constants.NUMBER_OF_CHARACTER_CARD)
                 .forEach(s -> this.characterCards.put(s, 0));
@@ -134,7 +142,7 @@ public class Game {
 
         if(gameState != State.CREATED)
             throw new InvalidOperationException(
-                    MessageFormat.format("Game already started (gameStatus is {0})", gameState)
+                    MessageFormat.format("Game already started (gameState is {0})", gameState)
             );
 
         logger.info("game starting...");
@@ -182,7 +190,7 @@ public class Game {
      * @param cloud the cloud chose by the player
      * @param player the player
      */
-    public void selectCloud(StudentsContainer cloud, Player player) {
+    public void selectCloud(Player player, StudentsContainer cloud) {
         if(!currentRound.getClouds().contains(cloud))
             throw new InvalidOperationException("Cannot find selected cloud");
 
@@ -191,6 +199,10 @@ public class Game {
 
         player.addCloudToEntrance(cloud);
         currentRound.removeCloud(cloud);
+
+        //go to next player or new round if necessary
+        if(currentRound.nextPlayer())
+            newRound();
     }
 
     /**
@@ -203,25 +215,30 @@ public class Game {
         if (players.size() >= numberOfPlayers)
             throw new InvalidOperationException("Players lobby is already full");
 
-        if (gameState != State.CREATED)
-            throw new InvalidOperationException(
-                    MessageFormat.format("Game already started (gameStatus is {0})", gameState)
-            );
-
         //check duplicate nickname
         if (players
                 .stream()
                 .anyMatch(p -> p.getNickname().equals(nickname)))
             throw new DuplicatedNicknameException();
 
+        int entranceSize = numberOfPlayers == 2 ?
+                Constants.TWO_PLAYERS.ENTRANCE_SIZE :
+                Constants.THREE_PLAYERS.ENTRANCE_SIZE;
+
+        int towersCount = numberOfPlayers == 2 ?
+                Constants.TWO_PLAYERS.TOWERS_COUNT :
+                Constants.THREE_PLAYERS.TOWERS_COUNT;
+
         Player p = new Player(
                 nickname,
                 Tower.values()[players.size()], //0->BLACK, 1->WHITE, 2->GREY
-                numberOfPlayers
+                towersCount,
+                studentsBag.pickManyRandom(entranceSize)
         );
 
         logger.info(MessageFormat.format("added player {0}", p.getNickname()));
         players.add(p);
+
         return p;
     }
 
@@ -315,7 +332,7 @@ public class Game {
         if(!players.contains(player))
             throw new InvalidOperationException();
 
-        if(player.canPlayAssistantCard(card))
+        if(!player.canPlayAssistantCard(card))
             throw new InvalidOperationException();
 
         player.playAssistantCard(card);
@@ -328,6 +345,9 @@ public class Game {
      * @param card
      */
     public void playCharacterCard(Player player, CharacterCard card){
+        if(!expertMode)
+            return;
+
         if(!players.contains(player))
             throw new InvalidOperationException();
 
@@ -381,31 +401,9 @@ public class Game {
             throw new InvalidOperationException();
 
         player.addStudentsToSchool(inSchool);
-        inIsland.forEach(Island::addStudents);
-    }
+        inIsland.forEach(player::addStudentsToIsland);
 
-    /**
-     * Calculate the influence of a player on a specific island
-     * @param island
-     * @param player
-     * @return calculate influence as int >= 0
-     */
-    private int calculateInfluenceOfPlayer(Island island, Player player) {
-        //atomic because it is used in lambda
-        AtomicInteger influence = new AtomicInteger();
-
-        //towers
-        if(island.isConquered())
-            if(island.getTowerColor() == player.getTowerColor())
-                influence.addAndGet(island.getTowersCount());
-
-        //students
-        this.professors.forEach((s, p) -> {
-            if (p.equals(player)) //if the player has the professor associated
-                influence.addAndGet(island.getStudents().getCountForStudent(s));
-        });
-
-        return influence.get();
+        updateProfessors();
     }
 
     /**
@@ -493,20 +491,20 @@ public class Game {
     }
 
     /**
-     * TODO: maybe make this private
      * Calculate current professors
      * If two players have the same number of students nothing changes for that student
      */
-    public void updateProfessors() {
+    private void updateProfessors() {
         Arrays.stream(Student.values()).forEach(s -> {
             List<Player> sortedPlayers = players.stream()
                     .sorted(
-                            Comparator.comparingInt(p -> p.getSchool().getCountForStudent(s))
+                            Comparator.comparingInt(p -> ((Player) p).getSchool().getCountForStudent(s))
+                                    .reversed()
                     )
                     .collect(Collectors.toList());
 
             Player firstPlayer = sortedPlayers.get(0);
-            Player secondPlayer = sortedPlayers.get(0);
+            Player secondPlayer = sortedPlayers.get(1);
 
             if(firstPlayer.getSchool().getCountForStudent(s) >
                     secondPlayer.getSchool().getCountForStudent(s))
@@ -612,7 +610,7 @@ public class Game {
         this.gameState = State.PAUSED;
     }
 
-    public void restartGame(){
+    public void resumeGame(){
         this.gameState = State.STARTED;
     }
 

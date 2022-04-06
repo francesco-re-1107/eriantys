@@ -15,11 +15,13 @@ class PlayerTest {
     @BeforeEach
     void setUp() {
         //test constructor two players
-        p1 = new Player("player1", Tower.BLACK, 2);
-        p2 = new Player("player2", Tower.WHITE, 2);
+        p1 = new Player("player1", Tower.BLACK, 8, new StudentsContainer());
+        p2 = new Player("player2", Tower.WHITE, 8, new StudentsContainer());
 
+        /*
         //test constructor three players
-        Player _p1 = new Player("_player1", Tower.BLACK, 3);
+        Player _p1 = new Player("_player1", Tower.BLACK, 6, new StudentsContainer());
+        */
     }
 
     @Test

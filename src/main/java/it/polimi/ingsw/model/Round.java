@@ -3,6 +3,7 @@ package it.polimi.ingsw.model;
 import it.polimi.ingsw.exceptions.InvalidOperationException;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class Round {
 
@@ -50,7 +51,25 @@ public class Round {
      * Go to the next stage (from PLAN to ATTACK), called internally
      */
     private void nextStage(){
-        //TODO: sort players and cards accordingly by assistant card played maybe using Pair
+        //TODO: improve this shitty code
+
+        //sort players and cards together by turn priority
+        List<Pair<Player, AssistantCard>> pairs = new ArrayList<>();
+
+        for(int i = 0; i < players.size(); i++)
+            pairs.add(new Pair<>(players.get(i), playedAssistantCards.get(i)));
+
+        pairs.sort(Comparator.comparingInt(pair -> pair.second.getTurnPriority()));
+
+        players.clear();
+        players.addAll(pairs.stream()
+                .map(pair -> pair.first)
+                .collect(Collectors.toList()));
+
+        playedAssistantCards.clear();
+        playedAssistantCards.addAll(pairs.stream()
+                .map(pair -> pair.second)
+                .collect(Collectors.toList()));
 
         stage = Stage.ATTACK;
         currentPlayer = 0;
@@ -166,6 +185,16 @@ public class Round {
     enum Stage {
         PLAN,
         ATTACK
+    }
+
+    private class Pair<T1, T2> {
+        public T1 first;
+        public T2 second;
+
+        public Pair(T1 first, T2 second) {
+            this.first = first;
+            this.second = second;
+        }
     }
 }
 

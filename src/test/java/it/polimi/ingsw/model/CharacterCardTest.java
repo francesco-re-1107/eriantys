@@ -50,7 +50,7 @@ class CharacterCardTest {
         HeraldCharacterCard c4 = new HeraldCharacterCard(new Island());
         assertNotNull(c4.getIsland());
 
-        KnightCharacterCard c5 = new KnightCharacterCard(new Player("p1", Tower.BLACK, 2));
+        KnightCharacterCard c5 = new KnightCharacterCard(new Player("p1", Tower.BLACK, 8, new StudentsContainer()));
         assertNotNull(c5.getInfluenceCalculator());
 
         MinstrelCharacterCard c6 = new MinstrelCharacterCard(new StudentsContainer(), new StudentsContainer());

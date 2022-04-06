@@ -1,6 +1,8 @@
 package it.polimi.ingsw.model;
 
 import it.polimi.ingsw.exceptions.StudentNotFoundException;
+
+import java.util.HashMap;
 import java.util.Random;
 
 /**
@@ -25,6 +27,14 @@ public class RandomizedStudentsContainer extends AStudentsContainer{
 
         for(Student s : Student.values())
             students.put(s, studentsPerColor);
+    }
+
+    /**
+     * Create a randomized students container starting from another container
+     * @param studentsContainer the other container to copy into this new container
+     */
+    public RandomizedStudentsContainer(AStudentsContainer studentsContainer) {
+        super(studentsContainer);
     }
 
     /**

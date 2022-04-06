@@ -27,9 +27,7 @@ public class StudentsContainer extends AStudentsContainer{
      * @param studentsContainer the students container used for creating this new container
      */
     public StudentsContainer(AStudentsContainer studentsContainer) {
-        super();
-
-        this.addAll(studentsContainer);
+        super(studentsContainer);
     }
 
     /**
