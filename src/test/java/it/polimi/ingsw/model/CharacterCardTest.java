@@ -12,12 +12,8 @@ class CharacterCardTest {
 
     @Test
     void generateRandomDeck() {
-        //8 cards, 2 picks of 6 cards -> ~0,005% probability to fail the test
-        List<String> d1 = CharacterCard.generateRandomDeck(6);
-        List<String> d2 = CharacterCard.generateRandomDeck(6);
-        assertEquals(6, d1.size());
-
-        assertNotEquals(d1, d2);
+        List<String> d = CharacterCard.generateRandomDeck(6);
+        assertEquals(6, d.size());
 
         assertThrows(
                 InvalidOperationException.class,

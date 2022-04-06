@@ -52,7 +52,8 @@ public class Player {
      * Create a player
      * @param nickname nickname choose by the client
      * @param towerColor color of the towers of this player
-     * @param numberOfPlayers used to determine the number of towers and the max size of the entrance
+     * @param towersCount number of towers at the beginning of the game
+     * @param entrance randomly picked entrance
      */
     public Player(String nickname, Tower towerColor, int towersCount, StudentsContainer entrance) {
         this.nickname = nickname;
@@ -191,6 +192,11 @@ public class Player {
         island.addStudents(students);
     }
 
+    /**
+     * Swap students between entrance and school
+     * @param studentsToRemove from school and add to entrance
+     * @param studentsToAdd to school and remove from entrance
+     */
     public void swapStudents(StudentsContainer studentsToRemove, StudentsContainer studentsToAdd) {
         if(studentsToAdd.getSize() != studentsToRemove.getSize())
             throw new InvalidOperationException("Cannot swap students containers of different size");

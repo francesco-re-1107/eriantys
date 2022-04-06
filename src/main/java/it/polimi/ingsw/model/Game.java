@@ -114,7 +114,7 @@ public class Game {
         RandomizedStudentsContainer bag =
                 new RandomizedStudentsContainer(Constants.ISLANDS_STUDENTS_BAG_NUMBER_PER_COLOR);
 
-        this.islands = Arrays.asList(
+        this.islands = new LinkedList<>(Arrays.asList(
                 new Island(),
                 new Island(bag.pickOneRandom()),
                 new Island(bag.pickOneRandom()),
@@ -127,7 +127,7 @@ public class Game {
                 new Island(bag.pickOneRandom()),
                 new Island(bag.pickOneRandom()),
                 new Island(bag.pickOneRandom())
-        );
+        ));
 
         logger.fine("initialized islands");
     }
@@ -534,7 +534,7 @@ public class Game {
      * @param winner the winner of the game
      */
     private void setGameFinished(Player winner) {
-        logger.info(MessageFormat.format("game finished! {1} won", winner.getNickname()));
+        logger.info(MessageFormat.format("game finished! {0} won", winner.getNickname()));
         gameState = State.FINISHED;
 
         this.winner = winner;
