@@ -372,7 +372,11 @@ public class Game {
             ((GrandmaCharacterCard) card).getIsland().setNoEntry(true);
         } else if (card instanceof MinstrelCharacterCard) {
             MinstrelCharacterCard c = ((MinstrelCharacterCard) card);
-            //player.swapStudents(c.getStudentsToRemove(), c.getStudentsToAdd());
+
+            if(c.getStudentsToRemove().getSize() > 2 || c.getStudentsToAdd().getSize() > 2)
+                throw new InvalidOperationException("Too much students to swap");
+
+            player.swapStudents(c.getStudentsToRemove(), c.getStudentsToAdd());
         }
     }
 

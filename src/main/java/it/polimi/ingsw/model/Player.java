@@ -190,4 +190,14 @@ public class Player {
         entrance.removeAll(students);
         island.addStudents(students);
     }
+
+    public void swapStudents(StudentsContainer studentsToRemove, StudentsContainer studentsToAdd) {
+        if(studentsToAdd.getSize() != studentsToRemove.getSize())
+            throw new InvalidOperationException("Cannot swap students containers of different size");
+
+        school.removeAll(studentsToRemove);
+        entrance.addAll(studentsToRemove);
+        entrance.removeAll(studentsToAdd);
+        school.addAll(studentsToAdd);
+    }
 }

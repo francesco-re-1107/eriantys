@@ -122,4 +122,50 @@ class PlayerTest {
                 () -> p1.useCoins(1)
         );
     }
+
+    @Test
+    void swapStudents() {
+        p1.addCloudToEntrance(
+                new StudentsContainer()
+                        .addStudents(Student.BLUE,8)
+                        .addStudents(Student.GREEN,8)
+                        .addStudents(Student.RED,8)
+        );
+
+        p1.addStudentsToSchool(
+                new StudentsContainer()
+                        .addStudents(Student.BLUE,4)
+                        .addStudents(Student.GREEN,4)
+                        .addStudents(Student.RED,4)
+        );
+
+        int schoolPrevSize = p1.getSchool().getSize();
+        int entrancePrevSize = p1.getEntrance().getSize();
+
+        p1.swapStudents(
+                new StudentsContainer()
+                        .addStudents(Student.BLUE,1)
+                        .addStudents(Student.GREEN,1),
+                new StudentsContainer()
+                        .addStudents(Student.RED,2)
+        );
+
+        int redsInSchool = p1.getSchool().getCountForStudent(Student.RED);
+        int redsInEntrance = p1.getEntrance().getCountForStudent(Student.RED);
+        assertEquals(6, redsInSchool);
+        assertEquals(2, redsInEntrance);
+
+        int bluesInSchool = p1.getSchool().getCountForStudent(Student.BLUE);
+        int bluesInEntrance = p1.getEntrance().getCountForStudent(Student.BLUE);
+        assertEquals(3, bluesInSchool);
+        assertEquals(5, bluesInEntrance);
+
+        int greensInSchool = p1.getSchool().getCountForStudent(Student.GREEN);
+        int greensInEntrance = p1.getEntrance().getCountForStudent(Student.GREEN);
+        assertEquals(3, greensInSchool);
+        assertEquals(5, greensInEntrance);
+
+        assertEquals(schoolPrevSize, p1.getSchool().getSize());
+        assertEquals(entrancePrevSize, p1.getEntrance().getSize());
+    }
 }
