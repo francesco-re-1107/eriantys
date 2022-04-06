@@ -10,12 +10,6 @@ import java.util.Objects;
 public class AssistantCard {
 
     /**
-     * TODO: check if it's really needed
-     * Globally identify a card
-     */
-    private final int id;
-
-    /**
      * Stores the maximum number of moves that mother nature can do when this card is played
      */
     private final int motherNatureMaxMoves;
@@ -27,21 +21,12 @@ public class AssistantCard {
 
     /**
      * Create an assistant card
-     * @param id ...
      * @param motherNatureMaxMoves number of moves that mother nature can do
      * @param turnPriority priority number of this card
      */
-    private AssistantCard(int id, int turnPriority, int motherNatureMaxMoves) {
-        this.id = id;
+    private AssistantCard(int turnPriority, int motherNatureMaxMoves) {
         this.motherNatureMaxMoves = motherNatureMaxMoves;
         this.turnPriority = turnPriority;
-    }
-
-    /**
-     * @return the identifier of the card
-     */
-    public int getId() {
-        return id;
     }
 
     /**
@@ -64,16 +49,16 @@ public class AssistantCard {
      */
     public static List<AssistantCard> getDefaultDeck() {
         return Arrays.asList(
-                new AssistantCard(0, 1, 1),
-                new AssistantCard(1, 2, 1),
-                new AssistantCard(2, 3, 2),
-                new AssistantCard(3, 4, 2),
-                new AssistantCard(4, 5, 3),
-                new AssistantCard(5, 6, 3),
-                new AssistantCard(6, 7, 4),
-                new AssistantCard(7, 8, 4),
-                new AssistantCard(8, 9, 5),
-                new AssistantCard(9, 10, 5)
+                new AssistantCard(1, 1),
+                new AssistantCard(2, 1),
+                new AssistantCard(3, 2),
+                new AssistantCard(4, 2),
+                new AssistantCard(5, 3),
+                new AssistantCard(6, 3),
+                new AssistantCard(7, 4),
+                new AssistantCard(8, 4),
+                new AssistantCard(9, 5),
+                new AssistantCard(10, 5)
         );
     }
 

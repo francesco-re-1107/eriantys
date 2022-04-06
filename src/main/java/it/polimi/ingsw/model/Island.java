@@ -148,14 +148,4 @@ public class Island {
         return this.isConquered() && anotherIsland.isConquered()
                 && this.towerColor == anotherIsland.towerColor;
     }
-
-    @Override
-    public String toString() {
-        return "Island{" +
-                "students=" + students +
-                ", towersCount=" + towersCount +
-                ", towerColor=" + towerColor +
-                ", noEntry=" + noEntry +
-                '}';
-    }
 }

@@ -4,7 +4,7 @@ import it.polimi.ingsw.model.Island;
 import it.polimi.ingsw.model.Player;
 import it.polimi.ingsw.model.Student;
 
-import java.util.Arrays;
+import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -13,45 +13,35 @@ import java.util.Map;
  */
 public class ProfessorsControlInfluenceCalculator extends DefaultInfluenceCalculator {
 
-    private final Player player;
+    private final Player privilegedPlayer;
 
-    public ProfessorsControlInfluenceCalculator(Player player) {
-        this.player = player;
+    public ProfessorsControlInfluenceCalculator(Player privilegedPlayer) {
+        this.privilegedPlayer = privilegedPlayer;
     }
 
     @Override
     protected int calculateStudentsInfluence(Player player, Island island, Map<Student, Player> professors) {
-        if (!this.player.equals(player)) //only for the player that played the card
-            return super.calculateStudentsInfluence(player, island, professors);
+        Map<Student, Player> newProfessors = new HashMap<>(professors);
 
-        int influence = 0;
+        for (Student s : Student.values()) {
+            //if no professor then all the players have 0 students of this color
+            if(!professors.containsKey(s)) {
+                newProfessors.put(s, privilegedPlayer);
+                continue;
+            }else{ //professors map contains this key
+                Player otherPlayer = professors.get(s);
+                if(!privilegedPlayer.equals(otherPlayer)){ //professor held by someone else
 
-        /* see later TODO: test and then delete this
-        //professors owned by this player
-        influence += professors.entrySet()
-                .stream()
-                .filter(e -> player.equals(e.getValue()))
-                .mapToInt(e -> island.getStudents().getCountForStudent(e.getKey()))
-                .sum();*/
+                    //check if the privileged player has the same number of students
+                    if(privilegedPlayer.getSchool().getCountForStudent(s)
+                            >= otherPlayer.getSchool().getCountForStudent(s))
 
-        //professors with null players (means that everyone has 0 students of that type TODO: maybe improve)
-        influence += professors.entrySet()
-                .stream()
-                .filter(e -> e.getValue() == null)
-                .mapToInt(e -> island.getStudents().getCountForStudent(e.getKey()))
-                .sum();
+                        newProfessors.put(s, privilegedPlayer);
+                }
+            }
+        }
 
-        //professors owned by this player OR by other players but with same number of students
-        influence += professors.entrySet()
-                .stream()
-                .filter(e ->
-                        e.getValue() != null &&
-                                player.getSchool().getCountForStudent(e.getKey()) >=
-                                        e.getValue().getSchool().getCountForStudent(e.getKey())
-                )
-                .mapToInt(e -> island.getStudents().getCountForStudent(e.getKey()))
-                .sum();
-
-        return influence;
+        //let the superclass calculate influence with the changed professors
+        return super.calculateStudentsInfluence(player, island, newProfessors);
     }
 }
