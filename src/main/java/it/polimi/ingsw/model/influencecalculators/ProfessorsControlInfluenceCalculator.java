@@ -4,7 +4,7 @@ import it.polimi.ingsw.model.Island;
 import it.polimi.ingsw.model.Player;
 import it.polimi.ingsw.model.Student;
 
-import java.util.HashMap;
+import java.util.EnumMap;
 import java.util.Map;
 
 /**
@@ -21,13 +21,12 @@ public class ProfessorsControlInfluenceCalculator extends DefaultInfluenceCalcul
 
     @Override
     protected int calculateStudentsInfluence(Player player, Island island, Map<Student, Player> professors) {
-        Map<Student, Player> newProfessors = new HashMap<>(professors);
+        Map<Student, Player> newProfessors = new EnumMap<>(professors);
 
         for (Student s : Student.values()) {
             //if no professor then all the players have 0 students of this color
             if(!professors.containsKey(s)) {
                 newProfessors.put(s, privilegedPlayer);
-                continue;
             }else{ //professors map contains this key
                 Player otherPlayer = professors.get(s);
                 if(!privilegedPlayer.equals(otherPlayer)){ //professor held by someone else
@@ -35,7 +34,6 @@ public class ProfessorsControlInfluenceCalculator extends DefaultInfluenceCalcul
                     //check if the privileged player has the same number of students
                     if(privilegedPlayer.getSchool().getCountForStudent(s)
                             >= otherPlayer.getSchool().getCountForStudent(s))
-
                         newProfessors.put(s, privilegedPlayer);
                 }
             }

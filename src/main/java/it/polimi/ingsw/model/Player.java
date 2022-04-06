@@ -1,8 +1,6 @@
 package it.polimi.ingsw.model;
 
-import it.polimi.ingsw.Constants;
 import it.polimi.ingsw.exceptions.InvalidOperationException;
-import it.polimi.ingsw.exceptions.StudentNotFoundException;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -64,7 +62,7 @@ public class Player {
 
         this.deck = new HashMap<>();
         AssistantCard.getDefaultDeck().forEach(
-                (c) -> this.deck.put(c, false)
+                c -> this.deck.put(c, false)
         );
     }
 
@@ -84,7 +82,7 @@ public class Player {
      */
     public void playAssistantCard(AssistantCard card){
         //TODO: find a better way to handle this
-        if(deck.get(card))
+        if(Boolean.TRUE.equals(deck.get(card)))
             throw new InvalidOperationException("Card already used by this user");
 
        deck.put(card, true);
@@ -172,7 +170,7 @@ public class Player {
     public int getAssistantCardsLeftCount() {
         return (int) deck.entrySet()
                 .stream()
-                .filter((e) -> !e.getValue()) //only cards not used
+                .filter(e -> !e.getValue()) //only cards not used
                 .count();
     }
 

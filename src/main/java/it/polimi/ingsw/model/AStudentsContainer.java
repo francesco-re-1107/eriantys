@@ -1,7 +1,8 @@
 package it.polimi.ingsw.model;
 
 import it.polimi.ingsw.Utils;
-import java.util.HashMap;
+
+import java.util.EnumMap;
 import java.util.Map;
 import java.util.Objects;
 
@@ -23,15 +24,15 @@ public abstract class AStudentsContainer {
     /**
      * Create a generic container (and not modifiable) with given maxSize
      */
-    public AStudentsContainer() {
-        this.students = new HashMap<>();
+    protected AStudentsContainer() {
+        this.students = new EnumMap<>(Student.class);
     }
 
     /**
      * Create a generic container (and not modifiable) with given maxSize
      * @param maxSize maximum number of students that this container can hold
      */
-    public AStudentsContainer(int maxSize) {
+    protected AStudentsContainer(int maxSize) {
         this();
         this.maxSize = maxSize;
     }
@@ -40,8 +41,8 @@ public abstract class AStudentsContainer {
      * Create a new AStudentsContainer starting from another AStudentsContainer
      * @param studentsContainer the students container used for creating this new container
      */
-    public AStudentsContainer(AStudentsContainer studentsContainer) {
-        this.students = new HashMap<>(studentsContainer.students);
+    protected AStudentsContainer(AStudentsContainer studentsContainer) {
+        this.students = new EnumMap<>(studentsContainer.students);
     }
 
     /**
@@ -74,7 +75,7 @@ public abstract class AStudentsContainer {
      * @return a copy of the private map used for storing students
      */
     public Map<Student, Integer> getStudents() {
-        return new HashMap<>(students);
+        return new EnumMap<>(students);
     }
 
     /**
@@ -91,5 +92,10 @@ public abstract class AStudentsContainer {
         if (o == null || getClass() != o.getClass()) return false;
         AStudentsContainer that = (AStudentsContainer) o;
         return maxSize == that.maxSize && students.equals(that.students);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(students, maxSize);
     }
 }

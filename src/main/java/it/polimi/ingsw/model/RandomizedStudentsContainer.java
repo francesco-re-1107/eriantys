@@ -2,7 +2,7 @@ package it.polimi.ingsw.model;
 
 import it.polimi.ingsw.exceptions.StudentNotFoundException;
 
-import java.util.HashMap;
+import java.util.Objects;
 import java.util.Random;
 
 /**
@@ -78,4 +78,17 @@ public class RandomizedStudentsContainer extends AStudentsContainer{
         return picked;
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        if (!super.equals(o)) return false;
+        RandomizedStudentsContainer that = (RandomizedStudentsContainer) o;
+        return Objects.equals(random, that.random);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(super.hashCode(), random);
+    }
 }

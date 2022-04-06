@@ -3,7 +3,6 @@ package it.polimi.ingsw.model.influencecalculators;
 import it.polimi.ingsw.model.Island;
 import it.polimi.ingsw.model.Player;
 import it.polimi.ingsw.model.Student;
-import it.polimi.ingsw.model.influencecalculators.DefaultInfluenceCalculator;
 
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;

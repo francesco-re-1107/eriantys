@@ -13,7 +13,7 @@ public abstract class InfluenceCharacterCard extends CharacterCard {
      *
      * @param cost initial cost of the card
      */
-    public InfluenceCharacterCard(int cost) {
+    protected InfluenceCharacterCard(int cost) {
         super(cost);
     }
 

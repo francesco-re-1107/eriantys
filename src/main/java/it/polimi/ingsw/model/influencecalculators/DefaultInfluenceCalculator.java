@@ -37,9 +37,8 @@ public class DefaultInfluenceCalculator implements InfluenceCalculator {
         //atomic because it is used in lambda
         AtomicInteger influence = new AtomicInteger();
 
-        if(island.isConquered())
-            if(island.getTowerColor() == player.getTowerColor())
-                influence.addAndGet(island.getTowersCount());
+        if(island.isConquered() && island.getTowerColor() == player.getTowerColor())
+            influence.addAndGet(island.getTowersCount());
 
         return influence.get();
     }

@@ -1,7 +1,6 @@
 package it.polimi.ingsw.model;
 
 import it.polimi.ingsw.exceptions.InvalidOperationException;
-import it.polimi.ingsw.model.charactercards.*;
 
 import java.util.*;
 
@@ -33,7 +32,7 @@ public abstract class CharacterCard {
      * Create a generic character card
      * @param cost initial cost of the card
      */
-    public CharacterCard(int cost) {
+    protected CharacterCard(int cost) {
         this.cost = cost;
     }
 

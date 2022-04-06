@@ -88,7 +88,7 @@ public class Round {
             throw new InvalidOperationException("This player cannot play card at this time");
 
         boolean alreadyPlayed =
-                playedAssistantCards.stream().anyMatch((c) -> c.equals(card));
+                playedAssistantCards.stream().anyMatch(c -> c.equals(card));
 
         if (alreadyPlayed)
             throw new InvalidOperationException("Card already played by another player");
@@ -187,9 +187,9 @@ public class Round {
         ATTACK
     }
 
-    private class Pair<T1, T2> {
-        public T1 first;
-        public T2 second;
+    private static class Pair<T1, T2> {
+        private T1 first;
+        private T2 second;
 
         public Pair(T1 first, T2 second) {
             this.first = first;

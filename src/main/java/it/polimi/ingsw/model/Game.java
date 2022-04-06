@@ -8,7 +8,6 @@ import it.polimi.ingsw.model.influencecalculators.DefaultInfluenceCalculator;
 
 import java.text.MessageFormat;
 import java.util.*;
-import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 import java.util.logging.Logger;
 
@@ -54,7 +53,7 @@ public class Game {
     /**
      * Stores the 3 character cards selected for this game and the number of times they've been used
      */
-    private final Map<String, Integer> characterCards = new HashMap<>();;
+    private final Map<String, Integer> characterCards = new HashMap<>();
 
     /**
      * Stores for each student color which player has the professor, it is empty when the game is started
@@ -98,7 +97,7 @@ public class Game {
         this.numberOfPlayers = numberOfPlayers;
         this.studentsBag = new RandomizedStudentsContainer(Constants.STUDENTS_BAG_NUMBER_PER_COLOR);
         this.players = new ArrayList<>();
-        this.professors = new HashMap<>();
+        this.professors = new EnumMap<>(Student.class);
         this.expertMode = expertMode;
 
         CharacterCard.generateRandomDeck(Constants.NUMBER_OF_CHARACTER_CARD)
@@ -415,11 +414,9 @@ public class Game {
      * It is called every time mother nature is moved so only the current island is checked
      */
     private void checkAndMergeIslands() {
-        Island curr, prev, next;
-
-        curr = getCurrentIsland();
-        prev = islands.get(calculateMotherNatureIndex(-1));
-        next = islands.get(calculateMotherNatureIndex(1));
+        Island curr = getCurrentIsland();
+        Island prev = islands.get(calculateMotherNatureIndex(-1));
+        Island next = islands.get(calculateMotherNatureIndex(1));
 
         if(curr.isMergeCompatible(prev)){
             logger.info("island merged with previous one");
@@ -599,7 +596,7 @@ public class Game {
      */
     public Map<Student, Player> getProfessors() {
         //return a copy
-        return new HashMap<>(professors);
+        return new EnumMap<>(professors);
     }
 
     /**
