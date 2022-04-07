@@ -8,7 +8,6 @@ import it.polimi.ingsw.model.influencecalculators.DefaultInfluenceCalculator;
 
 import java.text.MessageFormat;
 import java.util.*;
-import java.util.stream.Collectors;
 import java.util.logging.Logger;
 
 /**
@@ -160,8 +159,9 @@ public class Game {
         if(studentsBag.getSize() == 0)
             setGameFinished(calculateCurrentWinner());
 
-        //check if players have any card left (checking only player0 because they're all the same)
-        if(players.get(0).getAssistantCardsLeftCount() == 0)
+        //check if players have any card left
+        boolean playersWithZeroCardsLeft = players.stream().anyMatch(p -> p.getAssistantCardsLeftCount() == 0);
+        if(playersWithZeroCardsLeft)
             setGameFinished(calculateCurrentWinner());
 
         //generate clouds
@@ -190,11 +190,10 @@ public class Game {
      * @param player the player
      */
     public void selectCloud(Player player, StudentsContainer cloud) {
+        checkIfCurrentPlayer(player);
+
         if(!currentRound.getClouds().contains(cloud))
             throw new InvalidOperationException("Cannot find selected cloud");
-
-        if(!players.contains(player))
-            throw new InvalidOperationException("Player not found");
 
         player.addCloudToEntrance(cloud);
         currentRound.removeCloud(cloud);
@@ -202,6 +201,15 @@ public class Game {
         //go to next player or new round if necessary
         if(currentRound.nextPlayer())
             newRound();
+    }
+
+    /**
+     * Check if the given player is the current player
+     * @param player the player to check
+     */
+    private void checkIfCurrentPlayer(Player player) {
+        if(!currentRound.getCurrentPlayer().equals(player))
+            throw new InvalidOperationException("This player cannot play at this time");
     }
 
     /**
@@ -246,8 +254,7 @@ public class Game {
      * @param steps number of steps that mother nature needs to be moved
      */
     public void moveMotherNature(Player player, int steps){
-        if(!currentRound.getCurrentPlayer().equals(player))
-            throw new InvalidOperationException("");
+        checkIfCurrentPlayer(player);
 
         if(currentRound.getStage() != Round.Stage.ATTACK)
             throw new InvalidOperationException("");
@@ -271,7 +278,7 @@ public class Game {
 
             //After influence calculation a player may have conquered a new island.
             //It's necessary to check if islands could be merged
-            this.checkAndMergeIslands();
+            this.checkMergeableIslands();
         }
     }
 
@@ -328,13 +335,11 @@ public class Game {
      * @param card
      */
     public void playAssistantCard(Player player, AssistantCard card){
-        if(!players.contains(player))
-            throw new InvalidOperationException();
+        checkIfCurrentPlayer(player);
 
         if(!player.canPlayAssistantCard(card))
             throw new InvalidOperationException();
 
-        player.playAssistantCard(card);
         currentRound.playAssistantCard(player, card);
     }
 
@@ -345,10 +350,12 @@ public class Game {
      */
     public void playCharacterCard(Player player, CharacterCard card){
         if(!expertMode)
-            return;
+            throw new InvalidOperationException("Cannot play character cards in simple mode");
 
-        if(!players.contains(player))
-            throw new InvalidOperationException();
+        checkIfCurrentPlayer(player);
+
+        if(currentRound.getStage() != Round.Stage.ATTACK)
+            throw new InvalidOperationException("");
 
         if(!characterCards.containsKey(card.getName()))
             throw new InvalidOperationException();
@@ -360,22 +367,22 @@ public class Game {
 
         player.useCoins(cost);
 
-        if(card instanceof InfluenceCharacterCard){
-            temporaryInfluenceCalculator = Optional.of(((InfluenceCharacterCard) card).getInfluenceCalculator());
-        } else if (card instanceof HeraldCharacterCard){
-            Island island = ((HeraldCharacterCard)card).getIsland();
-            calculateInfluenceOnIsland(island);
-        } else if (card instanceof PostmanCharacterCard) {
-            currentRound.setAdditionalMotherNatureMoves(((PostmanCharacterCard)card).getAdditionalMotherNatureMoves());
-        } else if (card instanceof GrandmaCharacterCard) {
-            ((GrandmaCharacterCard) card).getIsland().setNoEntry(true);
-        } else if (card instanceof MinstrelCharacterCard) {
-            MinstrelCharacterCard c = ((MinstrelCharacterCard) card);
-
-            if(c.getStudentsToRemove().getSize() > 2 || c.getStudentsToAdd().getSize() > 2)
+        if(card instanceof InfluenceCharacterCard influenceCard){
+            temporaryInfluenceCalculator = Optional.of(influenceCard.getInfluenceCalculator());
+        } else if (card instanceof HeraldCharacterCard heraldCard){
+            calculateInfluenceOnIsland(heraldCard.getIsland());
+        } else if (card instanceof PostmanCharacterCard postmanCard) {
+            currentRound.setAdditionalMotherNatureMoves(postmanCard.getAdditionalMotherNatureMoves());
+        } else if (card instanceof GrandmaCharacterCard grandmaCard) {
+            if (!islands.contains(grandmaCard.getIsland()))
+                throw new InvalidOperationException("Island not present in this game");
+            grandmaCard.getIsland().setNoEntry(true);
+        } else if (card instanceof MinstrelCharacterCard minstrelCard) {
+            if(minstrelCard.getStudentsToRemove().getSize() > 2 ||
+                    minstrelCard.getStudentsToAdd().getSize() > 2)
                 throw new InvalidOperationException("Too much students to swap");
 
-            player.swapStudents(c.getStudentsToRemove(), c.getStudentsToAdd());
+            player.swapStudents(minstrelCard.getStudentsToRemove(), minstrelCard.getStudentsToAdd());
         }
     }
 
@@ -388,8 +395,7 @@ public class Game {
      * @param inIsland students to add to the relative island
      */
     public void putStudents(Player player, StudentsContainer inSchool, Map<Island,StudentsContainer> inIsland){
-        if(!currentRound.getCurrentPlayer().equals(player))
-            throw new InvalidOperationException();
+        checkIfCurrentPlayer(player);
 
         if(currentRound.getStage() != Round.Stage.ATTACK)
             throw new InvalidOperationException();
@@ -413,7 +419,7 @@ public class Game {
      * Check if island could be merged.
      * It is called every time mother nature is moved so only the current island is checked
      */
-    private void checkAndMergeIslands() {
+    private void checkMergeableIslands() {
         Island curr = getCurrentIsland();
         Island prev = islands.get(calculateMotherNatureIndex(-1));
         Island next = islands.get(calculateMotherNatureIndex(1));
@@ -448,7 +454,7 @@ public class Game {
         //order players by placed towers
         List<Player> orderedPlayers = players.stream()
                 .sorted(Comparator.comparingInt(Player::getTowersCount).reversed())
-                .collect(Collectors.toList());
+                .toList();
 
         Player firstPlayer =
                 orderedPlayers.get(0);
@@ -480,7 +486,8 @@ public class Game {
      * @return the calculated index
      */
     private int calculateMotherNatureIndex(int steps){
-        return (this.motherNaturePosition + steps) % islands.size();
+        //using floorMod because the % operator gives problems with negative numbers
+        return Math.floorMod(this.motherNaturePosition + steps, islands.size());
     }
 
     public void addGameUpdateListener() {
@@ -502,7 +509,7 @@ public class Game {
                             Comparator.comparingInt(p -> ((Player) p).getSchool().getCountForStudent(s))
                                     .reversed()
                     )
-                    .collect(Collectors.toList());
+                    .toList();
 
             Player firstPlayer = sortedPlayers.get(0);
             Player secondPlayer = sortedPlayers.get(1);
@@ -523,7 +530,7 @@ public class Game {
                 .stream()
                 .filter(e -> e.getValue().equals(player))
                 .map(Map.Entry::getKey)
-                .collect(Collectors.toList());
+                .toList();
     }
 
     /**
@@ -621,6 +628,13 @@ public class Game {
      */
     public Optional<Player> getWinner() {
         return Optional.of(winner);
+    }
+
+    /**
+     * @return whether the game is played with expert rules or not
+     */
+    public boolean isExpertMode() {
+        return expertMode;
     }
 
     /**

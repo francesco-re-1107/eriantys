@@ -10,15 +10,17 @@ import org.junit.jupiter.api.Test;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 class GameTest {
 
-    //TODO: test game always with the same custom random seed otherwise test for example 100 games every time
-
-    @RepeatedTest(100)
-    void testGame1() {
+    /**
+     * This method creates a game with 2 rounds only and checks all the corner-cases in Game methods
+     */
+    @Test
+    void testStaticGameTwoPlayers() {
         Game g = new Game(2, true);
         List<Player> players;
 
@@ -67,6 +69,30 @@ class GameTest {
         //check round
         assertEquals(Round.Stage.PLAN, g.getCurrentRound().getStage());
         assertEquals(players.get(0), g.getCurrentRound().getCurrentPlayer());
+
+        //play assistant card player 1 (it's not the current player)
+        assertThrows(
+                InvalidOperationException.class,
+                () -> g.playAssistantCard(players.get(1), AssistantCard.getDefaultDeck().get(1))
+        );
+
+        //putStudents in PLAN stage
+        assertThrows(
+                InvalidOperationException.class,
+                () -> g.putStudents(players.get(0), new StudentsContainer(), new HashMap<>())
+        );
+
+        //moveMotherNature in PLAN stage
+        assertThrows(
+                InvalidOperationException.class,
+                () -> g.moveMotherNature(players.get(0), 1)
+        );
+
+        //selectCloud in PLAN stage
+        assertThrows(
+                InvalidOperationException.class,
+                () -> g.selectCloud(players.get(0), new StudentsContainer())
+        );
 
         //play assistant card player 0
         g.playAssistantCard(players.get(0), AssistantCard.getDefaultDeck().get(1));
@@ -155,35 +181,87 @@ class GameTest {
         //plays first the one who played the lowest card before
         assertEquals(players.get(1), g.getCurrentRound().getCurrentPlayer());
 
-        //play assistant card player 1
-        g.playAssistantCard(players.get(1), AssistantCard.getDefaultDeck().get(5));
+        //play two times the same card
+        assertThrows(
+                InvalidOperationException.class,
+                () -> g.playAssistantCard(players.get(1), AssistantCard.getDefaultDeck().get(0))
+        );
+    }
 
-        //play assistant card player 0
-        g.playAssistantCard(players.get(0), AssistantCard.getDefaultDeck().get(4));
 
-        //put students player 0
-        picker = new RandomizedStudentsContainer(players.get(0).getEntrance());
-        inSchool = picker.pickManyRandom(3);
-        inIsland = new HashMap<>();
-        g.putStudents(players.get(0), inSchool, inIsland);
+    /**
+     * This method creates a completely random game and brings it all the way to the end
+     * in order to test different endings and different character cards.
+     * This will be repeated 500 times to be sure that all parts of the code will be tested at least once.
+     *
+     * This test DOESN'T check whether the methods called do what they claim to do.
+     */
+    @RepeatedTest(500)
+    void testDynamicGame() {
+        Random r = new Random();
 
-        //move mother nature player 0
-        g.moveMotherNature(players.get(0), 3);
+        Game g = new Game(r.nextInt(2,4), r.nextBoolean());
 
-        //select cloud player 0
-        g.selectCloud(players.get(0), g.getCurrentRound().getClouds().get(0));
+        try {
+            do {
+                g.addPlayer("p" + r.nextInt());
+            }while(g.getCurrentNumberOfPlayers() < g.getNumberOfPlayers());
+        }catch (DuplicatedNicknameException e){}
 
-        //put students player 1
-        picker = new RandomizedStudentsContainer(players.get(1).getEntrance());
-        inSchool = picker.pickManyRandom(3);
-        inIsland = new HashMap<>();
-        g.putStudents(players.get(1), inSchool, inIsland);
+        g.startGame();
 
-        //move mother nature player 1
-        g.moveMotherNature(players.get(1), 2);
+        while(g.getGameState() != Game.State.FINISHED){
 
-        //select cloud player 1
-        g.selectCloud(players.get(1), g.getCurrentRound().getClouds().get(0));
+            //stage PLAN
+            while(g.getCurrentRound().getStage() == Round.Stage.PLAN){
+                Player currentPlayer = g.getCurrentRound().getCurrentPlayer();
 
+                boolean playedCard = false;
+
+                while(!playedCard) {
+                    AssistantCard card;
+                    do {
+                        card = AssistantCard.getDefaultDeck().get(r.nextInt(10));
+                    }
+                    while (!currentPlayer.canPlayAssistantCard(card));
+
+                    try{
+                        g.playAssistantCard(currentPlayer, card);
+                        playedCard = true;
+                    }catch (InvalidOperationException e){}
+                }
+            }
+
+            //stage ATTACK
+            while(g.getCurrentRound().getStage() == Round.Stage.ATTACK) {
+                Player currentPlayer = g.getCurrentRound().getCurrentPlayer();
+
+                //2 random students in school and 1 on a random island
+                RandomizedStudentsContainer picker =
+                        new RandomizedStudentsContainer(currentPlayer.getEntrance());
+
+                StudentsContainer inSchool = picker.pickManyRandom(2);
+
+                Map<Island, StudentsContainer> inIsland = new HashMap<>();
+                int studentsToPutOnIsland = g.getNumberOfPlayers() == 2 ? 1 : 2;
+                inIsland.put(g.getIslands().get(r.nextInt(g.getIslands().size())), picker.pickManyRandom(studentsToPutOnIsland));
+
+                g.putStudents(currentPlayer, inSchool, inIsland);
+
+                //play character card randomly
+                //TODO: implement
+
+                //move mother nature randomly
+                int allowedMoves = g.getCurrentRound().getCardPlayedBy(currentPlayer).get().getMotherNatureMaxMoves() +
+                            g.getCurrentRound().getAdditionalMotherNatureMoves();
+                g.moveMotherNature(currentPlayer, 1 + r.nextInt(allowedMoves));
+
+                //select cloud randomly
+                List<StudentsContainer> clouds = g.getCurrentRound().getClouds();
+                g.selectCloud(currentPlayer, clouds.get(r.nextInt(clouds.size())));
+            }
+        }
+
+        assertNotNull(g.getWinner().get());
     }
 }

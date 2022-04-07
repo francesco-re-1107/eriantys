@@ -64,12 +64,14 @@ public class Round {
         players.clear();
         players.addAll(pairs.stream()
                 .map(pair -> pair.first)
-                .collect(Collectors.toList()));
+                .toList()
+        );
 
         playedAssistantCards.clear();
         playedAssistantCards.addAll(pairs.stream()
                 .map(pair -> pair.second)
-                .collect(Collectors.toList()));
+                .toList()
+        );
 
         stage = Stage.ATTACK;
         currentPlayer = 0;
@@ -84,16 +86,24 @@ public class Round {
         if(stage == Stage.ATTACK)
             throw new InvalidOperationException("In attack mode cannot play assistantCard");
 
-        if (!player.equals(getCurrentPlayer()))
-            throw new InvalidOperationException("This player cannot play card at this time");
-
         boolean alreadyPlayed =
                 playedAssistantCards.stream().anyMatch(c -> c.equals(card));
 
-        if (alreadyPlayed)
-            throw new InvalidOperationException("Card already played by another player");
+        if(alreadyPlayed){
+            //check if the player has other cards to play
+            boolean canPlayOtherCards = player.getDeck()
+                    .entrySet()
+                    .stream()
+                    .filter(e -> !e.getValue())
+                    .map(Map.Entry::getKey)
+                    .anyMatch(c -> !playedAssistantCards.contains(c));
+
+            if (canPlayOtherCards)
+                throw new InvalidOperationException("Card already played by another player");
+        }
 
         playedAssistantCards.add(card);
+        player.playAssistantCard(card);
         if (playedAssistantCards.size() == players.size()) //go to attack stage
             nextStage();
         else
