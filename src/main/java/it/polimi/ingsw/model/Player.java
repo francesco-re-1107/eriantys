@@ -8,7 +8,7 @@ import java.util.Map;
 /**
  * This class models a player of the game, storing all the information of the board
  */
-public class Player {
+public class Player implements StudentsContainer.StudentNumberReachedListener{
 
     /**
      * Stores the nickname chose by the player during setup
@@ -27,7 +27,6 @@ public class Player {
 
     /**
      * Stores the number of towers the player currently has on his board
-     * TODO: check if it's too much redundant because it could be calculated by counting the towers on the islands
      */
     private int towersCount;
 
@@ -59,11 +58,24 @@ public class Player {
         this.towersCount = towersCount;
         this.entrance = entrance;
         this.school = new StudentsContainer();
+        setUpListenersForCoins();
 
         this.deck = new HashMap<>();
         AssistantCard.getDefaultDeck().forEach(
                 c -> this.deck.put(c, false)
         );
+    }
+
+    /**
+     * This method will add listeners to the school container for 3, 6 and 9 students of each type
+     * in order to receive coins
+     */
+    private void setUpListenersForCoins() {
+        for (Student s : Student.values()) {
+            this.school.addOnStudentNumberReachedListener(s, 3, this);
+            this.school.addOnStudentNumberReachedListener(s, 6, this);
+            this.school.addOnStudentNumberReachedListener(s, 9, this);
+        }
     }
 
     /**
@@ -81,7 +93,6 @@ public class Player {
      * @param card the card to play
      */
     public void playAssistantCard(AssistantCard card){
-        //TODO: find a better way to handle this
         if(Boolean.TRUE.equals(deck.get(card)))
             throw new InvalidOperationException("Card already used by this user");
 
@@ -104,7 +115,6 @@ public class Player {
 
     /**
      * Set the number of towers left on the board of this player
-     * TODO: improve this part of code
      * @param towersCount new number of towers to set
      */
     public void setTowersCount(int towersCount){
@@ -185,6 +195,11 @@ public class Player {
         coins -= howMany;
     }
 
+    /**
+     * Move students from entrance to island
+     * @param island
+     * @param students
+     */
     public void addStudentsToIsland(Island island, StudentsContainer students) {
         entrance.removeAll(students);
         island.addStudents(students);
@@ -203,5 +218,17 @@ public class Player {
         entrance.addAll(studentsToRemove);
         entrance.removeAll(studentsToAdd);
         school.addAll(studentsToAdd);
+    }
+
+    /**
+     * Listener used for receiving coins
+     * @param student
+     * @param count
+     */
+    @Override
+    public void onStudentNumberReachedListener(Student student, int count) {
+        coins++;
+        //coin obtained -> remove listener
+        this.school.removeOnStudentNumberReachedListener(student, count);
     }
 }

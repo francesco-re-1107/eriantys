@@ -132,8 +132,10 @@ class GameTest {
 
         //play postman character card
         if (g.getCharacterCards().containsKey("PostmanCharacterCard")) {
+            int prevCoins = players.get(1).getCoins();
+
             g.playCharacterCard(players.get(1), new PostmanCharacterCard());
-            assertEquals(0, players.get(1).getCoins());
+            assertEquals(prevCoins - 1, players.get(1).getCoins());
             assertEquals(2, g.getCurrentRound().getAdditionalMotherNatureMoves());
         }
 

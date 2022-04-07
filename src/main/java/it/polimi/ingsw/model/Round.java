@@ -3,7 +3,6 @@ package it.polimi.ingsw.model;
 import it.polimi.ingsw.exceptions.InvalidOperationException;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 public class Round {
 
@@ -54,22 +53,22 @@ public class Round {
         //TODO: improve this shitty code
 
         //sort players and cards together by turn priority
-        List<Pair<Player, AssistantCard>> pairs = new ArrayList<>();
+        List<CardPair> cardPairs = new ArrayList<>();
 
         for(int i = 0; i < players.size(); i++)
-            pairs.add(new Pair<>(players.get(i), playedAssistantCards.get(i)));
+            cardPairs.add(new CardPair(players.get(i), playedAssistantCards.get(i)));
 
-        pairs.sort(Comparator.comparingInt(pair -> pair.second.getTurnPriority()));
+        cardPairs.sort(Comparator.comparingInt(cardPair -> cardPair.second.getTurnPriority()));
 
         players.clear();
-        players.addAll(pairs.stream()
-                .map(pair -> pair.first)
+        players.addAll(cardPairs.stream()
+                .map(cardPair -> cardPair.first)
                 .toList()
         );
 
         playedAssistantCards.clear();
-        playedAssistantCards.addAll(pairs.stream()
-                .map(pair -> pair.second)
+        playedAssistantCards.addAll(cardPairs.stream()
+                .map(cardPair -> cardPair.second)
                 .toList()
         );
 
@@ -197,14 +196,6 @@ public class Round {
         ATTACK
     }
 
-    private static class Pair<T1, T2> {
-        private T1 first;
-        private T2 second;
-
-        public Pair(T1 first, T2 second) {
-            this.first = first;
-            this.second = second;
-        }
-    }
+    private record CardPair(Player first, AssistantCard second){ }
 }
 
