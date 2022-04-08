@@ -62,8 +62,8 @@ public class StudentsContainer extends AStudentsContainer {
         if (getSize() + 1 > maxSize)
             throw new StudentsMaxReachedException();
 
-        int count = this.students.getOrDefault(student, 0);
-        this.students.put(student, count + 1);
+        int count = this.students.getOrDefault(student, 0) + 1;
+        this.students.put(student, count);
 
         new HashMap<>(triggerListeners)
                 .entrySet()
@@ -87,14 +87,14 @@ public class StudentsContainer extends AStudentsContainer {
         if (getSize() + howMany > maxSize)
             throw new StudentsMaxReachedException();
 
-        int count = this.students.getOrDefault(student, 0);
-        this.students.put(student, count + howMany);
+        int count = this.students.getOrDefault(student, 0) + howMany;
+        this.students.put(student, count);
 
         //create a copy
         new HashMap<>(triggerListeners)
                 .entrySet()
                 .stream()
-                .filter(e -> e.getKey().student() == student && e.getKey().count() >= count)
+                .filter(e -> e.getKey().student() == student && count >= e.getKey().count())
                 .map(Map.Entry::getValue)
                 .forEach(e -> e.onStudentNumberReachedListener(student, count));
 

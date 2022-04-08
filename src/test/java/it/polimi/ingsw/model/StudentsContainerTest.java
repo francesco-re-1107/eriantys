@@ -4,6 +4,9 @@ import it.polimi.ingsw.exceptions.StudentNotFoundException;
 import it.polimi.ingsw.exceptions.StudentsMaxReachedException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+
+import java.util.concurrent.atomic.AtomicBoolean;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 class StudentsContainerTest {
@@ -103,9 +106,9 @@ class StudentsContainerTest {
         container.addAll(anotherContainer);
         assertEquals(anotherContainer.getSize() + prevSize, container.getSize());
 
-        assertEquals(container.getCountForStudent(Student.BLUE), 3);
-        assertEquals(container.getCountForStudent(Student.GREEN), 4);
-        assertEquals(container.getCountForStudent(Student.YELLOW), 2);
+        assertEquals(3, container.getCountForStudent(Student.BLUE));
+        assertEquals(4, container.getCountForStudent(Student.GREEN));
+        assertEquals(2, container.getCountForStudent(Student.YELLOW));
 
 
         assertThrows(
@@ -129,8 +132,8 @@ class StudentsContainerTest {
         container.removeAll(anotherContainer);
         assertEquals(prevSize - anotherContainer.getSize(), container.getSize());
 
-        assertEquals(container.getCountForStudent(Student.GREEN), 2);
-        assertEquals(container.getCountForStudent(Student.BLUE), 0);
+        assertEquals(2, container.getCountForStudent(Student.GREEN));
+        assertEquals(0, container.getCountForStudent(Student.BLUE));
 
         assertThrows(
                 StudentNotFoundException.class,
@@ -153,6 +156,43 @@ class StudentsContainerTest {
     void setMaxSize() {
         container.setMaxSize(3);
         assertEquals(3, container.getMaxSize());
+    }
+
+    @Test
+    void studentNumberReachedListeners() {
+        AtomicBoolean callback1Called = new AtomicBoolean(false);
+        AtomicBoolean callback2Called = new AtomicBoolean(false);
+        AtomicBoolean callback3Called = new AtomicBoolean(false);
+
+        container.addOnStudentNumberReachedListener(Student.RED, 3, (s, c) -> {
+            assertEquals(Student.RED, s);
+            assertTrue(c >= 3);
+            callback1Called.set(true);
+        });
+
+        container.addOnStudentNumberReachedListener(Student.BLUE, 6, (s, c) -> {
+            assertEquals(Student.BLUE, s);
+            assertTrue(c >= 6);
+            callback2Called.set(true);
+        });
+
+        container.addOnStudentNumberReachedListener(Student.PINK, 1, (s, c) -> {
+            callback3Called.set(true);
+        });
+
+        container.addStudents(Student.RED, 2);
+        assertFalse(callback2Called.get());
+        container.addStudents(Student.RED, 2);
+        assertTrue(callback1Called.get());
+
+        container.addStudents(Student.BLUE, 5);
+        assertFalse(callback2Called.get());
+        container.addStudent(Student.BLUE);
+        assertTrue(callback2Called.get());
+
+        container.removeOnStudentNumberReachedListener(Student.PINK, 1);
+        container.addStudent(Student.PINK);
+        assertFalse(callback3Called.get());
     }
 
     @Test
