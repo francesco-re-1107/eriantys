@@ -2,6 +2,7 @@ package it.polimi.ingsw.model;
 
 import it.polimi.ingsw.exceptions.StudentNotFoundException;
 
+import java.security.SecureRandom;
 import java.util.Objects;
 import java.util.Random;
 
@@ -13,9 +14,8 @@ public class RandomizedStudentsContainer extends AStudentsContainer{
 
     /**
      * The random object used to pick random students
-     * TODO: store the seed for persistance
      */
-    private final Random random = new Random();
+    private final Random random = new SecureRandom();
 
     /**
      * Create a randomized students container

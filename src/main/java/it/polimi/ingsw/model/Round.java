@@ -17,7 +17,7 @@ public class Round {
     private final List<Player> players;
 
     /**
-     * List of played cards, it's bound 1 to 1 to the players list TODO: maybe improve
+     * List of played cards, it's bound 1 to 1 to the players list
      */
     private final List<AssistantCard> playedAssistantCards;
 

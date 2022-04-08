@@ -8,6 +8,7 @@ import it.polimi.ingsw.model.influencecalculators.DefaultInfluenceCalculator;
 
 import java.text.MessageFormat;
 import java.util.*;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
@@ -92,7 +93,7 @@ public class Game {
      * @param numberOfPlayers number of players chose at the creation of the game
      */
     public Game(int numberOfPlayers, boolean expertMode) {
-        logger.info(MessageFormat.format("creating game with {0} players", numberOfPlayers));
+        logger.log(Level.INFO, "creating game with {0} players", numberOfPlayers);
         this.numberOfPlayers = numberOfPlayers;
         this.studentsBag = new RandomizedStudentsContainer(Constants.STUDENTS_BAG_NUMBER_PER_COLOR);
         this.players = new ArrayList<>();
@@ -243,7 +244,7 @@ public class Game {
                 studentsBag.pickManyRandom(entranceSize)
         );
 
-        logger.info(MessageFormat.format("added player {0}", p.getNickname()));
+        logger.log(Level.INFO, "added player {0}", p.getNickname());
         players.add(p);
 
         return p;
@@ -260,7 +261,7 @@ public class Game {
             throw new InvalidOperationException("");
 
         //use get directly cause in attack stage every player has played its card
-        AssistantCard card = currentRound.getCardPlayedBy(player).get();
+        AssistantCard card = currentRound.getCardPlayedBy(player).orElseThrow();
 
         if(steps > card.getMotherNatureMaxMoves() + currentRound.getAdditionalMotherNatureMoves())
             throw new InvalidOperationException("Cannot move mother nature that far");
@@ -538,7 +539,7 @@ public class Game {
      * @param winner the winner of the game
      */
     private void setGameFinished(Player winner) {
-        logger.info(MessageFormat.format("game finished! {0} won", winner.getNickname()));
+        logger.log(Level.INFO, "game finished! {0} won", winner.getNickname());
         gameState = State.FINISHED;
 
         this.winner = winner;
