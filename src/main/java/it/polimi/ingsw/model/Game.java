@@ -198,6 +198,7 @@ public class Game {
 
         player.addCloudToEntrance(cloud);
         currentRound.removeCloud(cloud);
+        currentRound.setAttackSubstage(Stage.Attack.SELECTING_CLOUD);
 
         //go to next player or new round if necessary
         if(currentRound.nextPlayer())
@@ -281,6 +282,7 @@ public class Game {
             //It's necessary to check if islands could be merged
             this.checkMergeableIslands();
         }
+        currentRound.setAttackSubstage(Stage.Attack.MOVING);
     }
 
     /**
@@ -385,6 +387,7 @@ public class Game {
 
             player.swapStudents(minstrelCard.getStudentsToRemove(), minstrelCard.getStudentsToAdd());
         }
+        currentRound.setAttackSubstage(Stage.Attack.CARD);
     }
 
     /**
@@ -398,7 +401,7 @@ public class Game {
     public void putStudents(Player player, StudentsContainer inSchool, Map<Island,StudentsContainer> inIsland){
         checkIfCurrentPlayer(player);
 
-        if(!(currentRound.getStage() instanceof Stage.Attack))
+        if(currentRound.getStage() != Stage.Attack.STARTING)
             throw new InvalidOperationException();
 
         int studentsMoved = inSchool.getSize() + inIsland.values().stream().mapToInt(StudentsContainer::getSize).sum();
@@ -414,6 +417,7 @@ public class Game {
         inIsland.forEach(player::addStudentsToIsland);
 
         updateProfessors();
+        currentRound.setAttackSubstage(Stage.Attack.PLACING);
     }
 
     /**

@@ -9,7 +9,6 @@ public interface Stage {
         PLACING,
         CARD,
         MOVING,
-        SELECTING_CLOUD,
-        FINISHED
+        SELECTING_CLOUD
     }
 }

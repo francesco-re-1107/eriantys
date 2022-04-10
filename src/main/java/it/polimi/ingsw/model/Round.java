@@ -76,6 +76,13 @@ public class Round {
         currentPlayer = 0;
     }
 
+    public void setAttackSubstage(Stage.Attack newStage){
+        if(stage instanceof Stage.Plan)
+            throw new InvalidOperationException("cannot handle Plan stage");
+        if(((Stage.Attack)stage).ordinal() >= newStage.ordinal())
+            throw new InvalidOperationException("stage must be post");
+
+    }
     /**
      * Play the given card for the given player
      * @param player
