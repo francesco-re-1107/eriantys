@@ -93,7 +93,7 @@ public class Game {
      * @param numberOfPlayers number of players chose at the creation of the game
      */
     public Game(int numberOfPlayers, boolean expertMode) {
-        logger.log(Level.INFO, "creating game with {0} players", numberOfPlayers);
+        logger.log(Level.INFO, "creating game with {0} players and expert = {1}", new Object[]{numberOfPlayers, expertMode});
         this.numberOfPlayers = numberOfPlayers;
         this.studentsBag = new RandomizedStudentsContainer(Constants.STUDENTS_BAG_NUMBER_PER_COLOR);
         this.players = new ArrayList<>();
