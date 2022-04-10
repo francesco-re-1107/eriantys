@@ -257,7 +257,7 @@ public class Game {
     public void moveMotherNature(Player player, int steps){
         checkIfCurrentPlayer(player);
 
-        if(currentRound.getStage() != Round.Stage.ATTACK)
+        if(!(currentRound.getStage() instanceof Stage.Attack))
             throw new InvalidOperationException("");
 
         //use get directly cause in attack stage every player has played its card
@@ -355,7 +355,7 @@ public class Game {
 
         checkIfCurrentPlayer(player);
 
-        if(currentRound.getStage() != Round.Stage.ATTACK)
+        if(!(currentRound.getStage() instanceof Stage.Attack))
             throw new InvalidOperationException("");
 
         if(!characterCards.containsKey(card.getName()))
@@ -398,7 +398,7 @@ public class Game {
     public void putStudents(Player player, StudentsContainer inSchool, Map<Island,StudentsContainer> inIsland){
         checkIfCurrentPlayer(player);
 
-        if(currentRound.getStage() != Round.Stage.ATTACK)
+        if(!(currentRound.getStage() instanceof Stage.Attack))
             throw new InvalidOperationException();
 
         int studentsMoved = inSchool.getSize() + inIsland.values().stream().mapToInt(StudentsContainer::getSize).sum();

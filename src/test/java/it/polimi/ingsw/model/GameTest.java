@@ -67,7 +67,7 @@ class GameTest {
         );
 
         //check round
-        assertEquals(Round.Stage.PLAN, g.getCurrentRound().getStage());
+        assertEquals(Stage.Plan.PLAN, g.getCurrentRound().getStage());
         assertEquals(players.get(0), g.getCurrentRound().getCurrentPlayer());
 
         //play assistant card player 1 (it's not the current player)
@@ -107,7 +107,7 @@ class GameTest {
         //play correct assistant card for player 1
         g.playAssistantCard(players.get(1), AssistantCard.getDefaultDeck().get(0));
 
-        assertEquals(Round.Stage.ATTACK, g.getCurrentRound().getStage());
+        assertEquals(Stage.Attack.STARTING, g.getCurrentRound().getStage());
 
         //player 1 has higher turn priority
         assertEquals(players.get(1), g.getCurrentRound().getCurrentPlayer());
@@ -165,7 +165,7 @@ class GameTest {
 
         //next turn
         assertEquals(players.get(0), g.getCurrentRound().getCurrentPlayer());
-        assertEquals(Round.Stage.ATTACK, g.getCurrentRound().getStage());
+        assertEquals(Stage.Attack.STARTING, g.getCurrentRound().getStage());
 
         //put students
         picker = new RandomizedStudentsContainer(players.get(0).getEntrance());
@@ -179,7 +179,7 @@ class GameTest {
         //select cloud
         g.selectCloud(players.get(0), g.getCurrentRound().getClouds().get(0));
 
-        assertEquals(Round.Stage.PLAN, g.getCurrentRound().getStage());
+        assertEquals(Stage.Plan.PLAN, g.getCurrentRound().getStage());
         //plays first the one who played the lowest card before
         assertEquals(players.get(1), g.getCurrentRound().getCurrentPlayer());
 
@@ -215,7 +215,7 @@ class GameTest {
         while(g.getGameState() != Game.State.FINISHED){
 
             //stage PLAN
-            while(g.getCurrentRound().getStage() == Round.Stage.PLAN){
+            while(g.getCurrentRound().getStage() == Stage.Plan.PLAN){
                 Player currentPlayer = g.getCurrentRound().getCurrentPlayer();
 
                 boolean playedCard = false;
@@ -235,7 +235,7 @@ class GameTest {
             }
 
             //stage ATTACK
-            while(g.getCurrentRound().getStage() == Round.Stage.ATTACK) {
+            while(g.getCurrentRound().getStage() == Stage.Attack.STARTING) {
                 Player currentPlayer = g.getCurrentRound().getCurrentPlayer();
 
                 //2 random students in school and 1 on a random island

@@ -9,7 +9,7 @@ public class Round {
     /**
      * Current stage of the round
      */
-    private Stage stage = Stage.PLAN;
+    private Stage stage = Stage.Plan.PLAN;
 
     /**
      * List of players, always ordered by turn priority
@@ -72,7 +72,7 @@ public class Round {
                 .toList()
         );
 
-        stage = Stage.ATTACK;
+        stage = Stage.Attack.STARTING;
         currentPlayer = 0;
     }
 
@@ -82,7 +82,7 @@ public class Round {
      * @param card
      */
     public void playAssistantCard(Player player, AssistantCard card){
-        if(stage == Stage.ATTACK)
+        if(stage instanceof Stage.Attack)
             throw new InvalidOperationException("In attack mode cannot play assistantCard");
 
         boolean alreadyPlayed =
@@ -114,7 +114,7 @@ public class Round {
      * @return true if the round is finished, false otherwise
      */
     public boolean nextPlayer(){
-        if(stage == Stage.PLAN)
+        if(stage instanceof Stage.Plan)
             throw new InvalidOperationException();
 
         currentPlayer++;
@@ -186,14 +186,6 @@ public class Round {
      */
     public int getAdditionalMotherNatureMoves() {
         return additionalMotherNatureMoves;
-    }
-
-    /**
-     * This enum represents all the possible stage for this round
-     */
-    enum Stage {
-        PLAN,
-        ATTACK
     }
 
     private record CardPair(Player first, AssistantCard second){ }
