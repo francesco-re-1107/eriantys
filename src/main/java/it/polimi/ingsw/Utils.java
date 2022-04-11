@@ -16,8 +16,6 @@ public class Utils {
         return (o1 == null) ? o2 : o1;
     }
 
-    public static Comparator<AssistantCard> priorityComparator = Comparator.comparingInt(AssistantCard::getTurnPriority);
-
     private static Logger logger = Logger.getLogger("it.polimi.ingsw");
 
     public static Logger SetupLogger(){

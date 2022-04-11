@@ -254,7 +254,7 @@ class GameTest {
                 //TODO: implement
 
                 //move mother nature randomly
-                int allowedMoves = g.getCurrentRound().getCardPlayedBy(currentPlayer).get().getMotherNatureMaxMoves() +
+                int allowedMoves = g.getCurrentRound().getCardPlayedBy(currentPlayer).get().motherNatureMaxMoves() +
                             g.getCurrentRound().getAdditionalMotherNatureMoves();
                 g.moveMotherNature(currentPlayer, 1 + r.nextInt(allowedMoves));
 

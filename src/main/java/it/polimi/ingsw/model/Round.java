@@ -58,7 +58,7 @@ public class Round {
         for(int i = 0; i < players.size(); i++)
             cardPairs.add(new CardPair(players.get(i), playedAssistantCards.get(i)));
 
-        cardPairs.sort(Comparator.comparingInt(cardPair -> cardPair.second.getTurnPriority()));
+        cardPairs.sort(Comparator.comparingInt(cardPair -> cardPair.second.turnPriority()));
 
         players.clear();
         players.addAll(cardPairs.stream()

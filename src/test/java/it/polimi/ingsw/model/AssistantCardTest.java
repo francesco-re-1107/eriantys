@@ -11,8 +11,8 @@ class AssistantCardTest {
         AssistantCard assistantCard = AssistantCard.getDefaultDeck().get(0);
 
         //assertEquals(0, assistantCard.getId());
-        assertEquals(1, assistantCard.getMotherNatureMaxMoves());
-        assertEquals(1, assistantCard.getTurnPriority());
+        assertEquals(1, assistantCard.motherNatureMaxMoves());
+        assertEquals(1, assistantCard.turnPriority());
     }
 
     @Test

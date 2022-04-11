@@ -263,7 +263,7 @@ public class Game {
         //use get directly cause in attack stage every player has played its card
         AssistantCard card = currentRound.getCardPlayedBy(player).orElseThrow();
 
-        if(steps > card.getMotherNatureMaxMoves() + currentRound.getAdditionalMotherNatureMoves())
+        if(steps > card.motherNatureMaxMoves() + currentRound.getAdditionalMotherNatureMoves())
             throw new InvalidOperationException("Cannot move mother nature that far");
         //reset additional moves after use
         currentRound.setAdditionalMotherNatureMoves(0);
