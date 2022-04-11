@@ -79,7 +79,7 @@ public class Game {
     /**
      * Used to retrieve the winner of this game, it is null until the game comes in the FINISHED state
      */
-    private Player winner;
+    private Optional<Player> winner = Optional.empty();
 
     /**
      * Whether the game is played with experto mode on
@@ -542,7 +542,7 @@ public class Game {
         logger.log(Level.INFO, "game finished! {0} won", winner.getNickname());
         gameState = State.FINISHED;
 
-        this.winner = winner;
+        this.winner = Optional.of(winner);
     }
 
     /**
@@ -628,7 +628,7 @@ public class Game {
      * @return the winner of the game, if the game was ended
      */
     public Optional<Player> getWinner() {
-        return Optional.of(winner);
+        return winner;
     }
 
     /**
@@ -641,7 +641,7 @@ public class Game {
     /**
      * this enum represents all the possible states of a game
      */
-    enum State {
+    public enum State {
         CREATED, //game was created but never started
         STARTED, //game is currently played
         PAUSED, //when a client disconnects, the game is paused

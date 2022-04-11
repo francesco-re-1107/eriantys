@@ -191,7 +191,7 @@ public class Round {
     /**
      * This enum represents all the possible stage for this round
      */
-    enum Stage {
+    public enum Stage {
         PLAN,
         ATTACK
     }
