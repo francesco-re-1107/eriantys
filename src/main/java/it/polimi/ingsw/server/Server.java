@@ -40,8 +40,6 @@ public class Server {
                 System.err.println(e.getMessage()); //socket closed
             }
         }
-        executor.shutdown();
-        serverSocket.close();
     }
 
     public int getPort() {

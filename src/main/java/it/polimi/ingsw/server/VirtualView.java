@@ -54,25 +54,27 @@ public class VirtualView implements ServerClientCommunicator.CommunicatorListene
                 gameController.setOnGameUpdateListener(this);
                 communicator.send(new AckResponse());
             } else if (request instanceof GameRequest r) {
-                processGameRequest(request);
+                processGameRequest(r);
             }
         } catch (Exception | Error e) {
             communicator.send(new ErrorResponse(e));
         }
     }
 
-    private void processGameRequest(Request request) {
+    private void processGameRequest(GameRequest request) {
         if (gameController == null)
             throw new InvalidOperationException("Cannot process game requests before a game is joined");
 
         if (request instanceof PlayAssistantCardRequest r) {
             gameController.playAssistantCard(r.getCard());
-        } else if (request instanceof  r) {
-
-        } else if (request instanceof  r) {
-
-        } else if (request instanceof  r) {
-
+        } else if (request instanceof PlaceStudentsRequest r) {
+            gameController.placeStudents(r.getInSchool(), r.getInIslands());
+        //} else if (request instanceof PlayCharacterCard r) {
+        //
+        } else if (request instanceof MoveMotherNatureRequest r) {
+            gameController.moveMotherNature(r.getSteps());
+        } else if (request instanceof SelectCloudRequest r) {
+            gameController.selectCloud(r.getCloud());
         }
         //if no exception is thrown send an ack
         communicator.send(new AckResponse());
@@ -81,7 +83,9 @@ public class VirtualView implements ServerClientCommunicator.CommunicatorListene
     @Override
     public void onDisconnect() {
         this.isConnected = true;
-        this.gameController.disconnect();
+
+        if(gameController != null)
+            this.gameController.disconnect();
     }
 
     public boolean isConnected() {

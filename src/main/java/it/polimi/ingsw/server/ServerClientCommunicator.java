@@ -1,6 +1,7 @@
 package it.polimi.ingsw.server;
 
 import it.polimi.ingsw.common.Parser;
+import it.polimi.ingsw.common.SerializationParser;
 import it.polimi.ingsw.common.responses.Response;
 import it.polimi.ingsw.common.requests.Request;
 
@@ -15,7 +16,7 @@ public class ServerClientCommunicator {
 
     private final CommunicatorListener communicatorListener;
 
-    private Parser parser;
+    private final Parser parser;
 
     public ServerClientCommunicator(Socket socket, CommunicatorListener listener) {
         this.socket = socket;

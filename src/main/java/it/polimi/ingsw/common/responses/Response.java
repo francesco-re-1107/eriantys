@@ -1,4 +1,5 @@
 package it.polimi.ingsw.common.responses;
 
-public abstract class Response {
-}
+import java.io.Serializable;
+
+public abstract class Response implements Serializable { }

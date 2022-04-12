@@ -1,8 +1,14 @@
 package it.polimi.ingsw;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import it.polimi.ingsw.server.Server;
 import it.polimi.ingsw.server.model.Game;
 import it.polimi.ingsw.common.reducedmodel.ReducedGame;
+
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.util.Properties;
 
 /**
  * Hello world!
@@ -12,40 +18,38 @@ public class App
 {
     public static void main( String[] args )
     {
-        System.out.println( "Hello World!" );
-        Game g = new Game(2, true);
+        System.out.println(args);
 
         try {
-            g.addPlayer("p1");
-            g.addPlayer("p2");
-        }catch (Exception e){}
-
-        g.startGame();
-
-        /*Gson gson = new GsonBuilder()
-                .setPrettyPrinting()
-                .create();
-
-
-        String json = gson.toJson(ReducedGame.fromGame(g));
-        System.out.println(json);
-
-        ReducedGame rg = gson.fromJson(json, ReducedGame.class);
-        System.out.println(rg.players().get(0).entrance());
-        */
-
-        ObjectMapper mapper = new ObjectMapper();
-
-        try {
-            String jsonString = mapper.writeValueAsString(ReducedGame.fromGame(g));
-            System.out.println(jsonString);
-
-            ReducedGame rg = mapper.readValue(jsonString, ReducedGame.class);
-            System.out.println(rg.players().get(0).entrance());
-        }catch (Exception e){
-            e.printStackTrace();
+            if (args[0].equals("server")) {
+                startServer();
+            } else if (args[0].equals("client")) {
+                startClient();
+            }
+        }catch (Exception e) {
+            System.err.println("Arguments error");
         }
+    }
 
+    public static void startServer() {
+        new Server(readPortFromProperties())
+                .startListening();
+    }
+
+    public static void startClient() {
+        //...
+    }
+
+    private static int readPortFromProperties() {
+        Properties prop = new Properties();
+
+        try (FileInputStream fis = new FileInputStream(Constants.CONFIG_FILE_PATH)) {
+            prop.load(fis);
+
+            return Integer.parseInt(prop.getProperty("server.port"));
+        } catch (Exception e) {
+            return Constants.DEFAULT_SERVER_PORT;
+        }
 
     }
 }

@@ -21,6 +21,16 @@ public final class Constants {
     public static final int NUMBER_OF_CHARACTER_CARD = 3;
 
     /**
+     * Represents the path for the configuration file used
+     */
+    public static final String CONFIG_FILE_PATH = "app.config";
+
+    /**
+     * Port number used by default by server
+     */
+    public static final int DEFAULT_SERVER_PORT = 6001;
+
+    /**
      * These constants are used in a game with 2 players (commented only once)
      */
     public static final class TWO_PLAYERS {

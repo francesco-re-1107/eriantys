@@ -4,14 +4,16 @@ import it.polimi.ingsw.Utils;
 import it.polimi.ingsw.common.exceptions.DuplicatedNicknameException;
 import it.polimi.ingsw.common.exceptions.GameJoiningError;
 import it.polimi.ingsw.common.exceptions.NicknameNotRegisteredError;
+import it.polimi.ingsw.common.exceptions.NicknameNotValidException;
 import it.polimi.ingsw.common.reducedmodel.ReducedGame;
 import it.polimi.ingsw.server.VirtualView;
 import it.polimi.ingsw.server.model.Game;
+import it.polimi.ingsw.server.model.Player;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
-public class Controller {
+public class Controller implements Game.GameUpdateListener {
 
     private final List<Game> games;
 
@@ -22,18 +24,20 @@ public class Controller {
         this.nicknameVirtualViewMap = new ConcurrentHashMap<>();
     }
 
-    public void registerNickname(String nickname, VirtualView virtualView) throws DuplicatedNicknameException {
+    public void registerNickname(String nickname, VirtualView virtualView)
+            throws DuplicatedNicknameException, NicknameNotValidException {
         if(nicknameVirtualViewMap.containsKey(nickname)) {
             if (nicknameVirtualViewMap.get(nickname).isConnected())
                 throw new DuplicatedNicknameException();
 
-            //replace disconnect view with the new one
-            nicknameVirtualViewMap.put(nickname, virtualView);
+            //replace disconnected view with the new one
         }else{
             if(Utils.isValidNickname(nickname))
                 throw new NicknameNotValidException();
-            nicknameVirtualViewMap.put(nickname, virtualView);
+
+            //insert the virtual view in the map
         }
+        nicknameVirtualViewMap.put(nickname, virtualView);
     }
 
     public List<ReducedGame> listGames() {
@@ -61,9 +65,9 @@ public class Controller {
         if(g.getGameState() == Game.State.CREATED &&
                 g.getCurrentNumberOfPlayers() < g.getNumberOfPlayers() ) {
 
-            g.addPlayer(nickname);
+            Player p = g.addPlayer(nickname);
 
-            return new GameController(g);
+            return new GameController(g, p);
         }else{
             throw new GameJoiningError("This game is already full");
         }
@@ -73,15 +77,25 @@ public class Controller {
         checkIfNicknameRegistered(nickname);
 
         Game g = new Game(numberOfPlayers, expertMode);
-        g.addPlayer(nickname);
+        g.addGameUpdateListener(this);
+        Player p = g.addPlayer(nickname);
         //g.addGameUpdateListener(this); remove game when it is finished
         games.add(g);
 
-        return new GameController(g);
+        return new GameController(g, p);
     }
 
     private void checkIfNicknameRegistered(String nickname) {
         if(!nicknameVirtualViewMap.containsKey(nickname))
             throw new NicknameNotRegisteredError();
+    }
+
+    @Override
+    public void onGameUpdate(Game game) {
+        Game.State state = game.getGameState();
+
+        //finished games are removed from the list
+        if(state == Game.State.TERMINATED || state == Game.State.FINISHED)
+            games.remove(game);
     }
 }

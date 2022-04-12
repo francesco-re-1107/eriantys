@@ -28,12 +28,6 @@ class GameTest {
                 () -> g.addPlayer("p1")
         );
 
-        //add player 2 with same nickname of player 1
-        assertThrows(
-                DuplicatedNicknameException.class,
-                () -> g.addPlayer("p1")
-        );
-
         //start the game without enough players
         assertThrows(
                 InvalidOperationException.class,
@@ -203,11 +197,9 @@ class GameTest {
 
         Game g = new Game(r.nextInt(2,4), r.nextBoolean());
 
-        try {
-            do {
-                g.addPlayer("p" + r.nextInt());
-            }while(g.getCurrentNumberOfPlayers() < g.getNumberOfPlayers());
-        }catch (DuplicatedNicknameException e){}
+        do {
+            g.addPlayer("p" + r.nextInt());
+        }while(g.getCurrentNumberOfPlayers() < g.getNumberOfPlayers());
 
         g.startGame();
 
