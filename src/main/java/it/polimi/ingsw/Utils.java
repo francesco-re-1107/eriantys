@@ -1,6 +1,6 @@
 package it.polimi.ingsw;
 
-import it.polimi.ingsw.model.AssistantCard;
+import it.polimi.ingsw.server.model.AssistantCard;
 
 import java.util.Comparator;
 import java.util.logging.ConsoleHandler;
@@ -26,5 +26,9 @@ public class Utils {
         handler.setFormatter(new PrettyLogFormatter());
         logger.addHandler(handler);
         return logger;
+    }
+
+    public static boolean isValidNickname(String nickname) {
+        return !nickname.isBlank();
     }
 }

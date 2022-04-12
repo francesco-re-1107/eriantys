@@ -1,10 +1,8 @@
 package it.polimi.ingsw;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import it.polimi.ingsw.model.Game;
-import it.polimi.ingsw.reducedmodel.ReducedGame;
+import it.polimi.ingsw.server.model.Game;
+import it.polimi.ingsw.common.reducedmodel.ReducedGame;
 
 /**
  * Hello world!
