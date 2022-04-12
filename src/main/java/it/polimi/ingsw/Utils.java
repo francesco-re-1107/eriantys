@@ -1,8 +1,5 @@
 package it.polimi.ingsw;
 
-import it.polimi.ingsw.model.AssistantCard;
-
-import java.util.Comparator;
 import java.util.logging.ConsoleHandler;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -18,11 +15,16 @@ public class Utils {
 
     private static Logger logger = Logger.getLogger("it.polimi.ingsw");
 
-    public static Logger SetupLogger(){
-        logger.setLevel(Level.FINEST);
+    public static Logger setupLogger(Level level){
+        logger.setLevel(level);
         ConsoleHandler handler = new ConsoleHandler();
+        handler.setLevel(level);
         handler.setFormatter(new PrettyLogFormatter());
         logger.addHandler(handler);
         return logger;
+    }
+
+    public static Logger setupLogger(){
+        return setupLogger(Level.INFO);
     }
 }

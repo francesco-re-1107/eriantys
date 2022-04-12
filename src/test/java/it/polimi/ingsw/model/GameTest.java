@@ -1,9 +1,10 @@
 package it.polimi.ingsw.model;
 
+import it.polimi.ingsw.Utils;
 import it.polimi.ingsw.exceptions.DuplicatedNicknameException;
 import it.polimi.ingsw.exceptions.InvalidOperationException;
 import it.polimi.ingsw.model.charactercards.PostmanCharacterCard;
-import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.RepeatedTest;
 import org.junit.jupiter.api.Test;
 
@@ -11,6 +12,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -19,6 +22,12 @@ class GameTest {
     /**
      * This method creates a game with 2 rounds only and checks all the corner-cases in Game methods
      */
+    @BeforeAll
+    static void setup(){
+        var l = Utils.setupLogger();
+        l.log(Level.INFO,  "starting game test...");
+    }
+
     @Test
     void testStaticGameTwoPlayers() {
         Game g = new Game(2, true);

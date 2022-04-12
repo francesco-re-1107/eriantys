@@ -2,7 +2,10 @@ package it.polimi.ingsw.model;
 
 import it.polimi.ingsw.exceptions.InvalidOperationException;
 
+import java.text.MessageFormat;
 import java.util.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class Round {
 
@@ -35,6 +38,8 @@ public class Round {
      * Additional mother nature moves for the current turn TODO: maybe improve
      */
     private int additionalMotherNatureMoves = 0;
+
+    Logger logger = Logger.getLogger(Game.class.getName());
 
     /**
      * @param players list of players ordered with respect to the assistant cards played in the previous round
@@ -117,8 +122,8 @@ public class Round {
         if(stage == Stage.PLAN)
             throw new InvalidOperationException();
 
+        logger.log(Level.FINE,  MessageFormat.format("Board:\n{0}", getCurrentPlayer().prettyBoard()));
         currentPlayer++;
-
         //finished round check
         return currentPlayer == players.size();
     }
