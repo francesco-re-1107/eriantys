@@ -9,36 +9,79 @@ import it.polimi.ingsw.common.responses.GameUpdateResponse;
 import it.polimi.ingsw.common.responses.GamesListResponse;
 import it.polimi.ingsw.server.controller.Controller;
 import it.polimi.ingsw.server.controller.GameController;
-
+import it.polimi.ingsw.server.model.Game;
 import java.net.Socket;
 
+/**
+ * This class models a virtual view, this class communicates with the client (through a ServerClientCommunicator)
+ * and forward every Request to controller and the game controller. The Response(s) are transmitted back to the client.
+ */
 public class VirtualView implements ServerClientCommunicator.CommunicatorListener,
         GameController.GameUpdateListener, Runnable {
 
+    /**
+     * Used for communication
+     */
     private final ServerClientCommunicator communicator;
 
+    /**
+     * Reference to the main controller of the server
+     */
     private final Controller controller;
 
+    /**
+     * Reference to the controller for the current game
+     * If null then there's no game currently played (TODO: Maybe use an optional)
+     */
     private GameController gameController;
 
+    /**
+     * Whether the client disconnected from the view
+     */
     private boolean isConnected = false;
 
+    /**
+     * Stores the nickname the player registered with
+     */
     private String nickname = "";
 
+    /**
+     * Create a VirtualView
+     * @param controller the instance of the main controller
+     * @param socket the client socket accepted by the server
+     */
     public VirtualView(Controller controller, Socket socket) {
         this.communicator = new ServerClientCommunicator(socket, this);
         this.controller = controller;
     }
 
+    /**
+     * This virtual view is executed in a new thread.
+     * The first thing to do is listening on the socket
+     */
+    @Override
+    public void run() {
+        this.communicator.startListening();
+    }
+
+    /**
+     * Callback for every request received from the client
+     * @param request
+     */
     @Override
     public void onRequest(Request request) {
         processRequest(request);
     }
 
+    /**
+     * This method handles every request (used internally).
+     * GameRequest(s) are forwarded to the processGameRequest method.
+     * @param request the request to handle
+     */
     private void processRequest(Request request) {
         try {
             if (request instanceof RegisterNicknameRequest r) {
-                controller.registerNickname(r.getNickname(), this);
+                this.gameController = controller.registerNickname(r.getNickname(), this);
                 this.nickname = r.getNickname();
                 communicator.send(new AckResponse());
             } else if (request instanceof ListGamesRequest) {
@@ -61,6 +104,10 @@ public class VirtualView implements ServerClientCommunicator.CommunicatorListene
         }
     }
 
+    /**
+     * This method handles all the game requests (used internally)
+     * @param request the game request to handle
+     */
     private void processGameRequest(GameRequest request) {
         if (gameController == null)
             throw new InvalidOperationException("Cannot process game requests before a game is joined");
@@ -80,6 +127,10 @@ public class VirtualView implements ServerClientCommunicator.CommunicatorListene
         communicator.send(new AckResponse());
     }
 
+    /**
+     * This callback is called when the socket disconnects.
+     * Used to update the internal status of disconnected variable
+     */
     @Override
     public void onDisconnect() {
         this.isConnected = true;
@@ -88,17 +139,27 @@ public class VirtualView implements ServerClientCommunicator.CommunicatorListene
             this.gameController.disconnect();
     }
 
+    /**
+     * Whether the client associated with this virtual view disconnected
+     * @return true if disconnected, false otherwise
+     */
     public boolean isConnected() {
         return isConnected;
     }
 
+    /**
+     * Callback from the controller.
+     * For every game update, the game is wrapped in a GameUpdateResponse and sent to the client
+     * @param game
+     */
     @Override
     public void onGameUpdate(ReducedGame game) {
         communicator.send(new GameUpdateResponse(game));
-    }
 
-    @Override
-    public void run() {
-        this.communicator.startListening();
+        Game.State state = game.currentState();
+
+        //if game's finished are removed from the list
+        if(state == Game.State.TERMINATED || state == Game.State.FINISHED)
+            this.gameController = null; //this game was finished
     }
 }

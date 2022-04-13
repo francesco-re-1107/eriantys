@@ -2,12 +2,15 @@ package it.polimi.ingsw.common.reducedmodel;
 
 import it.polimi.ingsw.server.model.Game;
 import it.polimi.ingsw.server.model.Student;
-
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
+/**
+ * This record represents a game for the client.
+ * This is a reduced version of the Game class, so it used in the communication with the client
+ */
 public record ReducedGame(
         UUID uuid,
         int numberOfPlayers,
@@ -22,6 +25,11 @@ public record ReducedGame(
         ReducedPlayer winner
 ) {
 
+    /**
+     * Create a ReducedGame starting from a Game
+     * @param g the game to translate
+     * @return the ReducedGame just created
+     */
     public static ReducedGame fromGame(Game g){
         ReducedPlayer winner = null;
         if(g.getWinner().isPresent())

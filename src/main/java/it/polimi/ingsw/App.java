@@ -1,13 +1,7 @@
 package it.polimi.ingsw;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import it.polimi.ingsw.server.Server;
-import it.polimi.ingsw.server.model.Game;
-import it.polimi.ingsw.common.reducedmodel.ReducedGame;
-
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
 import java.util.Properties;
 
 /**
@@ -20,26 +14,38 @@ public class App
     {
         System.out.println(args);
 
+        //rough arguments parsing to determine if server or client must be started
         try {
             if (args[0].equals("server")) {
                 startServer();
             } else if (args[0].equals("client")) {
-                startClient();
+                startClient(args[1].equals("--gui"));
             }
         }catch (Exception e) {
             System.err.println("Arguments error");
         }
     }
 
+    /**
+     * Start the server
+     */
     public static void startServer() {
         new Server(readPortFromProperties())
                 .startListening();
     }
 
-    public static void startClient() {
+    /**
+     * Start the client with cli or gui respectively
+     * @param gui whether the client must be started with gui or not.
+     */
+    public static void startClient(boolean gui) {
         //...
     }
 
+    /**
+     * Read server port from properties if the config file exists otherwise the DEFAULT_SERVER_PORT is used
+     * @return the server port to use
+     */
     private static int readPortFromProperties() {
         Properties prop = new Properties();
 

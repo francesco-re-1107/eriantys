@@ -10,20 +10,40 @@ import java.io.PrintWriter;
 import java.net.Socket;
 import java.util.Scanner;
 
+/**
+ * This class handles the low level communication from server to client
+ */
 public class ServerClientCommunicator {
 
+    /**
+     * Client socket
+     */
     private final Socket socket;
 
+    /**
+     * Stores the listener for every request received
+     */
     private final CommunicatorListener communicatorListener;
 
+    /**
+     * Used for serialization of the data, could be json or java serialization
+     */
     private final Parser parser;
 
+    /**
+     * Instantiates a communicator
+     * @param socket the client socket
+     * @param listener request listener
+     */
     public ServerClientCommunicator(Socket socket, CommunicatorListener listener) {
         this.socket = socket;
         this.communicatorListener = listener;
         this.parser = new SerializationParser(); //or JsonParser
     }
 
+    /**
+     * This method binds to the socket input stream and listens for requests from the client
+     */
     public void startListening() {
         try {
             Scanner in = new Scanner(socket.getInputStream());
@@ -31,7 +51,7 @@ public class ServerClientCommunicator {
             while (socket.isConnected()){
                 String line = in.nextLine();
 
-                Request r = parser.parseRequest(line);
+                Request r = parser.decodeRequest(line);
                 communicatorListener.onRequest(r);
             }
 
@@ -45,6 +65,10 @@ public class ServerClientCommunicator {
         }
     }
 
+    /**
+     * This method sends a response to the client
+     * @param r the response to send
+     */
     public void send(Response r){
         try {
             PrintWriter out = new PrintWriter(socket.getOutputStream());
@@ -54,6 +78,9 @@ public class ServerClientCommunicator {
         }
     }
 
+    /**
+     * Listener interface
+     */
     public interface CommunicatorListener {
         void onRequest(Request r);
         void onDisconnect();

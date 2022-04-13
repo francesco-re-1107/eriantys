@@ -4,6 +4,10 @@ import it.polimi.ingsw.server.model.*;
 
 import java.util.Map;
 
+/**
+ * This record represents a Player for the client.
+ * This is a reduced version of the Player class, so it used in the communication with the client
+ */
 public record ReducedPlayer(
         String nickname,
         StudentsContainer entrance,
@@ -14,6 +18,11 @@ public record ReducedPlayer(
         int coins
 ) {
 
+    /**
+     * Create a ReducedPlayer starting from a Player
+     * @param p the player to translate
+     * @return the ReducedPlayer just created
+     */
     public static ReducedPlayer fromPlayer(Player p){
         return new ReducedPlayer(
                 p.getNickname(),
