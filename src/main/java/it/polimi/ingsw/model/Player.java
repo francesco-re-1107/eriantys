@@ -115,12 +115,22 @@ public class Player implements StudentsContainer.StudentNumberReachedListener{
     }
 
     /**
-     * Set the number of towers left on the board of this player
-     * @param towersCount new number of towers to set
+     * Decrement number of towers left on the board of this player
+     * @param count number of towers to add to towersCount
      */
-    public void setTowersCount(int towersCount){
-        this.towersCount = towersCount;
+    public void incrementTowersCount(int count){
+        this.towersCount += count;
     }
+
+    /**
+     * Increment number of towers left on the board of this player
+     * @param count number of towers to subtract from towersCount
+     */
+    public void decrementTowersCount(int count){
+        //not going below zero
+        this.towersCount = Math.max(this.towersCount - count, 0);
+    }
+
 
     /**
      * @return the tower color chose for this player

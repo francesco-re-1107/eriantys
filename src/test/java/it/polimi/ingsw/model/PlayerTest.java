@@ -50,9 +50,19 @@ class PlayerTest {
     }
 
     @Test
-    void setTowersCount() {
-        p1.setTowersCount(2);
-        assertEquals(2, p1.getTowersCount());
+    void incrementTowersCount() {
+        int prev = p1.getTowersCount();
+        p1.incrementTowersCount(2);
+        assertEquals(prev + 2, p1.getTowersCount());
+    }
+
+    @Test
+    void decrementTowersCount() {
+        int prev = p1.getTowersCount();
+        p1.decrementTowersCount(2);
+        assertEquals(prev - 2, p1.getTowersCount());
+        p1.decrementTowersCount(100);
+        assertEquals(0, p1.getTowersCount());
     }
 
     @Test

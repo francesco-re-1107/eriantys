@@ -322,18 +322,24 @@ public class Game {
         }
 
         //only if there's a max without duplicate
-        maxP.ifPresent(
-                player -> {
-                    //only if island is not yet conquered by this player
-                    if (player.getTowerColor() != island.getTowerColor()) {
-                        island.setConquered(player.getTowerColor());
-                        player.setTowersCount(player.getTowersCount() - island.getTowersCount());
-
-                        //TODO maybe use an observer
-                        if (player.getTowersCount() <= 0)
-                            setGameFinished(player);
+        maxP.ifPresent(player -> {
+                //only if island is not yet conquered by this player
+                if (player.getTowerColor() != island.getTowerColor()) {
+                    if(island.isConquered()) { //island already conquered, remove towers from the previous owner
+                        players.stream()
+                                .filter(p -> p.getTowerColor() == island.getTowerColor())
+                                .findFirst()
+                                .ifPresent(p -> p.incrementTowersCount(island.getTowersCount()));
                     }
+
+                    island.setConquered(player.getTowerColor());
+                    //in both cases remove towers from player
+                    player.decrementTowersCount(island.getTowersCount());
+
+                    if (player.getTowersCount() <= 0)
+                        setGameFinished(player);
                 }
+            }
         );
 
         //remove temporary after use
@@ -356,8 +362,9 @@ public class Game {
     }
 
     /**
-     * @param player
-     * @param card
+     * Play character card for the given player
+     * @param player the player that plays the card
+     * @param card the card to paly
      */
     public void playCharacterCard(Player player, CharacterCard card) {
         if (!expertMode)
@@ -400,14 +407,13 @@ public class Game {
     }
 
     /**
-     * TODO: find a better name for this method
      * Move students of a player from entrance to school or islands
      *
      * @param player
      * @param inSchool students to add to school
      * @param inIsland students to add to the relative island
      */
-    public void putStudents(Player player, StudentsContainer inSchool, Map<Island, StudentsContainer> inIsland) {
+    public void placeStudents(Player player, StudentsContainer inSchool, Map<Island, StudentsContainer> inIsland) {
         checkIfCurrentPlayer(player);
 
         if (currentRound.getStage() != Round.Stage.ATTACK)

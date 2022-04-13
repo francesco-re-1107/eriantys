@@ -13,7 +13,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Random;
 import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -88,7 +87,7 @@ class GameTest {
         //putStudents in PLAN stage
         assertThrows(
                 InvalidOperationException.class,
-                () -> g.putStudents(players.get(0), new StudentsContainer(), new HashMap<>())
+                () -> g.placeStudents(players.get(0), new StudentsContainer(), new HashMap<>())
         );
 
         //moveMotherNature in PLAN stage
@@ -121,7 +120,13 @@ class GameTest {
         //player 1 has higher turn priority
         assertEquals(players.get(1), g.getCurrentRound().getCurrentPlayer());
 
-        //put students
+        //trying placing not enough students
+        assertThrows(
+                InvalidOperationException.class,
+                () -> g.placeStudents(players.get(1), new StudentsContainer(), new HashMap<>())
+        );
+
+        //place students
         RandomizedStudentsContainer picker =
                 new RandomizedStudentsContainer(players.get(1).getEntrance());
 
@@ -131,7 +136,7 @@ class GameTest {
         inIsland.put(g.getIslands().get(3), picker.pickManyRandom(1));
         inIsland.put(g.getIslands().get(5), picker.pickManyRandom(1));
 
-        g.putStudents(players.get(1), inSchool, inIsland);
+        g.placeStudents(players.get(1), inSchool, inIsland);
 
         //check size of entrance, school and island
         assertEquals(4, players.get(1).getEntrance().getSize());
@@ -176,11 +181,11 @@ class GameTest {
         assertEquals(players.get(0), g.getCurrentRound().getCurrentPlayer());
         assertEquals(Round.Stage.ATTACK, g.getCurrentRound().getStage());
 
-        //put students
+        //place students
         picker = new RandomizedStudentsContainer(players.get(0).getEntrance());
         inSchool = picker.pickManyRandom(3);
         inIsland = new HashMap<>();
-        g.putStudents(players.get(0), inSchool, inIsland);
+        g.placeStudents(players.get(0), inSchool, inIsland);
 
         //move mother nature
         g.moveMotherNature(players.get(0), 1);
@@ -257,7 +262,7 @@ class GameTest {
                 int studentsToPutOnIsland = g.getNumberOfPlayers() == 2 ? 1 : 2;
                 inIsland.put(g.getIslands().get(r.nextInt(g.getIslands().size())), picker.pickManyRandom(studentsToPutOnIsland));
 
-                g.putStudents(currentPlayer, inSchool, inIsland);
+                g.placeStudents(currentPlayer, inSchool, inIsland);
 
                 //play character card randomly
                 //TODO: implement
