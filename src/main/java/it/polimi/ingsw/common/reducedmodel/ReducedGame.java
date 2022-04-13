@@ -18,6 +18,7 @@ public record ReducedGame(
         List<ReducedPlayer> players,
         List<ReducedIsland> islands,
         int motherNaturePosition,
+        int studentsBagSize,
         ReducedRound currentRound,
         Map<String, Integer> characterCards,
         Map<Student, ReducedPlayer> currentProfessors,
@@ -48,6 +49,7 @@ public record ReducedGame(
                         .map(ReducedIsland::fromIsland)
                         .toList(),
                 g.getMotherNaturePosition(),
+                g.getStudentsBag().getSize(),
                 ReducedRound.fromRound(g.getCurrentRound()),
                 g.getCharacterCards(),
                 g.getProfessors()

@@ -633,8 +633,18 @@ public class Game {
         return expertMode;
     }
 
+    /**
+     * @return uuid of this game
+     */
     public UUID getUUID() {
         return uuid;
+    }
+
+    /**
+     * @return students bag copy
+     */
+    public RandomizedStudentsContainer getStudentsBag() {
+        return new RandomizedStudentsContainer(studentsBag);
     }
 
     /**
