@@ -60,7 +60,7 @@ public class ServerClientCommunicator {
             socket.close();
             communicatorListener.onDisconnect();
 
-        } catch (IOException e){
+        } catch (Exception e){
             System.err.println(e.getMessage());
         }
     }

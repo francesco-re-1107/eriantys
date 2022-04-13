@@ -2,6 +2,8 @@ package it.polimi.ingsw.common.reducedmodel;
 
 import it.polimi.ingsw.server.model.Game;
 import it.polimi.ingsw.server.model.Student;
+
+import java.io.Serializable;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -24,7 +26,7 @@ public record ReducedGame(
         Map<Student, ReducedPlayer> currentProfessors,
         Game.State currentState,
         ReducedPlayer winner
-) {
+) implements Serializable {
 
     /**
      * Create a ReducedGame starting from a Game

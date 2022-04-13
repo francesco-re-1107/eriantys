@@ -3,6 +3,7 @@ package it.polimi.ingsw.common.reducedmodel;
 import it.polimi.ingsw.server.model.Round;
 import it.polimi.ingsw.server.model.StudentsContainer;
 
+import java.io.Serializable;
 import java.util.List;
 
 /**
@@ -14,7 +15,7 @@ public record ReducedRound(
         ReducedPlayer currentPlayer,
         List<StudentsContainer> clouds
         //Map<ReducedPlayer, AssistantCard> playedAssistantCards
-) {
+) implements Serializable {
 
     /**
      * Create a ReducedRound starting from a Round

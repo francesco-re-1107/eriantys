@@ -4,6 +4,8 @@ import it.polimi.ingsw.server.model.Island;
 import it.polimi.ingsw.server.model.StudentsContainer;
 import it.polimi.ingsw.server.model.Tower;
 
+import java.io.Serializable;
+
 /**
  * This record represents an Island for the client.
  * This is a reduced version of the Island class, so it used in the communication with the client
@@ -14,7 +16,7 @@ public record ReducedIsland(
         int towersCount,
         Tower towerColor,
         boolean noEntry
-) {
+) implements Serializable {
 
     /**
      * Create a ReducedIsland starting from an Island

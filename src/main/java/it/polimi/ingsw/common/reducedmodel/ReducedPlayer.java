@@ -2,6 +2,7 @@ package it.polimi.ingsw.common.reducedmodel;
 
 import it.polimi.ingsw.server.model.*;
 
+import java.io.Serializable;
 import java.util.Map;
 
 /**
@@ -16,7 +17,7 @@ public record ReducedPlayer(
         Tower towerColor,
         Map<AssistantCard, Boolean> deck,
         int coins
-) {
+) implements Serializable {
 
     /**
      * Create a ReducedPlayer starting from a Player
