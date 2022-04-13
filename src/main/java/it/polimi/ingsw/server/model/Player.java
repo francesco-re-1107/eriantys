@@ -46,6 +46,11 @@ public class Player implements StudentsContainer.StudentNumberReachedListener{
     private int coins = 1;
 
     /**
+     * Whether the player is connected or not
+     */
+    private boolean isConnected;
+
+    /**
      * Create a player
      * @param nickname nickname choose by the client
      * @param towerColor color of the towers of this player
@@ -154,6 +159,21 @@ public class Player implements StudentsContainer.StudentNumberReachedListener{
      */
     public Map<AssistantCard, Boolean> getDeck() {
         return new HashMap<>(deck);
+    }
+
+    /**
+     * Set the player as connected or not
+     * @param connected
+     */
+    public void setConnected(boolean connected) {
+        this.isConnected = connected;
+    }
+
+    /**
+     * @return true if the player is currently connected, false otherwise
+     */
+    public boolean isConnected() {
+        return isConnected;
     }
 
     /**

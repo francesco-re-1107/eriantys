@@ -609,13 +609,56 @@ public class Game {
         return gameState;
     }
 
-    //TODO maybe these will be substituted with setClientOffline(), setClientOnline(), setClientQuit()...
-    public void pauseGame(){
+
+    /**
+     * When a player disconnects the game is paused until it reconnects back
+     * @param player the player disconnected
+     */
+    public void setPlayerDisconnected(Player player){
+        if(!players.contains(player))
+            throw new InvalidOperationException("Not a valid player");
+
+        player.setConnected(false);
+
+        //pause game
         this.gameState = State.PAUSED;
+
+        notifyUpdate();
     }
 
-    public void resumeGame(){
-        this.gameState = State.STARTED;
+    /**
+     * This method is called when a player (previously disconnected) reconnects
+     * @param player
+     */
+    public void setPlayerReconnected(Player player){
+        if(!players.contains(player))
+            throw new InvalidOperationException("Not a valid player");
+
+        player.setConnected(true);
+
+        //resume game if all players are connected
+        boolean allConnected = players.stream().allMatch(Player::isConnected);
+        if(allConnected)
+            this.gameState = State.STARTED;
+
+        notifyUpdate();
+    }
+
+    /**
+     * This method is called when a player explicitly left the game.
+     * The game is terminated for all and there is no winner.
+     * @param player
+     */
+    public void leaveGame(Player player) {
+        if(!players.contains(player))
+            throw new InvalidOperationException("Not a valid player");
+
+        //if the player leaves the game sets it as disconnected
+        player.setConnected(false);
+
+        this.gameState = State.TERMINATED;
+
+        notifyUpdate();
     }
 
     /**

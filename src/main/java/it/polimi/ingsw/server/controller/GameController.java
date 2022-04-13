@@ -66,7 +66,7 @@ public class GameController implements Game.GameUpdateListener {
      * play until it reconnects.
      */
     public void disconnect() {
-        //game.disconnectPlayer();
+        game.setPlayerDisconnected(player);
     }
 
     /**
@@ -74,7 +74,7 @@ public class GameController implements Game.GameUpdateListener {
      * The game is terminated instantly for every player
      */
     public void leaveGame() {
-        //game.
+        game.leaveGame(player);
     }
 
     /**

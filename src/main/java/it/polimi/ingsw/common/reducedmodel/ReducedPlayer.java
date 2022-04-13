@@ -11,6 +11,7 @@ import java.util.Map;
  */
 public record ReducedPlayer(
         String nickname,
+        boolean isConnected,
         StudentsContainer entrance,
         StudentsContainer school,
         int towersCount,
@@ -27,6 +28,7 @@ public record ReducedPlayer(
     public static ReducedPlayer fromPlayer(Player p){
         return new ReducedPlayer(
                 p.getNickname(),
+                p.isConnected(),
                 p.getEntrance(),
                 p.getSchool(),
                 p.getTowersCount(),

@@ -122,6 +122,8 @@ public class VirtualView implements ServerClientCommunicator.CommunicatorListene
             gameController.moveMotherNature(r.getSteps());
         } else if (request instanceof SelectCloudRequest r) {
             gameController.selectCloud(r.getCloud());
+        } else if (request instanceof LeaveGameRequest) {
+            gameController.leaveGame();
         }
         //if no exception is thrown send an ack
         communicator.send(new AckResponse());

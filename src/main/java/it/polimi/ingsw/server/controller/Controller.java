@@ -71,8 +71,11 @@ public class Controller implements Game.GameUpdateListener {
             //replace disconnected view with the new one
             nicknameVirtualViewMap.put(nickname, virtualView);
 
-            if(foundGame != null)
+            if(foundGame != null) {
+                //TODO: maybe move this part in the GameController
+                foundGame.setPlayerReconnected(foundPlayer);
                 return new GameController(foundGame, foundPlayer);
+            }
         }else{
             if(Utils.isValidNickname(nickname))
                 throw new NicknameNotValidException();
