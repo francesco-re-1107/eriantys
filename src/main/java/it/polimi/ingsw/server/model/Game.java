@@ -1,5 +1,6 @@
 package it.polimi.ingsw.server.model;
 
+import com.fasterxml.jackson.databind.node.ArrayNode;
 import it.polimi.ingsw.Constants;
 import it.polimi.ingsw.common.exceptions.InvalidOperationException;
 import it.polimi.ingsw.server.model.charactercards.*;
@@ -85,7 +86,15 @@ public class Game {
      */
     private final boolean expertMode;
 
+    /**
+     * Stores the unique id of this game
+     */
     private final UUID uuid = UUID.randomUUID();
+
+    /**
+     * Stores all the listeners observing this game
+     */
+    private final ArrayList<GameUpdateListener> listeners;
 
     Logger logger = Logger.getLogger(Game.class.getName());
 
@@ -101,6 +110,7 @@ public class Game {
         this.players = new ArrayList<>();
         this.professors = new EnumMap<>(Student.class);
         this.expertMode = expertMode;
+        this.listeners = new ArrayList<>();
 
         CharacterCard.generateRandomDeck(Constants.NUMBER_OF_CHARACTER_CARD)
                 .forEach(s -> this.characterCards.put(s, 0));
@@ -150,6 +160,8 @@ public class Game {
         newRound();
 
         this.gameState = State.STARTED;
+
+        notifyUpdate();
     }
 
     /**
@@ -185,6 +197,8 @@ public class Game {
             tmpPlayers = new ArrayList<>(players);
 
         currentRound = new Round(tmpPlayers, clouds);
+
+        notifyUpdate();
     }
 
     /**
@@ -204,6 +218,8 @@ public class Game {
         //go to next player or new round if necessary
         if(currentRound.nextPlayer())
             newRound();
+
+        notifyUpdate();
     }
 
     /**
@@ -242,6 +258,8 @@ public class Game {
         logger.log(Level.INFO, "added player {0}", p.getNickname());
         players.add(p);
 
+        notifyUpdate();
+
         return p;
     }
 
@@ -276,6 +294,8 @@ public class Game {
             //It's necessary to check if islands could be merged
             this.checkMergeableIslands();
         }
+
+        notifyUpdate();
     }
 
     /**
@@ -290,7 +310,7 @@ public class Game {
      * Calculate which player has the most influence on the given island
      * and change the towers on that island respectively
      */
-    public void calculateInfluenceOnIsland(Island island){
+    private void calculateInfluenceOnIsland(Island island){
         int max = -1;
         Optional<Player> maxP = Optional.empty();
         InfluenceCalculator calc = temporaryInfluenceCalculator.orElse(defaultInfluenceCalculator);
@@ -337,6 +357,8 @@ public class Game {
             throw new InvalidOperationException();
 
         currentRound.playAssistantCard(player, card);
+
+        notifyUpdate();
     }
 
     /**
@@ -380,6 +402,8 @@ public class Game {
 
             player.swapStudents(minstrelCard.getStudentsToRemove(), minstrelCard.getStudentsToAdd());
         }
+
+        notifyUpdate();
     }
 
     /**
@@ -409,6 +433,8 @@ public class Game {
         inIsland.forEach(player::addStudentsToIsland);
 
         updateProfessors();
+
+        notifyUpdate();
     }
 
     /**
@@ -487,11 +513,17 @@ public class Game {
     }
 
     public void addGameUpdateListener(GameUpdateListener listener) {
-        //TODO implement
+        listeners.add(listener);
+    }
+
+    public void removeGameUpdateListener(GameUpdateListener listener) {
+        listeners.remove(listener);
     }
 
     private void notifyUpdate(){
-        //TODO implement
+        //create a copy so observers can remove the listener
+        new ArrayList<>(listeners)
+                .forEach(l -> l.onGameUpdate(this));
     }
 
     /**
@@ -538,6 +570,8 @@ public class Game {
         gameState = State.FINISHED;
 
         this.winner = Optional.of(winner);
+
+        notifyUpdate();
     }
 
     /**
@@ -653,10 +687,18 @@ public class Game {
         if(!players.contains(player))
             throw new InvalidOperationException("Not a valid player");
 
-        //if the player leaves the game sets it as disconnected
-        player.setConnected(false);
+        if(gameState == State.CREATED) {
+            //just remove the player
+            players.remove(player);
+        } else if(gameState == State.FINISHED || gameState == State.TERMINATED){
+            //game already in finished or terminated state
+            throw new InvalidOperationException("Game is finished or terminated, cannot leave");
+        } else {
+            //if the player leaves the game sets it as disconnected
+            player.setConnected(false);
 
-        this.gameState = State.TERMINATED;
+            this.gameState = State.TERMINATED;
+        }
 
         notifyUpdate();
     }

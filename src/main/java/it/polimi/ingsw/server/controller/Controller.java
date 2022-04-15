@@ -77,7 +77,7 @@ public class Controller implements Game.GameUpdateListener {
                 return new GameController(foundGame, foundPlayer);
             }
         }else{
-            if(Utils.isValidNickname(nickname))
+            if(!Utils.isValidNickname(nickname))
                 throw new NicknameNotValidException();
 
             //insert the virtual view in the map

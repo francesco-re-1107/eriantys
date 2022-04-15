@@ -1,5 +1,6 @@
 package it.polimi.ingsw.common.reducedmodel;
 
+import it.polimi.ingsw.Utils;
 import it.polimi.ingsw.server.model.Game;
 import it.polimi.ingsw.server.model.Student;
 
@@ -38,6 +39,11 @@ public record ReducedGame(
         if(g.getWinner().isPresent())
             winner = ReducedPlayer.fromPlayer(g.getWinner().get());
 
+        ReducedRound reducedRound = null;
+
+        if(g.getCurrentRound() != null)
+            reducedRound = ReducedRound.fromRound(g.getCurrentRound());
+
         return new ReducedGame(
                 g.getUUID(),
                 g.getNumberOfPlayers(),
@@ -52,7 +58,7 @@ public record ReducedGame(
                         .toList(),
                 g.getMotherNaturePosition(),
                 g.getStudentsBag().getSize(),
-                ReducedRound.fromRound(g.getCurrentRound()),
+                reducedRound,
                 g.getCharacterCards(),
                 g.getProfessors()
                         .entrySet()

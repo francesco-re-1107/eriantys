@@ -7,6 +7,7 @@ import it.polimi.ingsw.server.model.Player;
 import it.polimi.ingsw.server.model.StudentsContainer;
 
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
@@ -24,7 +25,7 @@ public class GameController implements Game.GameUpdateListener {
     /**
      * Listener for updates on the game
      */
-    private GameUpdateListener listener;
+    private Optional<GameUpdateListener> listener = Optional.empty();
 
     /**
      * The player controlled
@@ -47,7 +48,7 @@ public class GameController implements Game.GameUpdateListener {
      * @param listener
      */
     public void setOnGameUpdateListener(GameUpdateListener listener) {
-        this.listener = listener;
+        this.listener = Optional.of(listener);
     }
 
     /**
@@ -58,7 +59,11 @@ public class GameController implements Game.GameUpdateListener {
      */
     @Override
     public void onGameUpdate(Game game) {
-        listener.onGameUpdate(ReducedGame.fromGame(game));
+        listener.ifPresent(l -> l.onGameUpdate(ReducedGame.fromGame(game)));
+
+        if(game.getGameState() == Game.State.FINISHED ||
+                game.getGameState() == Game.State.TERMINATED)
+            game.removeGameUpdateListener(this);
     }
 
     /**
@@ -125,4 +130,6 @@ public class GameController implements Game.GameUpdateListener {
     public interface GameUpdateListener {
         void onGameUpdate(ReducedGame game);
     }
+
+
 }

@@ -38,7 +38,7 @@ public class VirtualView implements ServerClientCommunicator.CommunicatorListene
     /**
      * Whether the client disconnected from the view
      */
-    private boolean isConnected = false;
+    private boolean isConnected = true;
 
     /**
      * Stores the nickname the player registered with
@@ -135,7 +135,7 @@ public class VirtualView implements ServerClientCommunicator.CommunicatorListene
      */
     @Override
     public void onDisconnect() {
-        this.isConnected = true;
+        this.isConnected = false;
 
         if(gameController != null)
             this.gameController.disconnect();
