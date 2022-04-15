@@ -16,17 +16,17 @@ public class Utils {
 
     public static final Logger LOGGER = Logger.getLogger("Logger");
 
-    private static void setupLogger(Level level){
-        LOGGER.setLevel(level);
+    private static void setupLogger(){
+        LOGGER.setLevel(Level.INFO);
         LogManager.getLogManager().reset();
         ConsoleHandler handler = new ConsoleHandler();
-        handler.setLevel(level);
+        handler.setLevel(Level.INFO);
         handler.setFormatter(new PrettyLogFormatter());
         LOGGER.addHandler(handler);
     }
 
     static {
-        setupLogger(Level.INFO);
+        setupLogger();
     }
 
 }

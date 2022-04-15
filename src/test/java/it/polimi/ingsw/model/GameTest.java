@@ -5,6 +5,7 @@ import it.polimi.ingsw.exceptions.DuplicatedNicknameException;
 import it.polimi.ingsw.exceptions.InvalidOperationException;
 import it.polimi.ingsw.model.charactercards.PostmanCharacterCard;
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.RepeatedTest;
 import org.junit.jupiter.api.Test;
 
@@ -17,6 +18,11 @@ import java.util.logging.Level;
 import static org.junit.jupiter.api.Assertions.*;
 
 class GameTest {
+
+    @BeforeEach
+    void setUp() {
+        Utils.LOGGER.setLevel(Level.WARNING);
+    }
 
     @Test
     void testStaticGameTwoPlayers() {
