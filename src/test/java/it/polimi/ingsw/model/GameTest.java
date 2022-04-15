@@ -18,15 +18,6 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class GameTest {
 
-    /**
-     * This method creates a game with 2 rounds only and checks all the corner-cases in Game methods
-     */
-    @BeforeAll
-    static void setup(){
-        var l = Utils.setupLogger();
-        l.log(Level.INFO,  "starting game test...");
-    }
-
     @Test
     void testStaticGameTwoPlayers() {
         Game g = new Game(2, true);
@@ -218,9 +209,11 @@ class GameTest {
 
         Game g = new Game(r.nextInt(2,4), r.nextBoolean());
 
+        int pCounter = 0;
         try {
             do {
-                g.addPlayer("p" + r.nextInt());
+                g.addPlayer("p" + pCounter);
+                pCounter++;
             }while(g.getCurrentNumberOfPlayers() < g.getNumberOfPlayers());
         }catch (DuplicatedNicknameException e){}
 

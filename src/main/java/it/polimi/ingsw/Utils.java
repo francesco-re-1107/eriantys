@@ -2,6 +2,7 @@ package it.polimi.ingsw;
 
 import java.util.logging.ConsoleHandler;
 import java.util.logging.Level;
+import java.util.logging.LogManager;
 import java.util.logging.Logger;
 
 /**
@@ -13,18 +14,19 @@ public class Utils {
         return (o1 == null) ? o2 : o1;
     }
 
-    private static Logger logger = Logger.getLogger("it.polimi.ingsw");
+    public static final Logger LOGGER = Logger.getLogger("Logger");
 
-    public static Logger setupLogger(Level level){
-        logger.setLevel(level);
+    private static void setupLogger(Level level){
+        LOGGER.setLevel(level);
+        LogManager.getLogManager().reset();
         ConsoleHandler handler = new ConsoleHandler();
         handler.setLevel(level);
         handler.setFormatter(new PrettyLogFormatter());
-        logger.addHandler(handler);
-        return logger;
+        LOGGER.addHandler(handler);
     }
 
-    public static Logger setupLogger(){
-        return setupLogger(Level.INFO);
+    static {
+        setupLogger(Level.INFO);
     }
+
 }

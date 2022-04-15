@@ -1,6 +1,7 @@
 package it.polimi.ingsw.model;
 
 import it.polimi.ingsw.Constants;
+import it.polimi.ingsw.Utils;
 import it.polimi.ingsw.exceptions.DuplicatedNicknameException;
 import it.polimi.ingsw.exceptions.InvalidOperationException;
 import it.polimi.ingsw.model.charactercards.*;
@@ -86,7 +87,7 @@ public class Game {
      */
     private final boolean expertMode;
 
-    Logger logger = Logger.getLogger(Game.class.getName());
+    Logger logger = Utils.LOGGER;
 
     /**
      * Create a new game
