@@ -1,6 +1,5 @@
 package it.polimi.ingsw.server.model;
 
-import com.fasterxml.jackson.databind.node.ArrayNode;
 import it.polimi.ingsw.Constants;
 import it.polimi.ingsw.common.exceptions.InvalidOperationException;
 import it.polimi.ingsw.server.model.charactercards.*;
