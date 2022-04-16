@@ -1,12 +1,11 @@
 package it.polimi.ingsw.server.controller;
 
 import it.polimi.ingsw.common.reducedmodel.ReducedGame;
-import it.polimi.ingsw.server.model.AssistantCard;
-import it.polimi.ingsw.server.model.Game;
-import it.polimi.ingsw.server.model.Player;
+import it.polimi.ingsw.server.model.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import java.util.HashMap;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -61,15 +60,27 @@ class GameControllerTest {
 
     @Test
     void testSimpleGame() {
+        //play assistant card
         gc1.playAssistantCard(AssistantCard.getDefaultDeck().get(0));
         gc2.playAssistantCard(AssistantCard.getDefaultDeck().get(1));
 
-        /*
-        gc1.placeStudents();
-        gc1.moveMotherNature();
-        gc1.selectCloud();
+        //place students
+        var bag = new RandomizedStudentsContainer(player1.getEntrance());
+        var inIsland = new HashMap<Integer, StudentsContainer>();
+        inIsland.put(2, bag.pickManyRandom(3));
+        gc1.placeStudents(new StudentsContainer(), inIsland);
+        assertEquals(4, game.getIslands().get(2).getStudents().getSize());
 
-        assertEquals(player1.);
-        */
+        //play character card
+        //...
+
+        //move mother nature
+        int prevPos = game.getMotherNaturePosition();
+        gc1.moveMotherNature(1);
+        assertEquals(prevPos + 1, game.getMotherNaturePosition());
+
+        //select cloud
+        gc1.selectCloud(game.getCurrentRound().getClouds().get(0));
+        assertEquals(1, game.getCurrentRound().getClouds().size());
     }
 }
