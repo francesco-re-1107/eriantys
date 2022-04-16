@@ -35,10 +35,10 @@ class CharacterCardTest {
     @Test
     void cardsSubclasses (){
         CentaurCharacterCard c1 = new CentaurCharacterCard();
-        assertNotNull(c1.getInfluenceCalculator());
+        assertNotNull(c1.getInfluenceCalculator(null));
 
-        FarmerCharacterCard c2 = new FarmerCharacterCard(null);
-        assertNotNull(c2.getInfluenceCalculator());
+        FarmerCharacterCard c2 = new FarmerCharacterCard();
+        assertNotNull(c2.getInfluenceCalculator(null));
 
         GrandmaCharacterCard c3 = new GrandmaCharacterCard(new Island());
         assertNotNull(c3.getIsland());
@@ -46,15 +46,15 @@ class CharacterCardTest {
         HeraldCharacterCard c4 = new HeraldCharacterCard(new Island());
         assertNotNull(c4.getIsland());
 
-        KnightCharacterCard c5 = new KnightCharacterCard(new Player("p1", Tower.BLACK, 8, new StudentsContainer()));
-        assertNotNull(c5.getInfluenceCalculator());
+        KnightCharacterCard c5 = new KnightCharacterCard();
+        assertNotNull(c5.getInfluenceCalculator(null));
 
         MinstrelCharacterCard c6 = new MinstrelCharacterCard(new StudentsContainer(), new StudentsContainer());
         assertNotNull(c6.getStudentsToAdd());
         assertNotNull(c6.getStudentsToRemove());
 
         MushroomManCharacterCard c7 = new MushroomManCharacterCard(Student.BLUE);
-        assertNotNull(c7.getInfluenceCalculator());
+        assertNotNull(c7.getInfluenceCalculator(null));
 
         PostmanCharacterCard c8 = new PostmanCharacterCard();
         c8.getAdditionalMotherNatureMoves();

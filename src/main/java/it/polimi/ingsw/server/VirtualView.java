@@ -116,8 +116,8 @@ public class VirtualView implements ServerClientCommunicator.CommunicatorListene
             gameController.playAssistantCard(r.getCard());
         } else if (request instanceof PlaceStudentsRequest r) {
             gameController.placeStudents(r.getInSchool(), r.getInIslands());
-        //} else if (request instanceof PlayCharacterCard r) {
-        //
+        } else if (request instanceof PlayCharacterCardRequest r) {
+            gameController.playCharacterCard(r.getCharacterCard());
         } else if (request instanceof MoveMotherNatureRequest r) {
             gameController.moveMotherNature(r.getSteps());
         } else if (request instanceof SelectCloudRequest r) {

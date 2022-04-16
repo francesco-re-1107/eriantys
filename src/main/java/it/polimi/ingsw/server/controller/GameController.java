@@ -1,10 +1,8 @@
 package it.polimi.ingsw.server.controller;
 
+import it.polimi.ingsw.common.reducedmodel.ReducedCharacterCard;
 import it.polimi.ingsw.common.reducedmodel.ReducedGame;
-import it.polimi.ingsw.server.model.AssistantCard;
-import it.polimi.ingsw.server.model.Game;
-import it.polimi.ingsw.server.model.Player;
-import it.polimi.ingsw.server.model.StudentsContainer;
+import it.polimi.ingsw.server.model.*;
 
 import java.util.Map;
 import java.util.Optional;
@@ -91,22 +89,6 @@ public class GameController implements Game.GameUpdateListener {
     }
 
     /**
-     * Select cloud for this player
-     * @param cloud
-     */
-    public void selectCloud(StudentsContainer cloud) {
-        game.selectCloud(player, cloud);
-    }
-
-    /**
-     * Move mother nature for this player
-     * @param steps
-     */
-    public void moveMotherNature(int steps) {
-        game.moveMotherNature(player, steps);
-    }
-
-    /**
      * Place students for this player
      * @param inSchool
      * @param inIslands
@@ -124,12 +106,31 @@ public class GameController implements Game.GameUpdateListener {
         );
     }
 
+    public void playCharacterCard(ReducedCharacterCard reducedCard) {
+        game.playCharacterCard(player, reducedCard.toCharacterCard(game));
+    }
+
+    /**
+     * Move mother nature for this player
+     * @param steps
+     */
+    public void moveMotherNature(int steps) {
+        game.moveMotherNature(player, steps);
+    }
+
+    /**
+     * Select cloud for this player
+     * @param cloud
+     */
+    public void selectCloud(StudentsContainer cloud) {
+        game.selectCloud(player, cloud);
+    }
+
     /**
      * This interface models a listener for every Game update
      */
     public interface GameUpdateListener {
         void onGameUpdate(ReducedGame game);
     }
-
 
 }

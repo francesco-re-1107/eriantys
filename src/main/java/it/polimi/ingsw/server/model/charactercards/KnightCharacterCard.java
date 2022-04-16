@@ -10,15 +10,12 @@ import it.polimi.ingsw.server.model.influencecalculators.AdditionalPointsInfluen
  */
 public class KnightCharacterCard extends InfluenceCharacterCard {
 
-    private final Player player;
-
-    public KnightCharacterCard(Player player) {
+    public KnightCharacterCard() {
         super(2);
-        this.player = player;
     }
 
     @Override
-    public InfluenceCalculator getInfluenceCalculator() {
-        return new AdditionalPointsInfluenceCalculator(this.player);
+    public InfluenceCalculator getInfluenceCalculator(Player cardPlayer) {
+        return new AdditionalPointsInfluenceCalculator(cardPlayer);
     }
 }

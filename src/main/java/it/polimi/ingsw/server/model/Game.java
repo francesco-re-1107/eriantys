@@ -385,7 +385,7 @@ public class Game {
         player.useCoins(cost);
 
         if(card instanceof InfluenceCharacterCard influenceCard){
-            temporaryInfluenceCalculator = Optional.of(influenceCard.getInfluenceCalculator());
+            temporaryInfluenceCalculator = Optional.of(influenceCard.getInfluenceCalculator(player));
         } else if (card instanceof HeraldCharacterCard heraldCard){
             calculateInfluenceOnIsland(heraldCard.getIsland());
         } else if (card instanceof PostmanCharacterCard postmanCard) {

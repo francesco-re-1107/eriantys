@@ -10,18 +10,12 @@ import it.polimi.ingsw.server.model.influencecalculators.ProfessorsControlInflue
  */
 public class FarmerCharacterCard extends InfluenceCharacterCard {
 
-    /**
-     * Holds a reference to the player who played this card, in order to pass it to the calculator
-     */
-    private final Player player;
-
-    public FarmerCharacterCard(Player player) {
+    public FarmerCharacterCard() {
         super(2);
-        this.player = player;
     }
 
     @Override
-    public InfluenceCalculator getInfluenceCalculator() {
-        return new ProfessorsControlInfluenceCalculator(player);
+    public InfluenceCalculator getInfluenceCalculator(Player cardPlayer) {
+        return new ProfessorsControlInfluenceCalculator(cardPlayer);
     }
 }
