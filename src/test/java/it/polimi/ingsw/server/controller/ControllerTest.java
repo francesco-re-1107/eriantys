@@ -106,8 +106,6 @@ class ControllerTest {
         c.createGame("p1", 2, false);
 
         assertEquals(1, c.listGames().size());
-
-        assertEquals("p1", c.listGames().get(0).players().get(0).nickname());
     }
 
     @Test

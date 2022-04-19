@@ -5,6 +5,7 @@ import it.polimi.ingsw.common.exceptions.DuplicatedNicknameException;
 import it.polimi.ingsw.common.exceptions.GameJoiningError;
 import it.polimi.ingsw.common.exceptions.NicknameNotRegisteredError;
 import it.polimi.ingsw.common.exceptions.NicknameNotValidException;
+import it.polimi.ingsw.common.reducedmodel.GameListItem;
 import it.polimi.ingsw.common.reducedmodel.ReducedGame;
 import it.polimi.ingsw.server.VirtualView;
 import it.polimi.ingsw.server.model.Game;
@@ -91,11 +92,11 @@ public class Controller implements Game.GameUpdateListener {
      * Only the games not started yet and with enough space are returned
      * @return the list of games
      */
-    public List<ReducedGame> listGames() {
+    public List<GameListItem> listGames() {
         return games.stream()
                 .filter(g -> g.getGameState() == Game.State.CREATED &&
                         g.getCurrentNumberOfPlayers() < g.getNumberOfPlayers())
-                .map(ReducedGame::fromGame)
+                .map(GameListItem::fromGame)
                 .toList();
     }
 
