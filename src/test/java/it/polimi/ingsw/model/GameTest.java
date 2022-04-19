@@ -3,16 +3,13 @@ package it.polimi.ingsw.model;
 import it.polimi.ingsw.Utils;
 import it.polimi.ingsw.exceptions.DuplicatedNicknameException;
 import it.polimi.ingsw.exceptions.InvalidOperationException;
-import it.polimi.ingsw.model.charactercards.PostmanCharacterCard;
+import it.polimi.ingsw.model.charactercards.*;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.RepeatedTest;
 import org.junit.jupiter.api.Test;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Random;
+import java.util.*;
 import java.util.logging.Level;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -209,7 +206,7 @@ class GameTest {
      *
      * This test DOESN'T check whether the methods called do what they claim to do.
      */
-    @RepeatedTest(500)
+    @RepeatedTest(10000)
     void testDynamicGame() {
         Random r = new Random();
 
@@ -224,6 +221,8 @@ class GameTest {
         }catch (DuplicatedNicknameException e){}
 
         g.startGame();
+
+        var characters = g.getCharacterCards().keySet().stream().toList();
 
         while(g.getGameState() != Game.State.FINISHED){
 
@@ -264,7 +263,32 @@ class GameTest {
                 g.placeStudents(currentPlayer, inSchool, inIsland);
 
                 //play character card randomly
-                //TODO: implement
+                if(g.isExpertMode()) {
+                    var pickedCard = characters.get(r.nextInt(characters.size()));
+                    var usedTimes = g.getCharacterCards().get(pickedCard);
+                    CharacterCard cardToPlay = null;
+
+                    switch (pickedCard) {
+                        case "CentaurCharacterCard" -> cardToPlay = new CentaurCharacterCard();
+                        case "FarmerCharacterCard" -> cardToPlay = new FarmerCharacterCard(currentPlayer);
+                        case "GrandmaCharacterCard" -> cardToPlay = new GrandmaCharacterCard(g.getIslands().get(r.nextInt(g.getIslands().size())));
+                        case "HeraldCharacterCard" -> cardToPlay = new HeraldCharacterCard(g.getIslands().get(r.nextInt(g.getIslands().size())));
+                        case "KnightCharacterCard" -> cardToPlay = new KnightCharacterCard(currentPlayer);
+                        case "MinstrelCharacterCard" -> {
+                            var entrance = new RandomizedStudentsContainer(currentPlayer.getEntrance());
+                            var school = new RandomizedStudentsContainer(currentPlayer.getSchool());
+                            cardToPlay = new MinstrelCharacterCard(
+                                    school.pickManyRandom(2),
+                                    entrance.pickManyRandom(2)
+                            );
+                        }
+                        case "MushroomManCharacterCard" -> cardToPlay = new MushroomManCharacterCard(Student.BLUE);
+                        case "PostmanCharacterCard" -> cardToPlay = new PostmanCharacterCard();
+                    }
+
+                    if (cardToPlay != null && cardToPlay.getCost(usedTimes) <= currentPlayer.getCoins())
+                        g.playCharacterCard(currentPlayer, cardToPlay);
+                }
 
                 //move mother nature randomly
                 int allowedMoves = g.getCurrentRound().getCardPlayedBy(currentPlayer).get().motherNatureMaxMoves() +
