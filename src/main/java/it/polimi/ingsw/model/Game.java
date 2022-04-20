@@ -198,7 +198,7 @@ public class Game {
 
         player.addCloudToEntrance(cloud);
         currentRound.removeCloud(cloud);
-        currentRound.setAttackSubstage(Stage.Attack.SELECTING_CLOUD);
+        currentRound.setAttackSubstage(Stage.Attack.SELECTED_CLOUD);
 
         //go to next player or new round if necessary
         if(currentRound.nextPlayer())
@@ -258,7 +258,8 @@ public class Game {
     public void moveMotherNature(Player player, int steps){
         checkIfCurrentPlayer(player);
 
-        if(!(currentRound.getStage() instanceof Stage.Attack))
+        if((!(currentRound.getStage() instanceof Stage.Attack)) ||
+                Stage.IsEqOrPost(currentRound.getStage(), Stage.Attack.MOTHER_NATURE_MOVED))
             throw new InvalidOperationException("");
 
         //use get directly cause in attack stage every player has played its card
@@ -282,7 +283,7 @@ public class Game {
             //It's necessary to check if islands could be merged
             this.checkMergeableIslands();
         }
-        currentRound.setAttackSubstage(Stage.Attack.MOVING);
+        currentRound.setAttackSubstage(Stage.Attack.MOTHER_NATURE_MOVED);
     }
 
     /**
@@ -357,8 +358,9 @@ public class Game {
 
         checkIfCurrentPlayer(player);
 
-        if(!(currentRound.getStage() instanceof Stage.Attack))
-            throw new InvalidOperationException("");
+        if((!(currentRound.getStage() instanceof Stage.Attack)) ||
+                Stage.IsEqOrPost(currentRound.getStage(), Stage.Attack.CARD_PLAYED))
+            throw new InvalidOperationException();
 
         if(!characterCards.containsKey(card.getName()))
             throw new InvalidOperationException();
@@ -387,7 +389,7 @@ public class Game {
 
             player.swapStudents(minstrelCard.getStudentsToRemove(), minstrelCard.getStudentsToAdd());
         }
-        currentRound.setAttackSubstage(Stage.Attack.CARD);
+        currentRound.setAttackSubstage(Stage.Attack.CARD_PLAYED);
     }
 
     /**
@@ -401,7 +403,7 @@ public class Game {
     public void putStudents(Player player, StudentsContainer inSchool, Map<Island,StudentsContainer> inIsland){
         checkIfCurrentPlayer(player);
 
-        if(currentRound.getStage() != Stage.Attack.STARTING)
+        if(currentRound.getStage() != Stage.Attack.STARTED)
             throw new InvalidOperationException();
 
         int studentsMoved = inSchool.getSize() + inIsland.values().stream().mapToInt(StudentsContainer::getSize).sum();
@@ -417,7 +419,7 @@ public class Game {
         inIsland.forEach(player::addStudentsToIsland);
 
         updateProfessors();
-        currentRound.setAttackSubstage(Stage.Attack.PLACING);
+        currentRound.setAttackSubstage(Stage.Attack.STUDENTS_PLACED);
     }
 
     /**

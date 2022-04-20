@@ -63,7 +63,7 @@ class RoundTest {
         r.playAssistantCard(players.get(1), AssistantCard.getDefaultDeck().get(1));
 
         //check if the stage has changed
-        assertEquals(Stage.Attack.STARTING, r.getStage());
+        assertEquals(Stage.Attack.STARTED, r.getStage());
 
         //playing card in attack stage
         assertThrows(

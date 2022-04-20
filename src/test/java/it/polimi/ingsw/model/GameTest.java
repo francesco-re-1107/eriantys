@@ -3,7 +3,6 @@ package it.polimi.ingsw.model;
 import it.polimi.ingsw.exceptions.DuplicatedNicknameException;
 import it.polimi.ingsw.exceptions.InvalidOperationException;
 import it.polimi.ingsw.model.charactercards.PostmanCharacterCard;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.RepeatedTest;
 import org.junit.jupiter.api.Test;
 
@@ -107,7 +106,7 @@ class GameTest {
         //play correct assistant card for player 1
         g.playAssistantCard(players.get(1), AssistantCard.getDefaultDeck().get(0));
 
-        assertEquals(Stage.Attack.STARTING, g.getCurrentRound().getStage());
+        assertEquals(Stage.Attack.STARTED, g.getCurrentRound().getStage());
 
         //player 1 has higher turn priority
         assertEquals(players.get(1), g.getCurrentRound().getCurrentPlayer());
@@ -124,6 +123,8 @@ class GameTest {
 
         g.putStudents(players.get(1), inSchool, inIsland);
 
+        assertEquals(Stage.Attack.STUDENTS_PLACED, g.getCurrentRound().getStage());
+
         //check size of entrance, school and island
         assertEquals(4, players.get(1).getEntrance().getSize());
         assertEquals(1, players.get(1).getSchool().getSize());
@@ -135,6 +136,7 @@ class GameTest {
             int prevCoins = players.get(1).getCoins();
 
             g.playCharacterCard(players.get(1), new PostmanCharacterCard());
+            assertEquals(Stage.Attack.CARD_PLAYED, g.getCurrentRound().getStage());
             assertEquals(prevCoins - 1, players.get(1).getCoins());
             assertEquals(2, g.getCurrentRound().getAdditionalMotherNatureMoves());
         }
@@ -165,7 +167,7 @@ class GameTest {
 
         //next turn
         assertEquals(players.get(0), g.getCurrentRound().getCurrentPlayer());
-        assertEquals(Stage.Attack.STARTING, g.getCurrentRound().getStage());
+        assertEquals(Stage.Attack.STARTED, g.getCurrentRound().getStage());
 
         //put students
         picker = new RandomizedStudentsContainer(players.get(0).getEntrance());
@@ -235,7 +237,7 @@ class GameTest {
             }
 
             //stage ATTACK
-            while(g.getCurrentRound().getStage() == Stage.Attack.STARTING) {
+            while(g.getCurrentRound().getStage() == Stage.Attack.STARTED) {
                 Player currentPlayer = g.getCurrentRound().getCurrentPlayer();
 
                 //2 random students in school and 1 on a random island

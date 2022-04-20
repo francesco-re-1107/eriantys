@@ -72,7 +72,7 @@ public class Round {
                 .toList()
         );
 
-        stage = Stage.Attack.STARTING;
+        stage = Stage.Attack.STARTED;
         currentPlayer = 0;
     }
 
