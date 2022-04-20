@@ -95,7 +95,7 @@ public class Game implements Serializable {
     /**
      * Stores all the listeners observing this game
      */
-    private final ArrayList<GameUpdateListener> listeners;
+    private final transient ArrayList<GameUpdateListener> listeners;
 
     private static final transient Logger logger = Utils.LOGGER;
 
@@ -190,8 +190,8 @@ public class Game implements Serializable {
         for (int i = 0; i < numberOfPlayers; i++)
             clouds.add(studentsBag.pickManyRandom(
                     numberOfPlayers == 2 ?
-                            Constants.TWO_PLAYERS.STUDENTS_PER_CLOUD :
-                            Constants.THREE_PLAYERS.STUDENTS_PER_CLOUD)
+                            Constants.TwoPlayers.STUDENTS_PER_CLOUD :
+                            Constants.ThreePlayers.STUDENTS_PER_CLOUD)
             );
 
         logger.log(Level.FINE, "generated clouds: {0}", clouds);
@@ -253,12 +253,12 @@ public class Game implements Serializable {
             throw new InvalidOperationException("Players lobby is already full");
 
         int entranceSize = numberOfPlayers == 2 ?
-                Constants.TWO_PLAYERS.ENTRANCE_SIZE :
-                Constants.THREE_PLAYERS.ENTRANCE_SIZE;
+                Constants.TwoPlayers.ENTRANCE_SIZE :
+                Constants.ThreePlayers.ENTRANCE_SIZE;
 
         int towersCount = numberOfPlayers == 2 ?
-                Constants.TWO_PLAYERS.TOWERS_COUNT :
-                Constants.THREE_PLAYERS.TOWERS_COUNT;
+                Constants.TwoPlayers.TOWERS_COUNT :
+                Constants.ThreePlayers.TOWERS_COUNT;
 
         Player p = new Player(
                 nickname,
@@ -446,8 +446,8 @@ public class Game implements Serializable {
         int studentsMoved = inSchool.getSize() + inIsland.values().stream().mapToInt(StudentsContainer::getSize).sum();
 
         int studentsToMove = numberOfPlayers == 3 ?
-                Constants.THREE_PLAYERS.STUDENTS_TO_MOVE :
-                Constants.TWO_PLAYERS.STUDENTS_TO_MOVE;
+                Constants.ThreePlayers.STUDENTS_TO_MOVE :
+                Constants.TwoPlayers.STUDENTS_TO_MOVE;
 
         if (studentsMoved != studentsToMove)
             throw new InvalidOperationException();
@@ -779,7 +779,7 @@ public class Game implements Serializable {
         TERMINATED //game terminated before finish (e.g. a player left the game)
     }
 
-    public interface GameUpdateListener extends Serializable{
+    public interface GameUpdateListener {
         void onGameUpdate(Game game);
     }
 }

@@ -1,5 +1,6 @@
 package it.polimi.ingsw.server.model;
 
+import it.polimi.ingsw.Utils;
 import it.polimi.ingsw.common.exceptions.InvalidOperationException;
 
 import java.io.Serializable;
@@ -40,7 +41,7 @@ public class Round implements Serializable {
      */
     private int additionalMotherNatureMoves = 0;
 
-    Logger logger = Logger.getLogger(Game.class.getName());
+    private static final transient Logger logger = Utils.LOGGER;
 
     /**
      * @param players list of players ordered with respect to the assistant cards played in the previous round

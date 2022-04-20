@@ -33,7 +33,7 @@ public final class Constants {
     /**
      * These constants are used in a game with 2 players (commented only once)
      */
-    public static final class TWO_PLAYERS {
+    public static final class TwoPlayers {
 
         /**
          * Number of towers given to every player at the beginning of the game
@@ -54,12 +54,14 @@ public final class Constants {
          * Number of students that a player must move in its turn
          */
         public static final int STUDENTS_TO_MOVE = 3;
+
+        private TwoPlayers() {}
     }
 
     /**
      * These constants are used in a game with 3 players
      */
-    public static final class THREE_PLAYERS {
+    public static final class ThreePlayers {
 
         public static final int TOWERS_COUNT = 6;
 
@@ -68,6 +70,9 @@ public final class Constants {
         public static final int STUDENTS_PER_CLOUD = 4;
 
         public static final int STUDENTS_TO_MOVE = 4;
+
+        private ThreePlayers() {}
     }
 
+    private Constants() {}
 }
