@@ -125,6 +125,12 @@ class GameTest {
 
         assertEquals(Stage.Attack.STUDENTS_PLACED, g.getCurrentRound().getStage());
 
+        //placing twice
+        assertThrows(
+                InvalidOperationException.class,
+                () -> g.putStudents(players.get(1), new StudentsContainer(), new HashMap<>())
+        );
+
         //check size of entrance, school and island
         assertEquals(4, players.get(1).getEntrance().getSize());
         assertEquals(1, players.get(1).getSchool().getSize());
@@ -148,7 +154,28 @@ class GameTest {
         );
         int prevPosition = g.getMotherNaturePosition();
         g.moveMotherNature(players.get(1), 1);
+        assertEquals(Stage.Attack.MOTHER_NATURE_MOVED, g.getCurrentRound().getStage());
         assertEquals(prevPosition + 1, g.getMotherNaturePosition());
+
+        //moving twice
+        assertThrows(
+                InvalidOperationException.class,
+                () -> g.moveMotherNature(players.get(1), 1)
+        );
+
+        //testing all prior stages to be invalid
+        assertThrows(
+                InvalidOperationException.class,
+                () -> g.putStudents(players.get(1), new StudentsContainer(), new HashMap<>())
+        );
+        assertThrows(
+                InvalidOperationException.class,
+                () -> g.playCharacterCard(players.get(1), new PostmanCharacterCard())
+        );
+        assertThrows(
+                InvalidOperationException.class,
+                () -> g.moveMotherNature(players.get(1), 1)
+        );
 
         //select cloud for player 1
         //non-existing cloud

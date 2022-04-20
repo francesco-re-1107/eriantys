@@ -77,11 +77,9 @@ public class Round {
     }
 
     public void setAttackSubstage(Stage.Attack newStage){
-        if(stage instanceof Stage.Plan)
-            throw new InvalidOperationException("cannot handle Plan stage");
-        if(((Stage.Attack)stage).ordinal() >= newStage.ordinal())
-            throw new InvalidOperationException("stage must be post");
-
+        if(Stage.IsEqOrPost(stage, newStage))
+            throw new InvalidOperationException("newStage must be post to current stage");
+        stage = newStage;
     }
     /**
      * Play the given card for the given player
@@ -123,11 +121,16 @@ public class Round {
     public boolean nextPlayer(){
         if(stage instanceof Stage.Plan)
             throw new InvalidOperationException();
+        // TODO: further checks
 
         currentPlayer++;
 
-        //finished round check
-        return currentPlayer == players.size();
+        // finished round check
+        if(currentPlayer == players.size())
+            return true;
+        // more players to come
+        stage = Stage.Attack.STARTED;
+        return false;
     }
 
     /**
