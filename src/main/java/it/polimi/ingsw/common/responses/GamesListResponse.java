@@ -1,7 +1,6 @@
 package it.polimi.ingsw.common.responses;
 
 import it.polimi.ingsw.common.reducedmodel.GameListItem;
-import it.polimi.ingsw.common.reducedmodel.ReducedGame;
 
 import java.util.List;
 

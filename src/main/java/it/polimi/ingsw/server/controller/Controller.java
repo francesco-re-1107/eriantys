@@ -6,7 +6,6 @@ import it.polimi.ingsw.common.exceptions.GameJoiningError;
 import it.polimi.ingsw.common.exceptions.NicknameNotRegisteredError;
 import it.polimi.ingsw.common.exceptions.NicknameNotValidException;
 import it.polimi.ingsw.common.reducedmodel.GameListItem;
-import it.polimi.ingsw.common.reducedmodel.ReducedGame;
 import it.polimi.ingsw.server.VirtualView;
 import it.polimi.ingsw.server.model.Game;
 import it.polimi.ingsw.server.model.Player;
@@ -61,8 +60,8 @@ public class Controller implements Game.GameUpdateListener {
             Player foundPlayer = null;
 
             //TODO improve
-            for (Game g : games) {
-                for (Player p : g.getPlayers())
+            for (var g : games) {
+                for (var p : g.getPlayers())
                     if(Objects.equals(p.getNickname(), nickname)) {
                         foundGame = g;
                         foundPlayer = p;
@@ -109,7 +108,7 @@ public class Controller implements Game.GameUpdateListener {
     public synchronized GameController joinGame(String nickname, UUID uuid) {
         checkIfNicknameRegistered(nickname);
 
-        Optional<Game> selectedGame = games.stream()
+        var selectedGame = games.stream()
                 .parallel()
                 .filter(g -> g.getUUID() == uuid)
                 .findFirst();
@@ -117,13 +116,13 @@ public class Controller implements Game.GameUpdateListener {
         if(selectedGame.isEmpty())
             throw new GameJoiningError("Game not found");
 
-        Game g = selectedGame.get();
+        var g = selectedGame.get();
 
         //game not started yet and with space for another player
         if(g.getGameState() == Game.State.CREATED &&
                 g.getCurrentNumberOfPlayers() < g.getNumberOfPlayers() ) {
 
-            Player p = g.addPlayer(nickname);
+            var p = g.addPlayer(nickname);
 
             //TODO: to fix: game started before the last player has added their listener
             if(g.getCurrentNumberOfPlayers() == g.getNumberOfPlayers())
@@ -145,9 +144,9 @@ public class Controller implements Game.GameUpdateListener {
     public synchronized GameController createGame(String nickname, int numberOfPlayers, boolean expertMode) {
         checkIfNicknameRegistered(nickname);
 
-        Game g = new Game(numberOfPlayers, expertMode);
+        var g = new Game(numberOfPlayers, expertMode);
         g.addGameUpdateListener(this);
-        Player p = g.addPlayer(nickname);
+        var p = g.addPlayer(nickname);
         //g.addGameUpdateListener(this); remove game when it is finished
         games.add(g);
 
@@ -171,7 +170,7 @@ public class Controller implements Game.GameUpdateListener {
      */
     @Override
     public void onGameUpdate(Game game) {
-        Game.State state = game.getGameState();
+        var state = game.getGameState();
 
         //finished games are removed from the list
         if(state == Game.State.TERMINATED || state == Game.State.FINISHED) {
