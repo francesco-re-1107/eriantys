@@ -94,7 +94,7 @@ public class GameController implements Game.GameUpdateListener {
      * @param inIslands
      */
     public void placeStudents(StudentsContainer inSchool, Map<Integer, StudentsContainer> inIslands) {
-        game.putStudents(
+        game.placeStudents(
                 player,
                 inSchool,
                 inIslands.entrySet()

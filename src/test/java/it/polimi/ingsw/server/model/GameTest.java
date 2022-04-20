@@ -1,13 +1,12 @@
 package it.polimi.ingsw.server.model;
 
-import it.polimi.ingsw.common.exceptions.DuplicatedNicknameException;
+import it.polimi.ingsw.Utils;
 import it.polimi.ingsw.common.exceptions.InvalidOperationException;
 import it.polimi.ingsw.server.model.charactercards.PostmanCharacterCard;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.RepeatedTest;
 import org.junit.jupiter.api.Test;
-
+import it.polimi.ingsw.server.model.charactercards.*;
 import java.util.*;
 import java.util.logging.Level;
 
@@ -264,10 +263,10 @@ class GameTest {
 
                     switch (pickedCard) {
                         case "CentaurCharacterCard" -> cardToPlay = new CentaurCharacterCard();
-                        case "FarmerCharacterCard" -> cardToPlay = new FarmerCharacterCard(currentPlayer);
+                        case "FarmerCharacterCard" -> cardToPlay = new FarmerCharacterCard();
                         case "GrandmaCharacterCard" -> cardToPlay = new GrandmaCharacterCard(g.getIslands().get(r.nextInt(g.getIslands().size())));
                         case "HeraldCharacterCard" -> cardToPlay = new HeraldCharacterCard(g.getIslands().get(r.nextInt(g.getIslands().size())));
-                        case "KnightCharacterCard" -> cardToPlay = new KnightCharacterCard(currentPlayer);
+                        case "KnightCharacterCard" -> cardToPlay = new KnightCharacterCard();
                         case "MinstrelCharacterCard" -> {
                             var entrance = new RandomizedStudentsContainer(currentPlayer.getEntrance());
                             var school = new RandomizedStudentsContainer(currentPlayer.getSchool());

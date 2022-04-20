@@ -1,6 +1,7 @@
 package it.polimi.ingsw.server.model;
 
 import it.polimi.ingsw.Constants;
+import it.polimi.ingsw.Utils;
 import it.polimi.ingsw.common.exceptions.InvalidOperationException;
 import it.polimi.ingsw.server.model.charactercards.*;
 import it.polimi.ingsw.server.model.influencecalculators.DefaultInfluenceCalculator;
@@ -403,7 +404,7 @@ public class Game {
         player.useCoins(cost);
 
         if (card instanceof InfluenceCharacterCard influenceCard) {
-            temporaryInfluenceCalculator = Optional.of(influenceCard.getInfluenceCalculator());
+            temporaryInfluenceCalculator = Optional.of(influenceCard.getInfluenceCalculator(player));
         } else if (card instanceof HeraldCharacterCard heraldCard) {
             calculateInfluenceOnIsland(heraldCard.getIsland());
         } else if (card instanceof PostmanCharacterCard postmanCard) {
