@@ -12,8 +12,6 @@ public class App
 {
     public static void main( String[] args )
     {
-        System.out.println(args);
-
         //rough arguments parsing to determine if server or client must be started
         try {
             if (args[0].equals("server")) {
@@ -22,7 +20,8 @@ public class App
                 startClient(args[1].equals("--gui"));
             }
         }catch (Exception e) {
-            System.err.println("Arguments error");
+            Utils.LOGGER.severe("Arguments error");
+            System.exit(0);
         }
     }
 

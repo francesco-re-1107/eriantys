@@ -2,10 +2,12 @@ package it.polimi.ingsw.server.model;
 
 import it.polimi.ingsw.common.exceptions.IslandNotCompatibleException;
 
+import java.io.Serializable;
+
 /**
  * This class represents an island of the game.
  */
-public class Island {
+public class Island implements Serializable {
 
     /**
      * Stores the students on this island

@@ -1,5 +1,6 @@
 package it.polimi.ingsw.server;
 
+import it.polimi.ingsw.Utils;
 import it.polimi.ingsw.common.Parser;
 import it.polimi.ingsw.common.SerializationParser;
 import it.polimi.ingsw.common.responses.Response;
@@ -61,7 +62,7 @@ public class ServerClientCommunicator {
             communicatorListener.onDisconnect();
 
         } catch (Exception e){
-            System.err.println(e.getMessage());
+            Utils.LOGGER.severe(e.getMessage());
         }
     }
 
@@ -74,7 +75,7 @@ public class ServerClientCommunicator {
             PrintWriter out = new PrintWriter(socket.getOutputStream());
             out.println(parser.encodeResponse(r));
         }catch (IOException e){
-            System.err.println(e.getMessage());
+            Utils.LOGGER.severe(e.getMessage());
         }
     }
 

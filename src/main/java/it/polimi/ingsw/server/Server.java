@@ -1,5 +1,6 @@
 package it.polimi.ingsw.server;
 
+import it.polimi.ingsw.Utils;
 import it.polimi.ingsw.server.controller.Controller;
 
 import java.io.IOException;
@@ -7,6 +8,7 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.logging.Level;
 
 /**
  * This class binds to the socket at the given port and listens for connections
@@ -51,16 +53,18 @@ public class Server {
         try{
             serverSocket = new ServerSocket(port);
         }catch (IOException e){
-            System.err.println(e.getMessage()); //port not available
+            Utils.LOGGER.severe(e.getMessage()); //port not available
+            System.exit(0);
         }
-        System.out.println("Server ready");
+        Utils.LOGGER.log(Level.INFO, "Server listening on port {0}", port);
 
         while (true){
             try{
                 Socket socket = serverSocket.accept();
                 executor.submit(new VirtualView(controller, socket));
             }catch(IOException e){
-                System.err.println(e.getMessage()); //socket closed
+                Utils.LOGGER.severe(e.getMessage()); //socket closed
+                System.exit(0);
             }
         }
     }

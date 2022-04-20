@@ -2,12 +2,13 @@ package it.polimi.ingsw.server.model;
 
 import it.polimi.ingsw.common.exceptions.InvalidOperationException;
 
+import java.io.Serializable;
 import java.text.MessageFormat;
 import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-public class Round {
+public class Round implements Serializable {
 
     /**
      * Current stage of the round

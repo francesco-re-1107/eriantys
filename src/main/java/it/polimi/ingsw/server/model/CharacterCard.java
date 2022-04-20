@@ -2,12 +2,13 @@ package it.polimi.ingsw.server.model;
 
 import it.polimi.ingsw.common.exceptions.InvalidOperationException;
 
+import java.io.Serializable;
 import java.util.*;
 
 /**
  * This class is used to represent a generic character card
  */
-public abstract class CharacterCard {
+public abstract class CharacterCard implements Serializable {
 
     /**
      * This list holds all the available character cards that can be randomly extracted

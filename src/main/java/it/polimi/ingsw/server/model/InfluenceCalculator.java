@@ -1,11 +1,12 @@
 package it.polimi.ingsw.server.model;
 
+import java.io.Serializable;
 import java.util.Map;
 
 /**
  * Represents the common interface for all calculators used for calculating influence
  */
-public interface InfluenceCalculator {
+public interface InfluenceCalculator extends Serializable {
 
     /**
      * Calculate influence

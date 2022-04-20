@@ -2,6 +2,7 @@ package it.polimi.ingsw.server.model;
 
 import it.polimi.ingsw.common.exceptions.InvalidOperationException;
 
+import java.io.Serializable;
 import java.text.MessageFormat;
 import java.util.HashMap;
 import java.util.Map;
@@ -9,7 +10,7 @@ import java.util.Map;
 /**
  * This class models a player of the game, storing all the information of the board
  */
-public class Player implements StudentsContainer.StudentNumberReachedListener{
+public class Player implements StudentsContainer.StudentNumberReachedListener, Serializable {
 
     /**
      * Stores the nickname chose by the player during setup
@@ -265,11 +266,11 @@ public class Player implements StudentsContainer.StudentNumberReachedListener{
 
     public String prettyBoard(){
         String b = MessageFormat.format("Towers: {0}\nCoins: {1}\n\n", towersCount, coins);
-        int max_entrance = entrance.getStudents().values().stream().mapToInt(n -> n).max().orElse(0); // used to align
+        int maxEntrance = entrance.getStudents().values().stream().mapToInt(n -> n).max().orElse(0); // used to align
         for (var s: Student.values()) {
             var ch = s.toString().substring(0,1); // color first letter
             var count = entrance.getCountForStudent(s);
-            b = b + ch.repeat(count) + " ".repeat(max_entrance - count) + " | "; // entrance
+            b = b + ch.repeat(count) + " ".repeat(maxEntrance - count) + " | "; // entrance
             b = b + ch.repeat(school.getCountForStudent(s)) + '\n'; // school
         }
         return b;

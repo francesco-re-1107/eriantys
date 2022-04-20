@@ -1,12 +1,13 @@
 package it.polimi.ingsw.server.model;
 
+import java.io.Serializable;
 import java.util.Arrays;
 import java.util.List;
 
 /**
  * This card represents an assistant card used by players in the planning stage of the round
  */
-public record AssistantCard(int turnPriority, int motherNatureMaxMoves) {
+public record AssistantCard(int turnPriority, int motherNatureMaxMoves) implements Serializable {
 
     /**
      * Generate a new default deck of assistant cards

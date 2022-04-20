@@ -6,6 +6,7 @@ import it.polimi.ingsw.common.exceptions.InvalidOperationException;
 import it.polimi.ingsw.server.model.charactercards.*;
 import it.polimi.ingsw.server.model.influencecalculators.DefaultInfluenceCalculator;
 
+import java.io.Serializable;
 import java.text.MessageFormat;
 import java.util.*;
 import java.util.logging.Level;
@@ -17,7 +18,7 @@ import java.util.logging.Logger;
  * When the desired number of players (@see numberOfPlayers in the constructor) is reached the game can be started
  * with the method startGame(). At this point the game state is State.STARTED.
  */
-public class Game {
+public class Game implements Serializable {
 
     /**
      * Stores the players of this game
@@ -96,7 +97,7 @@ public class Game {
      */
     private final ArrayList<GameUpdateListener> listeners;
 
-    Logger logger = Utils.LOGGER;
+    private static final transient Logger logger = Utils.LOGGER;
 
     /**
      * Create a new game
@@ -104,8 +105,11 @@ public class Game {
      * @param numberOfPlayers number of players chose at the creation of the game
      */
     public Game(int numberOfPlayers, boolean expertMode) {
-        //TODO: validate numberOfPlayers
-        logger.log(Level.INFO, "creating game with {0} players and expert = {1}", new Object[]{numberOfPlayers, expertMode});
+
+        if(numberOfPlayers < 2 || numberOfPlayers > 3)
+            throw new InvalidOperationException("NumberOfPlayers must be 2 or 3");
+
+        logger.log(Level.INFO, "Creating game with {0} players and expert = {1}", new Object[]{numberOfPlayers, expertMode});
         this.numberOfPlayers = numberOfPlayers;
         this.studentsBag = new RandomizedStudentsContainer(Constants.STUDENTS_BAG_NUMBER_PER_COLOR);
         this.players = new ArrayList<>();
@@ -115,7 +119,7 @@ public class Game {
 
         CharacterCard.generateRandomDeck(Constants.NUMBER_OF_CHARACTER_CARD)
                 .forEach(s -> this.characterCards.put(s, 0));
-        logger.log(Level.FINER, MessageFormat.format("character cards> {0}", this.characterCards.keySet().toString()));
+        logger.log(Level.FINER, "Character cards -> {0}", characterCards.keySet());
 
         initializeIslands();
     }
@@ -190,7 +194,7 @@ public class Game {
                             Constants.THREE_PLAYERS.STUDENTS_PER_CLOUD)
             );
 
-        logger.log(Level.FINE, MessageFormat.format("generated clouds: {0}", clouds.toString()));
+        logger.log(Level.FINE, "generated clouds: {0}", clouds);
         List<Player> tmpPlayers;
 
         //if it's not the first round, use the previous players order for the new round
@@ -232,6 +236,8 @@ public class Game {
      * @param player the player to check
      */
     private void checkIfCurrentPlayer(Player player) {
+        checkIfValidPlayer(player);
+
         if (!currentRound.getCurrentPlayer().equals(player))
             throw new InvalidOperationException("This player cannot play at this time");
     }
@@ -672,8 +678,7 @@ public class Game {
      * @param player the player disconnected
      */
     public void setPlayerDisconnected(Player player){
-        if(!players.contains(player))
-            throw new InvalidOperationException("Not a valid player");
+        checkIfValidPlayer(player);
 
         player.setConnected(false);
 
@@ -688,8 +693,7 @@ public class Game {
      * @param player
      */
     public void setPlayerReconnected(Player player){
-        if(!players.contains(player))
-            throw new InvalidOperationException("Not a valid player");
+        checkIfValidPlayer(player);
 
         player.setConnected(true);
 
@@ -707,8 +711,7 @@ public class Game {
      * @param player
      */
     public void leaveGame(Player player) {
-        if(!players.contains(player))
-            throw new InvalidOperationException("Not a valid player");
+        checkIfValidPlayer(player);
 
         if(gameState == State.CREATED) {
             //just remove the player
@@ -724,6 +727,15 @@ public class Game {
         }
 
         notifyUpdate();
+    }
+
+    /**
+     * Check if the given player is a valid player for this game
+     * @param player
+     */
+    private void checkIfValidPlayer(Player player) {
+        if(!players.contains(player))
+            throw new InvalidOperationException("Not a valid player");
     }
 
     /**
@@ -767,7 +779,7 @@ public class Game {
         TERMINATED //game terminated before finish (e.g. a player left the game)
     }
 
-    public interface GameUpdateListener {
+    public interface GameUpdateListener extends Serializable{
         void onGameUpdate(Game game);
     }
 }

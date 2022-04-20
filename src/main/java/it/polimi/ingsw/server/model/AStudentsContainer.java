@@ -2,6 +2,7 @@ package it.polimi.ingsw.server.model;
 
 import it.polimi.ingsw.Utils;
 
+import java.io.Serializable;
 import java.util.EnumMap;
 import java.util.Map;
 import java.util.Objects;
@@ -9,7 +10,7 @@ import java.util.Objects;
 /**
  * This class represents a generic students container which cannot be modified
  */
-public abstract class AStudentsContainer {
+public abstract class AStudentsContainer implements Serializable {
 
     /**
      * Used internally to store the students
