@@ -36,11 +36,6 @@ class IslandTest {
     }
 
     @Test
-    void getTowersCount() {
-
-    }
-
-    @Test
     void getTowerColor() {
         i1.setConquered(Tower.BLACK);
 

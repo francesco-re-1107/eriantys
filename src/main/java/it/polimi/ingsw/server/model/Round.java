@@ -2,7 +2,10 @@ package it.polimi.ingsw.server.model;
 
 import it.polimi.ingsw.common.exceptions.InvalidOperationException;
 
+import java.text.MessageFormat;
 import java.util.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class Round {
 
@@ -36,6 +39,8 @@ public class Round {
      */
     private int additionalMotherNatureMoves = 0;
 
+    Logger logger = Logger.getLogger(Game.class.getName());
+
     /**
      * @param players list of players ordered with respect to the assistant cards played in the previous round
      * @param clouds randomly generated clouds
@@ -58,7 +63,7 @@ public class Round {
         for(int i = 0; i < players.size(); i++)
             cardPairs.add(new CardPair(players.get(i), playedAssistantCards.get(i)));
 
-        cardPairs.sort(Comparator.comparingInt(cardPair -> cardPair.second.getTurnPriority()));
+        cardPairs.sort(Comparator.comparingInt(cardPair -> cardPair.second.turnPriority()));
 
         players.clear();
         players.addAll(cardPairs.stream()
@@ -117,8 +122,8 @@ public class Round {
         if(stage == Stage.PLAN)
             throw new InvalidOperationException();
 
+        logger.log(Level.FINE,  MessageFormat.format("Board:\n{0}", getCurrentPlayer().prettyBoard()));
         currentPlayer++;
-
         //finished round check
         return currentPlayer == players.size();
     }

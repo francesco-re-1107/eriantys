@@ -98,4 +98,9 @@ public abstract class AStudentsContainer {
     public int hashCode() {
         return Objects.hash(students, maxSize);
     }
+
+    @Override
+    public String toString() {
+        return students.toString();
+    }
 }

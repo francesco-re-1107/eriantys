@@ -3,17 +3,22 @@ package it.polimi.ingsw.server.model;
 import it.polimi.ingsw.common.exceptions.DuplicatedNicknameException;
 import it.polimi.ingsw.common.exceptions.InvalidOperationException;
 import it.polimi.ingsw.server.model.charactercards.PostmanCharacterCard;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.RepeatedTest;
 import org.junit.jupiter.api.Test;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Random;
+import java.util.*;
+import java.util.logging.Level;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 class GameTest {
+
+    @BeforeEach
+    void setUp() {
+        Utils.LOGGER.setLevel(Level.WARNING);
+    }
 
     /**
      * This method creates a game with 2 rounds only and checks all the corner-cases in Game methods
@@ -72,7 +77,7 @@ class GameTest {
         //putStudents in PLAN stage
         assertThrows(
                 InvalidOperationException.class,
-                () -> g.putStudents(players.get(0), new StudentsContainer(), new HashMap<>())
+                () -> g.placeStudents(players.get(0), new StudentsContainer(), new HashMap<>())
         );
 
         //moveMotherNature in PLAN stage
@@ -105,7 +110,13 @@ class GameTest {
         //player 1 has higher turn priority
         assertEquals(players.get(1), g.getCurrentRound().getCurrentPlayer());
 
-        //put students
+        //trying placing not enough students
+        assertThrows(
+                InvalidOperationException.class,
+                () -> g.placeStudents(players.get(1), new StudentsContainer(), new HashMap<>())
+        );
+
+        //place students
         RandomizedStudentsContainer picker =
                 new RandomizedStudentsContainer(players.get(1).getEntrance());
 
@@ -115,7 +126,7 @@ class GameTest {
         inIsland.put(g.getIslands().get(3), picker.pickManyRandom(1));
         inIsland.put(g.getIslands().get(5), picker.pickManyRandom(1));
 
-        g.putStudents(players.get(1), inSchool, inIsland);
+        g.placeStudents(players.get(1), inSchool, inIsland);
 
         //check size of entrance, school and island
         assertEquals(4, players.get(1).getEntrance().getSize());
@@ -160,11 +171,11 @@ class GameTest {
         assertEquals(players.get(0), g.getCurrentRound().getCurrentPlayer());
         assertEquals(Round.Stage.ATTACK, g.getCurrentRound().getStage());
 
-        //put students
+        //place students
         picker = new RandomizedStudentsContainer(players.get(0).getEntrance());
         inSchool = picker.pickManyRandom(3);
         inIsland = new HashMap<>();
-        g.putStudents(players.get(0), inSchool, inIsland);
+        g.placeStudents(players.get(0), inSchool, inIsland);
 
         //move mother nature
         g.moveMotherNature(players.get(0), 1);
@@ -191,17 +202,21 @@ class GameTest {
      *
      * This test DOESN'T check whether the methods called do what they claim to do.
      */
-    @RepeatedTest(500)
+    @RepeatedTest(10000)
     void testDynamicGame() {
         Random r = new Random();
 
         Game g = new Game(r.nextInt(2,4), r.nextBoolean());
 
+        int pCounter = 0;
         do {
-            g.addPlayer("p" + r.nextInt());
+            g.addPlayer("p" + pCounter);
+            pCounter++;
         }while(g.getCurrentNumberOfPlayers() < g.getNumberOfPlayers());
 
         g.startGame();
+
+        var characters = g.getCharacterCards().keySet().stream().toList();
 
         while(g.getGameState() != Game.State.FINISHED){
 
@@ -239,13 +254,38 @@ class GameTest {
                 int studentsToPutOnIsland = g.getNumberOfPlayers() == 2 ? 1 : 2;
                 inIsland.put(g.getIslands().get(r.nextInt(g.getIslands().size())), picker.pickManyRandom(studentsToPutOnIsland));
 
-                g.putStudents(currentPlayer, inSchool, inIsland);
+                g.placeStudents(currentPlayer, inSchool, inIsland);
 
                 //play character card randomly
-                //TODO: implement
+                if(g.isExpertMode()) {
+                    var pickedCard = characters.get(r.nextInt(characters.size()));
+                    var usedTimes = g.getCharacterCards().get(pickedCard);
+                    CharacterCard cardToPlay = null;
+
+                    switch (pickedCard) {
+                        case "CentaurCharacterCard" -> cardToPlay = new CentaurCharacterCard();
+                        case "FarmerCharacterCard" -> cardToPlay = new FarmerCharacterCard(currentPlayer);
+                        case "GrandmaCharacterCard" -> cardToPlay = new GrandmaCharacterCard(g.getIslands().get(r.nextInt(g.getIslands().size())));
+                        case "HeraldCharacterCard" -> cardToPlay = new HeraldCharacterCard(g.getIslands().get(r.nextInt(g.getIslands().size())));
+                        case "KnightCharacterCard" -> cardToPlay = new KnightCharacterCard(currentPlayer);
+                        case "MinstrelCharacterCard" -> {
+                            var entrance = new RandomizedStudentsContainer(currentPlayer.getEntrance());
+                            var school = new RandomizedStudentsContainer(currentPlayer.getSchool());
+                            cardToPlay = new MinstrelCharacterCard(
+                                    school.pickManyRandom(2),
+                                    entrance.pickManyRandom(2)
+                            );
+                        }
+                        case "MushroomManCharacterCard" -> cardToPlay = new MushroomManCharacterCard(Student.BLUE);
+                        case "PostmanCharacterCard" -> cardToPlay = new PostmanCharacterCard();
+                    }
+
+                    if (cardToPlay != null && cardToPlay.getCost(usedTimes) <= currentPlayer.getCoins())
+                        g.playCharacterCard(currentPlayer, cardToPlay);
+                }
 
                 //move mother nature randomly
-                int allowedMoves = g.getCurrentRound().getCardPlayedBy(currentPlayer).get().getMotherNatureMaxMoves() +
+                int allowedMoves = g.getCurrentRound().getCardPlayedBy(currentPlayer).get().motherNatureMaxMoves() +
                             g.getCurrentRound().getAdditionalMotherNatureMoves();
                 g.moveMotherNature(currentPlayer, 1 + r.nextInt(allowedMoves));
 

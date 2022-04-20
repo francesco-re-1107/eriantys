@@ -5,6 +5,7 @@ import it.polimi.ingsw.server.model.AssistantCard;
 import java.util.Comparator;
 import java.util.logging.ConsoleHandler;
 import java.util.logging.Level;
+import java.util.logging.LogManager;
 import java.util.logging.Logger;
 
 /**
@@ -16,16 +17,19 @@ public class Utils {
         return (o1 == null) ? o2 : o1;
     }
 
-    public static Comparator<AssistantCard> priorityComparator = Comparator.comparingInt(AssistantCard::getTurnPriority);
+    public static final Logger LOGGER = Logger.getLogger("Logger");
 
-    private static Logger logger = Logger.getLogger("it.polimi.ingsw");
-
-    public static Logger SetupLogger(){
-        logger.setLevel(Level.FINEST);
+    private static void setupLogger(){
+        LOGGER.setLevel(Level.INFO);
+        LogManager.getLogManager().reset();
         ConsoleHandler handler = new ConsoleHandler();
+        handler.setLevel(Level.INFO);
         handler.setFormatter(new PrettyLogFormatter());
-        logger.addHandler(handler);
-        return logger;
+        LOGGER.addHandler(handler);
+    }
+
+    static {
+        setupLogger();
     }
 
     public static boolean isValidNickname(String nickname) {

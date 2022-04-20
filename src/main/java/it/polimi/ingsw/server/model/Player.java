@@ -2,6 +2,7 @@ package it.polimi.ingsw.server.model;
 
 import it.polimi.ingsw.common.exceptions.InvalidOperationException;
 
+import java.text.MessageFormat;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -119,12 +120,22 @@ public class Player implements StudentsContainer.StudentNumberReachedListener{
     }
 
     /**
-     * Set the number of towers left on the board of this player
-     * @param towersCount new number of towers to set
+     * Decrement number of towers left on the board of this player
+     * @param count number of towers to add to towersCount
      */
-    public void setTowersCount(int towersCount){
-        this.towersCount = towersCount;
+    public void incrementTowersCount(int count){
+        this.towersCount += count;
     }
+
+    /**
+     * Increment number of towers left on the board of this player
+     * @param count number of towers to subtract from towersCount
+     */
+    public void decrementTowersCount(int count){
+        //not going below zero
+        this.towersCount = Math.max(this.towersCount - count, 0);
+    }
+
 
     /**
      * @return the tower color chose for this player
@@ -250,5 +261,17 @@ public class Player implements StudentsContainer.StudentNumberReachedListener{
         coins++;
         //coin obtained -> remove listener
         this.school.removeOnStudentNumberReachedListener(student, count);
+    }
+
+    public String prettyBoard(){
+        String b = MessageFormat.format("Towers: {0}\nCoins: {1}\n\n", towersCount, coins);
+        int max_entrance = entrance.getStudents().values().stream().mapToInt(n -> n).max().orElse(0); // used to align
+        for (var s: Student.values()) {
+            var ch = s.toString().substring(0,1); // color first letter
+            var count = entrance.getCountForStudent(s);
+            b = b + ch.repeat(count) + " ".repeat(max_entrance - count) + " | "; // entrance
+            b = b + ch.repeat(school.getCountForStudent(s)) + '\n'; // school
+        }
+        return b;
     }
 }

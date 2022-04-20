@@ -95,10 +95,11 @@ public class Game {
      */
     private final ArrayList<GameUpdateListener> listeners;
 
-    Logger logger = Logger.getLogger(Game.class.getName());
+    Logger logger = Utils.LOGGER;
 
     /**
      * Create a new game
+     *
      * @param numberOfPlayers number of players chose at the creation of the game
      */
     public Game(int numberOfPlayers, boolean expertMode) {
@@ -113,6 +114,7 @@ public class Game {
 
         CharacterCard.generateRandomDeck(Constants.NUMBER_OF_CHARACTER_CARD)
                 .forEach(s -> this.characterCards.put(s, 0));
+        logger.log(Level.FINER, MessageFormat.format("character cards> {0}", this.characterCards.keySet().toString()));
 
         initializeIslands();
     }
@@ -150,7 +152,7 @@ public class Game {
         if (players.size() != numberOfPlayers)
             throw new InvalidOperationException("Number of players not reached yet");
 
-        if(gameState != State.CREATED)
+        if (gameState != State.CREATED)
             throw new InvalidOperationException(
                     MessageFormat.format("Game already started (gameState is {0})", gameState)
             );
@@ -170,27 +172,28 @@ public class Game {
     private void newRound() {
         logger.info("round started");
         //if the bag is empty the game is finished
-        if(studentsBag.getSize() == 0)
+        if (studentsBag.getSize() == 0)
             setGameFinished(calculateCurrentWinner());
 
         //check if players have any card left
         boolean playersWithZeroCardsLeft = players.stream().anyMatch(p -> p.getAssistantCardsLeftCount() == 0);
-        if(playersWithZeroCardsLeft)
+        if (playersWithZeroCardsLeft)
             setGameFinished(calculateCurrentWinner());
 
         //generate clouds
         List<StudentsContainer> clouds = new ArrayList<>();
-        for(int i = 0; i < numberOfPlayers; i++)
+        for (int i = 0; i < numberOfPlayers; i++)
             clouds.add(studentsBag.pickManyRandom(
                     numberOfPlayers == 2 ?
                             Constants.TWO_PLAYERS.STUDENTS_PER_CLOUD :
                             Constants.THREE_PLAYERS.STUDENTS_PER_CLOUD)
             );
 
+        logger.log(Level.FINE, MessageFormat.format("generated clouds: {0}", clouds.toString()));
         List<Player> tmpPlayers;
 
         //if it's not the first round, use the previous players order for the new round
-        if(currentRound != null)
+        if (currentRound != null)
             tmpPlayers = currentRound.getPlayers();
         else
             tmpPlayers = new ArrayList<>(players);
@@ -202,20 +205,21 @@ public class Game {
 
     /**
      * Select a cloud for a given player
-     * @param cloud the cloud chose by the player
+     *
+     * @param cloud  the cloud chose by the player
      * @param player the player
      */
     public void selectCloud(Player player, StudentsContainer cloud) {
         checkIfCurrentPlayer(player);
 
-        if(!currentRound.getClouds().contains(cloud))
+        if (!currentRound.getClouds().contains(cloud))
             throw new InvalidOperationException("Cannot find selected cloud");
 
         player.addCloudToEntrance(cloud);
         currentRound.removeCloud(cloud);
 
         //go to next player or new round if necessary
-        if(currentRound.nextPlayer())
+        if (currentRound.nextPlayer())
             newRound();
 
         notifyUpdate();
@@ -223,15 +227,17 @@ public class Game {
 
     /**
      * Check if the given player is the current player
+     *
      * @param player the player to check
      */
     private void checkIfCurrentPlayer(Player player) {
-        if(!currentRound.getCurrentPlayer().equals(player))
+        if (!currentRound.getCurrentPlayer().equals(player))
             throw new InvalidOperationException("This player cannot play at this time");
     }
 
     /**
      * Add a new player to this game lobby, only if the game is in CREATED state and there's space for another user
+     *
      * @param nickname the nickname chose by the player
      * @return the newly created player
      */
@@ -264,18 +270,19 @@ public class Game {
 
     /**
      * Move mother nature on the islands
+     *
      * @param steps number of steps that mother nature needs to be moved
      */
-    public void moveMotherNature(Player player, int steps){
+    public void moveMotherNature(Player player, int steps) {
         checkIfCurrentPlayer(player);
 
-        if(currentRound.getStage() != Round.Stage.ATTACK)
+        if (currentRound.getStage() != Round.Stage.ATTACK)
             throw new InvalidOperationException("");
 
         //use get directly cause in attack stage every player has played its card
         AssistantCard card = currentRound.getCardPlayedBy(player).orElseThrow();
 
-        if(steps > card.getMotherNatureMaxMoves() + currentRound.getAdditionalMotherNatureMoves())
+        if (steps > card.motherNatureMaxMoves() + currentRound.getAdditionalMotherNatureMoves())
             throw new InvalidOperationException("Cannot move mother nature that far");
         //reset additional moves after use
         currentRound.setAdditionalMotherNatureMoves(0);
@@ -283,7 +290,7 @@ public class Game {
         this.motherNaturePosition = calculateMotherNatureIndex(steps);
 
         // if there's a no entry on the island then remove it and don't calculate influence
-        if(getCurrentIsland().isNoEntry()) {
+        if (getCurrentIsland().isNoEntry()) {
             getCurrentIsland().setNoEntry(false);
         } else {
             //after moving mother nature calculate influence on the island she just reached
@@ -301,7 +308,7 @@ public class Game {
      * Calculate which player has the most influence on the current island
      * and change the towers on that island respectively
      */
-    private void calculateInfluenceOnCurrentIsland(){
+    private void calculateInfluenceOnCurrentIsland() {
         this.calculateInfluenceOnIsland(getCurrentIsland());
     }
 
@@ -309,35 +316,43 @@ public class Game {
      * Calculate which player has the most influence on the given island
      * and change the towers on that island respectively
      */
-    private void calculateInfluenceOnIsland(Island island){
+    private void calculateInfluenceOnIsland(Island island) {
         int max = -1;
         Optional<Player> maxP = Optional.empty();
+        if (temporaryInfluenceCalculator.isPresent())
+            logger.log(Level.INFO, "calculating influence with modifier...");
         InfluenceCalculator calc = temporaryInfluenceCalculator.orElse(defaultInfluenceCalculator);
 
-        for(Player p: players){
+        for (Player p : players) {
             int infl = calc.calculateInfluence(p, island, getProfessors());
 
-            if(infl > max){
+            if (infl > max) {
                 max = infl;
                 maxP = Optional.of(p);
-            }else if(infl == max){ // if there are two or more maximums
+            } else if (infl == max) { // if there are two or more maximums
                 maxP = Optional.empty();
             }
         }
 
         //only if there's a max without duplicate
-        maxP.ifPresent(
-                player -> {
-                    //only if island is not yet conquered by this player
-                    if(player.getTowerColor() != island.getTowerColor()) {
-                        island.setConquered(player.getTowerColor());
-                        player.setTowersCount(player.getTowersCount() - island.getTowersCount());
-
-                        //TODO maybe use an observer
-                        if(player.getTowersCount() <= 0)
-                            setGameFinished(player);
+        maxP.ifPresent(player -> {
+                //only if island is not yet conquered by this player
+                if (player.getTowerColor() != island.getTowerColor()) {
+                    if(island.isConquered()) { //island already conquered, remove towers from the previous owner
+                        players.stream()
+                                .filter(p -> p.getTowerColor() == island.getTowerColor())
+                                .findFirst()
+                                .ifPresent(p -> p.incrementTowersCount(island.getTowersCount()));
                     }
+
+                    island.setConquered(player.getTowerColor());
+                    //in both cases remove towers from player
+                    player.decrementTowersCount(island.getTowersCount());
+
+                    if (player.getTowersCount() <= 0)
+                        setGameFinished(player);
                 }
+            }
         );
 
         //remove temporary after use
@@ -345,48 +360,51 @@ public class Game {
     }
 
     /**
-     *
      * @param player
      * @param card
      */
-    public void playAssistantCard(Player player, AssistantCard card){
+    public void playAssistantCard(Player player, AssistantCard card) {
         checkIfCurrentPlayer(player);
 
-        if(!player.canPlayAssistantCard(card))
+        if (!player.canPlayAssistantCard(card))
             throw new InvalidOperationException();
 
+        logger.log(Level.INFO, MessageFormat.format("{0} played assistant card with priority {1} and max moves {2} ",
+                player.getNickname(), card.turnPriority(), card.motherNatureMaxMoves()));
         currentRound.playAssistantCard(player, card);
 
         notifyUpdate();
     }
 
     /**
-     *
-     * @param player
-     * @param card
+     * Play character card for the given player
+     * @param player the player that plays the card
+     * @param card the card to paly
      */
-    public void playCharacterCard(Player player, CharacterCard card){
-        if(!expertMode)
+    public void playCharacterCard(Player player, CharacterCard card) {
+        if (!expertMode)
             throw new InvalidOperationException("Cannot play character cards in simple mode");
 
         checkIfCurrentPlayer(player);
 
-        if(currentRound.getStage() != Round.Stage.ATTACK)
+        if (currentRound.getStage() != Round.Stage.ATTACK)
             throw new InvalidOperationException("");
 
-        if(!characterCards.containsKey(card.getName()))
+        if (!characterCards.containsKey(card.getName()))
             throw new InvalidOperationException();
 
         int cost = card.getCost(characterCards.get(card.getName()));
 
-        if(player.getCoins() < cost)
+        if (player.getCoins() < cost)
             throw new InvalidOperationException("Player cannot buy the card");
+
+        logger.log(Level.INFO,  MessageFormat.format("playing character card {0} at {1}c", card.getName(), cost));
 
         player.useCoins(cost);
 
-        if(card instanceof InfluenceCharacterCard influenceCard){
-            temporaryInfluenceCalculator = Optional.of(influenceCard.getInfluenceCalculator(player));
-        } else if (card instanceof HeraldCharacterCard heraldCard){
+        if (card instanceof InfluenceCharacterCard influenceCard) {
+            temporaryInfluenceCalculator = Optional.of(influenceCard.getInfluenceCalculator());
+        } else if (card instanceof HeraldCharacterCard heraldCard) {
             calculateInfluenceOnIsland(heraldCard.getIsland());
         } else if (card instanceof PostmanCharacterCard postmanCard) {
             currentRound.setAdditionalMotherNatureMoves(postmanCard.getAdditionalMotherNatureMoves());
@@ -395,7 +413,7 @@ public class Game {
                 throw new InvalidOperationException("Island not present in this game");
             grandmaCard.getIsland().setNoEntry(true);
         } else if (card instanceof MinstrelCharacterCard minstrelCard) {
-            if(minstrelCard.getStudentsToRemove().getSize() > 2 ||
+            if (minstrelCard.getStudentsToRemove().getSize() > 2 ||
                     minstrelCard.getStudentsToAdd().getSize() > 2)
                 throw new InvalidOperationException("Too much students to swap");
 
@@ -406,17 +424,16 @@ public class Game {
     }
 
     /**
-     * TODO: find a better name for this method
      * Move students of a player from entrance to school or islands
      *
      * @param player
      * @param inSchool students to add to school
      * @param inIsland students to add to the relative island
      */
-    public void putStudents(Player player, StudentsContainer inSchool, Map<Island,StudentsContainer> inIsland){
+    public void placeStudents(Player player, StudentsContainer inSchool, Map<Island, StudentsContainer> inIsland) {
         checkIfCurrentPlayer(player);
 
-        if(currentRound.getStage() != Round.Stage.ATTACK)
+        if (currentRound.getStage() != Round.Stage.ATTACK)
             throw new InvalidOperationException();
 
         int studentsMoved = inSchool.getSize() + inIsland.values().stream().mapToInt(StudentsContainer::getSize).sum();
@@ -425,7 +442,7 @@ public class Game {
                 Constants.THREE_PLAYERS.STUDENTS_TO_MOVE :
                 Constants.TWO_PLAYERS.STUDENTS_TO_MOVE;
 
-        if(studentsMoved != studentsToMove)
+        if (studentsMoved != studentsToMove)
             throw new InvalidOperationException();
 
         player.addStudentsToSchool(inSchool);
@@ -445,19 +462,19 @@ public class Game {
         Island prev = islands.get(calculateMotherNatureIndex(-1));
         Island next = islands.get(calculateMotherNatureIndex(1));
 
-        if(curr.isMergeCompatible(prev)){
+        if (curr.isMergeCompatible(prev)) {
             logger.info("island merged with previous one");
             curr.merge(prev);
             islands.remove(prev);
         }
 
-        if(curr.isMergeCompatible(next)){
+        if (curr.isMergeCompatible(next)) {
             logger.info("island merged with next one");
             curr.merge(next);
             islands.remove(next);
         }
 
-        if(islands.size() <= 3)
+        if (islands.size() <= 3)
             setGameFinished(calculateCurrentWinner());
 
         //adjust motherNatureIndex
@@ -469,6 +486,7 @@ public class Game {
      * Calculate player that is winning right now, based on the number of towers left.
      * If there's a draw, the player with most professors wins
      * If there's a draw, TODO: the instructions don't handle this case
+     *
      * @return the winning player
      */
     private Player calculateCurrentWinner() {
@@ -483,11 +501,11 @@ public class Game {
         Player secondPlayer =
                 orderedPlayers.get(1);
 
-        if(firstPlayer.getTowersCount() < secondPlayer.getTowersCount()) //there's a winner
+        if (firstPlayer.getTowersCount() < secondPlayer.getTowersCount()) //there's a winner
             return firstPlayer;
 
         //otherwise, look at the professors
-        if(getProfessorsForPlayer(firstPlayer).size() >
+        if (getProfessorsForPlayer(firstPlayer).size() >
                 getProfessorsForPlayer(secondPlayer).size())
             return firstPlayer;
         else
@@ -497,16 +515,17 @@ public class Game {
     /**
      * @return the island on which mother nature is located
      */
-    public Island getCurrentIsland(){
+    public Island getCurrentIsland() {
         return islands.get(this.motherNaturePosition);
     }
 
     /**
      * Calculate the index of mother nature on the islands in a circular path
+     *
      * @param steps number of steps to move mother nature (positive or negative)
      * @return the calculated index
      */
-    private int calculateMotherNatureIndex(int steps){
+    private int calculateMotherNatureIndex(int steps) {
         //using floorMod because the % operator gives problems with negative numbers
         return Math.floorMod(this.motherNaturePosition + steps, islands.size());
     }
@@ -519,7 +538,7 @@ public class Game {
         listeners.remove(listener);
     }
 
-    private void notifyUpdate(){
+    private void notifyUpdate() {
         //create a copy so observers can remove the listener
         new ArrayList<>(listeners)
                 .forEach(l -> l.onGameUpdate(this));
@@ -541,7 +560,7 @@ public class Game {
             Player firstPlayer = sortedPlayers.get(0);
             Player secondPlayer = sortedPlayers.get(1);
 
-            if(firstPlayer.getSchool().getCountForStudent(s) >
+            if (firstPlayer.getSchool().getCountForStudent(s) >
                     secondPlayer.getSchool().getCountForStudent(s))
                 professors.put(s, firstPlayer);
         });
@@ -549,6 +568,7 @@ public class Game {
 
     /**
      * Utility method to retrieve the professors of a given player
+     *
      * @param player
      * @return a list of student for which the player has the professor
      */
@@ -562,6 +582,7 @@ public class Game {
 
     /**
      * End this game and set a winner
+     *
      * @param winner the winner of the game
      */
     private void setGameFinished(Player winner) {
@@ -583,6 +604,7 @@ public class Game {
 
     /**
      * If game is started, this will return the same as getCurrentNumberOfPlayers()
+     *
      * @return the desired number of players
      */
     public int getNumberOfPlayers() {
@@ -591,6 +613,7 @@ public class Game {
 
     /**
      * If game is started, this will return the same as getNumberOfPlayers()
+     *
      * @return the current number of players
      */
     public int getCurrentNumberOfPlayers() {
@@ -704,6 +727,7 @@ public class Game {
 
     /**
      * Return
+     *
      * @return the winner of the game, if the game was ended
      */
     public Optional<Player> getWinner() {
