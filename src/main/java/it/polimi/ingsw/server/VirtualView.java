@@ -10,6 +10,7 @@ import it.polimi.ingsw.common.responses.GamesListResponse;
 import it.polimi.ingsw.server.controller.Controller;
 import it.polimi.ingsw.server.controller.GameController;
 import it.polimi.ingsw.server.model.Game;
+
 import java.net.Socket;
 
 /**
@@ -81,8 +82,8 @@ public class VirtualView implements ServerClientCommunicator.CommunicatorListene
     private void processRequest(Request request) {
         try {
             if (request instanceof RegisterNicknameRequest r) {
-                this.gameController = controller.registerNickname(r.getNickname(), this);
-                this.nickname = r.getNickname();
+                gameController = controller.registerNickname(r.getNickname(), this);
+                nickname = r.getNickname();
                 communicator.send(new AckResponse());
             } else if (request instanceof ListGamesRequest) {
                 communicator.send(new GamesListResponse(controller.listGames()));
@@ -135,10 +136,10 @@ public class VirtualView implements ServerClientCommunicator.CommunicatorListene
      */
     @Override
     public void onDisconnect() {
-        this.isConnected = false;
+        isConnected = false;
 
         if(gameController != null)
-            this.gameController.disconnect();
+            gameController.disconnect();
     }
 
     /**
@@ -158,7 +159,7 @@ public class VirtualView implements ServerClientCommunicator.CommunicatorListene
     public void onGameUpdate(ReducedGame game) {
         communicator.send(new GameUpdateResponse(game));
 
-        Game.State state = game.currentState();
+        var state = game.currentState();
 
         //if game's finished are removed from the list
         if(state == Game.State.TERMINATED || state == Game.State.FINISHED)

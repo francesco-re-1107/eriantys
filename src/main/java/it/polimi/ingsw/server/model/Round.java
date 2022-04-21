@@ -37,7 +37,7 @@ public class Round implements Serializable {
     private int currentPlayer = 0;
 
     /**
-     * Additional mother nature moves for the current turn TODO: maybe improve
+     * Additional mother nature moves for the current turn
      */
     private int additionalMotherNatureMoves = 0;
 

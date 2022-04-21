@@ -2,12 +2,15 @@ package it.polimi.ingsw.server.model;
 
 import it.polimi.ingsw.Utils;
 import it.polimi.ingsw.common.exceptions.InvalidOperationException;
-import it.polimi.ingsw.server.model.charactercards.PostmanCharacterCard;
+import it.polimi.ingsw.server.model.charactercards.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.RepeatedTest;
 import org.junit.jupiter.api.Test;
-import it.polimi.ingsw.server.model.charactercards.*;
-import java.util.*;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Random;
 import java.util.logging.Level;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -73,7 +76,7 @@ class GameTest {
                 () -> g.playAssistantCard(players.get(1), AssistantCard.getDefaultDeck().get(1))
         );
 
-        //putStudents in PLAN stage
+        //placeStudents in PLAN stage
         assertThrows(
                 InvalidOperationException.class,
                 () -> g.placeStudents(players.get(0), new StudentsContainer(), new HashMap<>())
@@ -143,6 +146,10 @@ class GameTest {
         }
 
         //move mother nature
+        assertThrows(
+                InvalidOperationException.class,
+                () -> g.moveMotherNature(players.get(1), 0)
+        );
         assertThrows(
                 InvalidOperationException.class,
                 () -> g.moveMotherNature(players.get(1), 10)
@@ -294,6 +301,6 @@ class GameTest {
             }
         }
 
-        assertNotNull(g.getWinner().get());
+        assertNotNull(g.getWinner());
     }
 }

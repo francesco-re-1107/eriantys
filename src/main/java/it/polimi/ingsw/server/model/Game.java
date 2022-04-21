@@ -72,15 +72,15 @@ public class Game implements Serializable {
     private final InfluenceCalculator defaultInfluenceCalculator = new DefaultInfluenceCalculator();
 
     /**
-     * One shot InfluenceCalculator used when calculating influence of a player on an island
+     * One-shot InfluenceCalculator used when calculating influence of a player on an island
      * under a character card effect. It has higher priority than defaultInfluenceCalculator
      */
-    private Optional<InfluenceCalculator> temporaryInfluenceCalculator = Optional.empty();
+    private InfluenceCalculator temporaryInfluenceCalculator = null;
 
     /**
      * Used to retrieve the winner of this game, it is null until the game comes in the FINISHED state
      */
-    private Optional<Player> winner = Optional.empty();
+    private Player winner = null;
 
     /**
      * Whether the game is played with experto mode on
@@ -283,8 +283,11 @@ public class Game implements Serializable {
     public void moveMotherNature(Player player, int steps) {
         checkIfCurrentPlayer(player);
 
+        if(steps < 1)
+            throw new InvalidOperationException("Cannot move mother nature for less than 1 step");
+
         if (currentRound.getStage() != Round.Stage.ATTACK)
-            throw new InvalidOperationException("");
+            throw new InvalidOperationException("Not currently in ATTACK mode");
 
         //use get directly cause in attack stage every player has played its card
         AssistantCard card = currentRound.getCardPlayedBy(player).orElseThrow();
@@ -326,9 +329,8 @@ public class Game implements Serializable {
     private void calculateInfluenceOnIsland(Island island) {
         int max = -1;
         Optional<Player> maxP = Optional.empty();
-        if (temporaryInfluenceCalculator.isPresent())
-            logger.log(Level.INFO, "calculating influence with modifier...");
-        InfluenceCalculator calc = temporaryInfluenceCalculator.orElse(defaultInfluenceCalculator);
+
+        var calc = Objects.requireNonNullElse(temporaryInfluenceCalculator, defaultInfluenceCalculator);
 
         for (Player p : players) {
             int infl = calc.calculateInfluence(p, island, getProfessors());
@@ -363,7 +365,7 @@ public class Game implements Serializable {
         );
 
         //remove temporary after use
-        temporaryInfluenceCalculator = Optional.empty();
+        temporaryInfluenceCalculator = null;
     }
 
     /**
@@ -410,7 +412,7 @@ public class Game implements Serializable {
         player.useCoins(cost);
 
         if (card instanceof InfluenceCharacterCard influenceCard) {
-            temporaryInfluenceCalculator = Optional.of(influenceCard.getInfluenceCalculator(player));
+            temporaryInfluenceCalculator = influenceCard.getInfluenceCalculator(player);
         } else if (card instanceof HeraldCharacterCard heraldCard) {
             calculateInfluenceOnIsland(heraldCard.getIsland());
         } else if (card instanceof PostmanCharacterCard postmanCard) {
@@ -489,17 +491,16 @@ public class Game implements Serializable {
     }
 
     /**
-     * TODO: fix if 3 players have the same towers and the last one has the most professors
      * Calculate player that is winning right now, based on the number of towers left.
      * If there's a draw, the player with most professors wins
-     * If there's a draw, TODO: the instructions don't handle this case
+     * If there's a draw, a random player is returned
      *
      * @return the winning player
      */
     private Player calculateCurrentWinner() {
         //order players by placed towers
-        List<Player> orderedPlayers = players.stream()
-                .sorted(Comparator.comparingInt(Player::getTowersCount).reversed())
+        var orderedPlayers = players.stream()
+                .sorted(Comparator.comparingInt(Player::getTowersCount))
                 .toList();
 
         Player firstPlayer =
@@ -512,11 +513,13 @@ public class Game implements Serializable {
             return firstPlayer;
 
         //otherwise, look at the professors
-        if (getProfessorsForPlayer(firstPlayer).size() >
-                getProfessorsForPlayer(secondPlayer).size())
-            return firstPlayer;
-        else
-            return secondPlayer;
+        //players with same towers count are ordered by the number of professors
+        orderedPlayers = players.stream()
+                .filter(p -> p.getTowersCount() == firstPlayer.getTowersCount())
+                .sorted(Comparator.comparingInt(p -> getProfessorsForPlayer((Player)p).size()).reversed())
+                .toList();
+
+        return orderedPlayers.get(0);
     }
 
     /**
@@ -537,14 +540,30 @@ public class Game implements Serializable {
         return Math.floorMod(this.motherNaturePosition + steps, islands.size());
     }
 
+    /**
+     * Add a game update listener for this game
+     *
+     * @param listener
+     */
     public void addGameUpdateListener(GameUpdateListener listener) {
         listeners.add(listener);
+
+        //when a new listener is added, notify to this new listener only
+        listener.onGameUpdate(this);
     }
 
+    /**
+     * Remove a previously added listener
+     *
+     * @param listener
+     */
     public void removeGameUpdateListener(GameUpdateListener listener) {
         listeners.remove(listener);
     }
 
+    /**
+     * This method is called whenever there's a change to be notified to the listeners
+     */
     private void notifyUpdate() {
         //create a copy so observers can remove the listener
         new ArrayList<>(listeners)
@@ -596,7 +615,7 @@ public class Game implements Serializable {
         logger.log(Level.INFO, "game finished! {0} won", winner.getNickname());
         gameState = State.FINISHED;
 
-        this.winner = Optional.of(winner);
+        this.winner = winner;
 
         notifyUpdate();
     }
@@ -743,7 +762,7 @@ public class Game implements Serializable {
      *
      * @return the winner of the game, if the game was ended
      */
-    public Optional<Player> getWinner() {
+    public Player getWinner() {
         return winner;
     }
 

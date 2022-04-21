@@ -9,6 +9,7 @@ import it.polimi.ingsw.common.reducedmodel.GameListItem;
 import it.polimi.ingsw.server.VirtualView;
 import it.polimi.ingsw.server.model.Game;
 import it.polimi.ingsw.server.model.Player;
+
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -32,7 +33,6 @@ public class Controller implements Game.GameUpdateListener {
 
     /**
      * Create a controller
-     * TODO: maybe use singleton
      */
     public Controller() {
         this.games = new ArrayList<>();
@@ -72,7 +72,6 @@ public class Controller implements Game.GameUpdateListener {
             nicknameVirtualViewMap.put(nickname, virtualView);
 
             if(foundGame != null) {
-                //TODO: maybe move this part in the GameController
                 foundGame.setPlayerReconnected(foundPlayer);
                 return new GameController(foundGame, foundPlayer);
             }
@@ -124,7 +123,6 @@ public class Controller implements Game.GameUpdateListener {
 
             var p = g.addPlayer(nickname);
 
-            //TODO: to fix: game started before the last player has added their listener
             if(g.getCurrentNumberOfPlayers() == g.getNumberOfPlayers())
                 g.startGame();
 

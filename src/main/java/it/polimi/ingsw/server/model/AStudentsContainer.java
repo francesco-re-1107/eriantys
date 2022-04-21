@@ -1,7 +1,5 @@
 package it.polimi.ingsw.server.model;
 
-import it.polimi.ingsw.Utils;
-
 import java.io.Serializable;
 import java.util.EnumMap;
 import java.util.Map;
@@ -84,7 +82,7 @@ public abstract class AStudentsContainer implements Serializable {
      * @return the number of students (of type student) held in this container
      */
     public int getCountForStudent(Student student) {
-        return Utils.nullAlternative(students.get(student), 0);
+        return Objects.requireNonNullElse(students.get(student), 0);
     }
 
     @Override
