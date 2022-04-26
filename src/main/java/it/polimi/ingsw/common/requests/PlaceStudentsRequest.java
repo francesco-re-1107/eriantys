@@ -10,7 +10,7 @@ public class PlaceStudentsRequest extends GameRequest{
 
     /**
      * Students to put on islands
-     * The key is the index of the island relative to islands list (TODO: maybe use the ReducedIsland instead)
+     * The key is the index of the island relative to islands list
      */
     private final Map<Integer, StudentsContainer> inIslands;
 

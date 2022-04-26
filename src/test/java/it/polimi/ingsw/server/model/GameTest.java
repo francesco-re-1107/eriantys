@@ -204,7 +204,7 @@ class GameTest {
     /**
      * This method creates a completely random game and brings it all the way to the end
      * in order to test different endings and different character cards.
-     * This will be repeated 500 times to be sure that all parts of the code will be tested at least once.
+     * This will be repeated 10000 times to be sure that all parts of the code will be tested at least once.
      *
      * This test DOESN'T check whether the methods called do what they claim to do.
      */

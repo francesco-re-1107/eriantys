@@ -13,7 +13,8 @@ import java.util.List;
 public record ReducedRound(
         Round.Stage stage,
         ReducedPlayer currentPlayer,
-        List<StudentsContainer> clouds
+        List<StudentsContainer> clouds,
+        int additionalMotherNatureMoves
         //Map<ReducedPlayer, AssistantCard> playedAssistantCards
 ) implements Serializable {
 
@@ -26,7 +27,8 @@ public record ReducedRound(
         return new ReducedRound(
                 r.getStage(),
                 ReducedPlayer.fromPlayer(r.getCurrentPlayer()),
-                r.getClouds()
+                r.getClouds(),
+                r.getAdditionalMotherNatureMoves()
                 /*r.getPlayers()
                         .stream()
                         .collect(Collectors.toMap(

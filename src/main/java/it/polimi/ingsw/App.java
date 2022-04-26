@@ -1,6 +1,7 @@
 package it.polimi.ingsw;
 
 import it.polimi.ingsw.server.Server;
+
 import java.io.FileInputStream;
 import java.util.Properties;
 
@@ -38,7 +39,11 @@ public class App
      * @param gui whether the client must be started with gui or not.
      */
     public static void startClient(boolean gui) {
-        //...
+        if(gui) {
+            Utils.LOGGER.info("Starting client with GUI");
+        }else{
+            Utils.LOGGER.info("Starting CLI client");
+        }
     }
 
     /**

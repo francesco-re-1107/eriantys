@@ -330,7 +330,8 @@ public class Game implements Serializable {
         int max = -1;
         Optional<Player> maxP = Optional.empty();
 
-        var calc = Objects.requireNonNullElse(temporaryInfluenceCalculator, defaultInfluenceCalculator);
+        var calc =
+                Objects.requireNonNullElse(temporaryInfluenceCalculator, defaultInfluenceCalculator);
 
         for (Player p : players) {
             int infl = calc.calculateInfluence(p, island, getProfessors());
