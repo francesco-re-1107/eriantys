@@ -1,4 +1,4 @@
-@startuml Eriantys
+@startuml Eriantys_model
 
 class AssistantCard {
     -motherNatureMaxMoves : Int

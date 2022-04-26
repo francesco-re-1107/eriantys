@@ -1,0 +1,78 @@
+@startuml Eriantys_controller
+
+class Controller {
+    -games : List<Game>
+    -nicknameVirtualViewMap : Map<String, VirtualView>
+
+    +registerNickname(nickname : String, virtualView : VirtualView) : GameController
+    +listGames() : List<GameListItem>
+    +createGame(nickname: String, numberOfPlayers : int, expertMode : boolean) : GameController
+    +joinGame(nickname : String, uuid : UUID) : GameController
+    +onGameUpdate(game : Game)
+    -checkIfNicknameRegistered(nickname : String)
+}
+
+class GameController {
+    -game : Game
+    -listener : GameUpdateListener
+    -player : Player
+    +setOnGameUpdateListener(listener : GameUpdateListener)
+    +onGameUpdate(game : Game)
+    +disconnect()
+    +leaveGame()
+    +playAssistantCard(card : AssistantCard)
+    +placeStudents(inSchool : StudentsContainer, inIslands : Map<Integer, StudentsContainer>)
+    +playCharacterCard(reducedCard : ReducedCharacterCard)
+    +moveMotherNature(steps : int)
+    +selectCloud(cloud : StudentsContainer)
+}
+
+class VirtualView {
+    -communicator : ServerClientCommunicator
+    -controller : Controller
+    -gameController : GameController
+    -isConnected : boolean
+    -nickname : String
+
+    +VirtualView(Controller controller, Socket socket)
+    +run()
+    +onRequest(request : Request)
+    +processRequest(request : Request)
+    +processGameRequest(request : GameRequest)
+    +onDisconnect()
+    +isConnected() : boolean
+    +onGameUpdate(game : ReducedGame)
+}
+
+class ServerClientCommunicator{
+    -socket : Socket
+    -listener : CommunicatorListener
+    -parser : Parser
+
+    +ServerClientCommunicator(socket : Socket, listener : CommunicatorListener)
+    +startListening()
+    +send(response : Response)
+}
+
+interface CommunicatorListener{
+    +onRequest(request : Request)
+    +onDisconnect()
+}
+
+interface Parser {
+    +encodeRequest(request : Request) : String
+    +decodeRequest(string : String) : Request
+    +encodeResponse(response : Response) : String
+    +decodeResponse(string : String) : Response
+}
+
+VirtualView "0..1" *-- GameController
+VirtualView "1" *-- Controller
+VirtualView "1" *-- ServerClientCommunicator
+ServerClientCommunicator --> Parser
+JavaSerializationParser --|> Parser
+VirtualView --|> CommunicatorListener
+Controller --> GameController
+
+
+@enduml

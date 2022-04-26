@@ -2,7 +2,10 @@ package it.polimi.ingsw.server.controller;
 
 import it.polimi.ingsw.common.reducedmodel.ReducedCharacterCard;
 import it.polimi.ingsw.common.reducedmodel.ReducedGame;
-import it.polimi.ingsw.server.model.*;
+import it.polimi.ingsw.server.model.AssistantCard;
+import it.polimi.ingsw.server.model.Game;
+import it.polimi.ingsw.server.model.Player;
+import it.polimi.ingsw.server.model.StudentsContainer;
 
 import java.util.Map;
 import java.util.Optional;
@@ -106,6 +109,10 @@ public class GameController implements Game.GameUpdateListener {
         );
     }
 
+    /**
+     * Play the given character card
+     * @param reducedCard
+     */
     public void playCharacterCard(ReducedCharacterCard reducedCard) {
         game.playCharacterCard(player, reducedCard.toCharacterCard(game));
     }
