@@ -222,6 +222,7 @@ public class Game implements Serializable {
 
         player.addCloudToEntrance(cloud);
         currentRound.removeCloud(cloud);
+        currentRound.setAttackSubstage(Stage.Attack.SELECTED_CLOUD);
 
         //go to next player or new round if necessary
         if (currentRound.nextPlayer())
@@ -286,7 +287,8 @@ public class Game implements Serializable {
         if(steps < 1)
             throw new InvalidOperationException("Cannot move mother nature for less than 1 step");
 
-        if (currentRound.getStage() != Round.Stage.ATTACK)
+        if ((!(currentRound.getStage() instanceof Stage.Attack)) ||
+                Stage.IsEqOrPost(currentRound.getStage(), Stage.Attack.MOTHER_NATURE_MOVED))
             throw new InvalidOperationException("Not currently in ATTACK mode");
 
         //use get directly cause in attack stage every player has played its card
@@ -310,6 +312,7 @@ public class Game implements Serializable {
             //It's necessary to check if islands could be merged
             this.checkMergeableIslands();
         }
+        currentRound.setAttackSubstage(Stage.Attack.MOTHER_NATURE_MOVED);
 
         notifyUpdate();
     }
@@ -397,8 +400,9 @@ public class Game implements Serializable {
 
         checkIfCurrentPlayer(player);
 
-        if (currentRound.getStage() != Round.Stage.ATTACK)
-            throw new InvalidOperationException("");
+        if ((!(currentRound.getStage() instanceof Stage.Attack)) ||
+                Stage.IsEqOrPost(currentRound.getStage(), Stage.Attack.CARD_PLAYED))
+            throw new InvalidOperationException();
 
         if (!characterCards.containsKey(card.getName()))
             throw new InvalidOperationException();
@@ -430,6 +434,8 @@ public class Game implements Serializable {
             player.swapStudents(minstrelCard.getStudentsToRemove(), minstrelCard.getStudentsToAdd());
         }
 
+        currentRound.setAttackSubstage(Stage.Attack.CARD_PLAYED);
+
         notifyUpdate();
     }
 
@@ -443,7 +449,7 @@ public class Game implements Serializable {
     public void placeStudents(Player player, StudentsContainer inSchool, Map<Island, StudentsContainer> inIsland) {
         checkIfCurrentPlayer(player);
 
-        if (currentRound.getStage() != Round.Stage.ATTACK)
+        if (currentRound.getStage() != Stage.Attack.STARTED)
             throw new InvalidOperationException();
 
         int studentsMoved = inSchool.getSize() + inIsland.values().stream().mapToInt(StudentsContainer::getSize).sum();
@@ -459,6 +465,7 @@ public class Game implements Serializable {
         inIsland.forEach(player::addStudentsToIsland);
 
         updateProfessors();
+        currentRound.setAttackSubstage(Stage.Attack.STUDENTS_PLACED);
 
         notifyUpdate();
     }

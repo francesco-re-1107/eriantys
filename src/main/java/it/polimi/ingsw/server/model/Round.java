@@ -14,7 +14,7 @@ public class Round implements Serializable {
     /**
      * Current stage of the round
      */
-    private Stage stage = Stage.PLAN;
+    private Stage stage = Stage.Plan.PLAN;
 
     /**
      * List of players, always ordered by turn priority
@@ -79,17 +79,22 @@ public class Round implements Serializable {
                 .toList()
         );
 
-        stage = Stage.ATTACK;
+        stage = Stage.Attack.STARTED;
         currentPlayer = 0;
     }
 
+    public void setAttackSubstage(Stage.Attack newStage){
+        if(Stage.IsEqOrPost(stage, newStage))
+            throw new InvalidOperationException("newStage must be post to current stage");
+        stage = newStage;
+    }
     /**
      * Play the given card for the given player
      * @param player
      * @param card
      */
     public void playAssistantCard(Player player, AssistantCard card){
-        if(stage == Stage.ATTACK)
+        if(stage instanceof Stage.Attack)
             throw new InvalidOperationException("In attack mode cannot play assistantCard");
 
         boolean alreadyPlayed =
@@ -121,13 +126,18 @@ public class Round implements Serializable {
      * @return true if the round is finished, false otherwise
      */
     public boolean nextPlayer(){
-        if(stage == Stage.PLAN)
+        if(stage instanceof Stage.Plan)
             throw new InvalidOperationException();
+        // TODO: further checks
 
         logger.log(Level.FINE,  MessageFormat.format("Board:\n{0}", getCurrentPlayer().prettyBoard()));
         currentPlayer++;
-        //finished round check
-        return currentPlayer == players.size();
+        // finished round check
+        if(currentPlayer == players.size())
+            return true;
+        // more players to come
+        stage = Stage.Attack.STARTED;
+        return false;
     }
 
     /**
@@ -193,14 +203,6 @@ public class Round implements Serializable {
      */
     public int getAdditionalMotherNatureMoves() {
         return additionalMotherNatureMoves;
-    }
-
-    /**
-     * This enum represents all the possible stage for this round
-     */
-    public enum Stage {
-        PLAN,
-        ATTACK
     }
 
     private record CardPair(Player first, AssistantCard second){ }
