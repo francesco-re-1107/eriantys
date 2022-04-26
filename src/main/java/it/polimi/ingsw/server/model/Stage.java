@@ -1,4 +1,4 @@
-package it.polimi.ingsw.model;
+package it.polimi.ingsw.server.model;
 
 /**
  * This piece of code aims to implement a multilevel enum.

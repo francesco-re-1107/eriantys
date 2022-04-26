@@ -3,6 +3,7 @@ package it.polimi.ingsw.server.model;
 import it.polimi.ingsw.Utils;
 import it.polimi.ingsw.common.exceptions.InvalidOperationException;
 import it.polimi.ingsw.server.model.charactercards.*;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.RepeatedTest;
 import org.junit.jupiter.api.Test;
 
@@ -134,7 +135,7 @@ class GameTest {
         //placing twice
         assertThrows(
                 InvalidOperationException.class,
-                () -> g.putStudents(players.get(1), new StudentsContainer(), new HashMap<>())
+                () -> g.placeStudents(players.get(1), new StudentsContainer(), new HashMap<>())
         );
 
         //check size of entrance, school and island
@@ -176,7 +177,7 @@ class GameTest {
         //testing all prior stages to be invalid
         assertThrows(
                 InvalidOperationException.class,
-                () -> g.putStudents(players.get(1), new StudentsContainer(), new HashMap<>())
+                () -> g.placeStudents(players.get(1), new StudentsContainer(), new HashMap<>())
         );
         assertThrows(
                 InvalidOperationException.class,

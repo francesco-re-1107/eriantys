@@ -1,6 +1,7 @@
 package it.polimi.ingsw.common.reducedmodel;
 
 import it.polimi.ingsw.server.model.Round;
+import it.polimi.ingsw.server.model.Stage;
 import it.polimi.ingsw.server.model.StudentsContainer;
 
 import java.io.Serializable;
@@ -11,7 +12,7 @@ import java.util.List;
  * This is a reduced version of the Round class, so it used in the communication with the client
  */
 public record ReducedRound(
-        Round.Stage stage,
+        Stage stage,
         ReducedPlayer currentPlayer,
         List<StudentsContainer> clouds,
         int additionalMotherNatureMoves
