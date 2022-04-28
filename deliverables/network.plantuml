@@ -1,0 +1,38 @@
+@startuml
+top to bottom direction
+skinparam linetype ortho
+
+class AckResponse
+class CreateGameRequest
+class ErrorResponse
+class GameRequest
+class GameUpdateResponse
+class GamesListResponse
+class JoinGameRequest
+class LeaveGameRequest
+class ListGamesRequest
+class MoveMotherNatureRequest
+class PlaceStudentsRequest
+class PlayAssistantCardRequest
+class PlayCharacterCardRequest
+class RegisterNicknameRequest
+class Request
+class Response
+class SelectCloudRequest
+
+AckResponse               -[#000000,plain]-^  Response
+CreateGameRequest         -[#000000,plain]-^  Request
+ErrorResponse             -[#000000,plain]-^  Response
+GameRequest               -[#000000,plain]-^  Request
+GameUpdateResponse        -[#000000,plain]-^  Response
+GamesListResponse         -[#000000,plain]-^  Response
+JoinGameRequest           -[#000000,plain]-^  Request
+LeaveGameRequest          -[#000000,plain]-^  GameRequest
+ListGamesRequest          -[#000000,plain]-^  Request
+MoveMotherNatureRequest   -[#000000,plain]-^  GameRequest
+PlaceStudentsRequest      -[#000000,plain]-^  GameRequest
+PlayAssistantCardRequest  -[#000000,plain]-^  GameRequest
+PlayCharacterCardRequest  -[#000000,plain]-^  GameRequest
+RegisterNicknameRequest   -[#000000,plain]-^  Request
+SelectCloudRequest        -[#000000,plain]-^  GameRequest
+@enduml
