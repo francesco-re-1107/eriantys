@@ -82,17 +82,21 @@ public class VirtualView implements ServerClientCommunicator.CommunicatorListene
     private void processRequest(Request request) {
         try {
             if (request instanceof RegisterNicknameRequest r) {
+                //TODO: check if already registered
                 gameController = controller.registerNickname(r.getNickname(), this);
                 nickname = r.getNickname();
                 communicator.send(new AckResponse());
             } else if (request instanceof ListGamesRequest) {
                 communicator.send(new GamesListResponse(controller.listGames()));
             } else if (request instanceof JoinGameRequest r) {
+                //TODO: check if already in a game
                 //game joined -> new game controller
                 gameController = controller.joinGame(nickname, r.getUUID());
                 gameController.setOnGameUpdateListener(this);
                 communicator.send(new AckResponse());
             } else if (request instanceof CreateGameRequest r) {
+                //TODO: check if already in a game
+
                 //game created -> new game controller
                 gameController = controller.createGame(nickname, r.getNumberOfPlayers(), r.isExpertMode());
                 gameController.setOnGameUpdateListener(this);
