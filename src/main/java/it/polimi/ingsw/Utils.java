@@ -1,5 +1,7 @@
 package it.polimi.ingsw;
 
+import java.io.InputStream;
+import java.util.Properties;
 import java.util.logging.ConsoleHandler;
 import java.util.logging.Level;
 import java.util.logging.LogManager;
@@ -41,4 +43,22 @@ public class Utils {
     }
 
     private Utils() {}
+
+    public static AppConfig GetAppConfig(){
+        Properties prop = new Properties();
+        try {
+            InputStream is = Utils.class.getClassLoader().getResourceAsStream("app.config");
+            prop.load(is);
+        } catch (Exception e) {
+            LOGGER.severe(e.toString());
+            return new AppConfig(
+                    "127.0.0.1",
+                    Constants.DEFAULT_SERVER_PORT
+            );
+        }
+        return new AppConfig(
+            prop.getProperty("server.address"),
+            Integer.parseInt(prop.getProperty("server.port"))
+        );
+    }
 }

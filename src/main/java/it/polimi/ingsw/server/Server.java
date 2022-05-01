@@ -56,7 +56,7 @@ public class Server {
             Utils.LOGGER.severe(e.getMessage()); //port not available
             System.exit(0);
         }
-        Utils.LOGGER.log(Level.INFO, "Server listening on port {0}", port);
+        Utils.LOGGER.log(Level.INFO, "Server listening on port %s".formatted(port));
 
         while (true){
             try{

@@ -3,6 +3,7 @@ package it.polimi.ingsw.client.cli;
 import it.polimi.ingsw.common.reducedmodel.ReducedIsland;
 import it.polimi.ingsw.server.model.Student;
 import it.polimi.ingsw.server.model.Tower;
+import org.fusesource.jansi.Ansi;
 import org.fusesource.jansi.AnsiConsole;
 
 import java.util.Collection;
@@ -14,6 +15,8 @@ import static org.fusesource.jansi.Ansi.Color.*;
 
 
 public class Cursor {
+    public static Cursor instance = null;
+
     public static final int ISLAND_WIDTH = 11;
     public static final int ISLAND_HEIGHT = 6;
     private static final Map<Student,Color> STUDENT_COLOR_MAP =  Map.ofEntries(
@@ -26,11 +29,20 @@ public class Cursor {
     final int WIDTH = 80;
     final int HEIGHT = 24;
 
-    public Cursor() {
-        AnsiConsole.systemInstall();
-        System.out.print( ansi().eraseScreen());
+    public static Cursor getInstance(){
+       if (instance == null) {
+           instance = new Cursor();
+       }
+       return instance;
     }
 
+    private Cursor() {
+        AnsiConsole.systemInstall();
+        clearScreen();
+    }
+    public void clearScreen(){
+        System.out.print(ansi().eraseScreen().reset());
+    }
     // unused
     public void drawEdges(){
         moveToXY(1,1);
@@ -121,5 +133,23 @@ public class Cursor {
     public void end(){
         AnsiConsole.systemUninstall();
     }
+
+    public void printPrompt(String prompt){
+        printPrompt(prompt, "");
+    }
+
+    public void printPrompt(String prompt, String default_resp){
+        Ansi s = ansi().bold().a("%s".formatted(prompt)).boldOff();
+        if (!default_resp.isEmpty()){
+            s = s.a(" (default %s)".formatted(default_resp));
+        }
+        s = s.a(": ").reset();
+        System.out.println(s);
+    }
+
+    public void printBold(String s){
+        System.out.println(ansi().bold().a(s).reset());
+    }
+
 
 }
