@@ -3,197 +3,340 @@
 <?import it.polimi.ingsw.client.gui.customviews.*?>
 <?import javafx.geometry.*?>
 <?import javafx.scene.control.*?>
-<?import javafx.scene.image.Image?>
-<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.image.*?>
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.text.Font?>
 <AnchorPane id="game_background" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity"
             prefHeight="720.0" prefWidth="1280.0" stylesheets="@../css/game.css" xmlns="http://javafx.com/javafx/18"
             xmlns:fx="http://javafx.com/fxml/1" fx:controller="it.polimi.ingsw.client.gui.controllers.GameController">
-    <children>
-        <SplitPane id="game_background_2" dividerPositions="0.38928012519561817" prefHeight="720.0" prefWidth="1280.0"
-                   AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0"
-                   AnchorPane.topAnchor="0.0">
-            <items>
-                <AnchorPane id="board" minHeight="0.0" minWidth="0.0" prefHeight="718.0" prefWidth="587.0"
-                            SplitPane.resizableWithParent="false">
-                    <children>
-                        <VBox prefHeight="483.0" prefWidth="498.0" AnchorPane.leftAnchor="0.0"
-                              AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
-                            <children>
-                                <GridPane id="players_grid" alignment="CENTER">
-                                    <columnConstraints>
-                                        <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0"/>
-                                        <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0"/>
-                                        <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0"/>
-                                    </columnConstraints>
-                                    <rowConstraints>
-                                        <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES"/>
-                                        <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES"/>
-                                    </rowConstraints>
-                                    <children>
-                                        <Label alignment="CENTER" text="Tu" GridPane.halignment="CENTER"/>
-                                        <Label alignment="CENTER" text="Giocatore1" GridPane.columnIndex="1"
-                                               GridPane.halignment="CENTER"/>
-                                        <Label alignment="CENTER" text="Giocatore2" GridPane.columnIndex="2"
-                                               GridPane.halignment="CENTER"/>
-                                        <AssistantCardView fitWidth="100" fitHeight="200" preserveRatio="true"
-                                                           GridPane.halignment="CENTER" GridPane.rowIndex="1">
-                                            <HBox.margin>
-                                                <Insets bottom="5.0" left="5.0" right="5.0" top="5.0"/>
-                                            </HBox.margin>
-                                        </AssistantCardView>
-                                        <HBox prefHeight="100.0" prefWidth="200.0" GridPane.columnIndex="1"
-                                              GridPane.rowIndex="1">
-                                            <children>
-                                                <VBox prefHeight="200.0" prefWidth="100.0">
-                                                    <AssistantCardView fitWidth="100" fitHeight="200" preserveRatio="true">
-                                                        <VBox.margin>
-                                                            <Insets bottom="5.0" left="5.0" right="5.0" top="5.0"/>
-                                                        </VBox.margin>
-                                                    </AssistantCardView>
-                                                </VBox>
-                                            </children>
-                                        </HBox>
-                                        <HBox prefHeight="100.0" prefWidth="200.0" GridPane.columnIndex="2"
-                                              GridPane.rowIndex="1">
-                                            <children>
-                                                <VBox prefHeight="200.0" prefWidth="100.0">
-                                                    <AssistantCardView fitWidth="100" fitHeight="200" preserveRatio="true" >
-                                                        <HBox.margin>
-                                                            <Insets bottom="5.0" left="5.0" right="5.0" top="5.0"/>
-                                                        </HBox.margin>
-                                                    </AssistantCardView>
-                                                </VBox>
-                                            </children>
-                                        </HBox>
-                                    </children>
-                                    <padding>
-                                        <Insets bottom="15.0" left="15.0" right="15.0" top="15.0"/>
-                                    </padding>
-                                </GridPane>
-                                <GridPane id="board_students" alignment="CENTER" hgap="10.0" vgap="10.0">
-                                    <columnConstraints>
-                                        <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0"/>
-                                        <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0"/>
-                                        <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0"/>
-                                        <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0"/>
-                                        <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0"/>
-                                    </columnConstraints>
-                                    <rowConstraints>
-                                        <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES"/>
-                                        <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES"/>
-                                        <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES"/>
-                                        <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES"/>
-                                        <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES"/>
-                                    </rowConstraints>
-                                    <VBox.margin>
-                                        <Insets left="25.0" right="25.0"/>
-                                    </VBox.margin>
-                                    <children>
-                                        <Label id="entrance_label" text="Entrata" GridPane.columnIndex="2"
-                                               GridPane.halignment="CENTER" GridPane.rowIndex="1"
-                                               GridPane.valignment="CENTER"/>
-                                        <Label id="school_label" text="Sala" GridPane.columnIndex="2"
-                                               GridPane.halignment="CENTER" GridPane.rowIndex="3"
-                                               GridPane.valignment="CENTER"/>
+    <SplitPane id="game_background_2" dividerPositions="0.38928012519561817" prefHeight="720.0" prefWidth="1280.0"
+               AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0"
+               AnchorPane.topAnchor="0.0">
+        <AnchorPane id="board" minHeight="0.0" minWidth="0.0" prefHeight="718.0" prefWidth="587.0"
+                    SplitPane.resizableWithParent="false">
+            <VBox prefHeight="800.0" prefWidth="500.0" AnchorPane.leftAnchor="0.0"
+                  AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                <Label text="È il tuo turno: lorem ipsum" id="info_label">
+                    <VBox.margin>
+                        <Insets top="20.0" bottom="20.0" left="20.0" right="20.0"/>
+                    </VBox.margin>
+                </Label>
 
-                                        <StudentView fitHeight="35.0" student="BLUE" fitWidth="35.0" pickOnBounds="true"
-                                                     preserveRatio="true" GridPane.columnIndex="0"
-                                                     GridPane.halignment="CENTER" GridPane.valignment="CENTER"/>
-                                        <StudentView fitHeight="35.0" student="GREEN" fitWidth="35.0"
-                                                     pickOnBounds="true" preserveRatio="true" GridPane.columnIndex="1"
-                                                     GridPane.halignment="CENTER" GridPane.valignment="CENTER"/>
-                                        <StudentView fitHeight="35.0" student="PINK" fitWidth="35.0" pickOnBounds="true"
-                                                     preserveRatio="true" GridPane.columnIndex="2"
-                                                     GridPane.halignment="CENTER" GridPane.valignment="CENTER"/>
-                                        <StudentView fitHeight="35.0" student="RED" fitWidth="35.0" pickOnBounds="true"
-                                                     preserveRatio="true" GridPane.columnIndex="3"
-                                                     GridPane.halignment="CENTER" GridPane.valignment="CENTER"/>
-                                        <StudentView fitHeight="35.0" student="YELLOW" fitWidth="35.0"
-                                                     pickOnBounds="true" preserveRatio="true" GridPane.columnIndex="4"
-                                                     GridPane.halignment="CENTER" GridPane.valignment="CENTER"/>
+                <GridPane id="players_grid" alignment="TOP_CENTER">
+                    <columnConstraints>
+                        <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0"/>
+                        <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0"/>
+                        <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0"/>
+                    </columnConstraints>
+                    <rowConstraints>
+                        <RowConstraints minHeight="10.0" vgrow="SOMETIMES"/>
+                        <RowConstraints minHeight="10.0" vgrow="SOMETIMES"/>
+                    </rowConstraints>
+                    <padding>
+                        <Insets bottom="15.0" left="15.0" right="15.0" top="15.0"/>
+                    </padding>
+                    <Label alignment="CENTER" text="Tu" GridPane.halignment="CENTER"/>
+                    <Label alignment="CENTER" text="Giocatore1" GridPane.columnIndex="1"
+                           GridPane.halignment="CENTER"/>
+                    <Label alignment="CENTER" text="Giocatore2" GridPane.columnIndex="2"
+                           GridPane.halignment="CENTER"/>
+                    <AssistantCardView fitWidth="100" fitHeight="200" preserveRatio="true"
+                                       GridPane.halignment="CENTER" GridPane.valignment="TOP"
+                                       GridPane.rowIndex="1">
+                        <GridPane.margin>
+                            <Insets bottom="10.0" left="10.0" right="10.0" top="10.0"/>
+                        </GridPane.margin>
+                    </AssistantCardView>
+                    <HBox prefHeight="100.0" prefWidth="200.0" GridPane.columnIndex="1"
+                          GridPane.rowIndex="1">
+                        <AssistantCardView fitWidth="100" fitHeight="200" preserveRatio="true">
+                            <HBox.margin>
+                                <Insets bottom="10.0" left="10.0" right="10.0" top="10.0"/>
+                            </HBox.margin>
+                        </AssistantCardView>
+                        <VBox prefHeight="200.0" prefWidth="100.0">
+                            <HBox.margin>
+                                <Insets bottom="10.0" right="10.0" top="10.0"/>
+                            </HBox.margin>
+                            <HBox>
+                                <VBox.margin>
+                                    <Insets bottom="2.0" top="2.0"/>
+                                </VBox.margin>
+                                <StudentView student="BLUE" fitWidth="25" fitHeight="25"/>
+                                <Label text="2(3)">
+                                    <HBox.margin>
+                                        <Insets left="2.5"/>
+                                    </HBox.margin>
+                                </Label>
+                            </HBox>
+                            <HBox>
+                                <VBox.margin>
+                                    <Insets bottom="2.0" top="2.0"/>
+                                </VBox.margin>
+                                <StudentView student="GREEN" fitWidth="25" fitHeight="25"/>
+                                <Label text="2(3)">
+                                    <HBox.margin>
+                                        <Insets left="2.5"/>
+                                    </HBox.margin>
+                                </Label>
+                            </HBox>
+                            <HBox>
+                                <VBox.margin>
+                                    <Insets bottom="2.0" top="2.0"/>
+                                </VBox.margin>
+                                <StudentView student="PINK" fitWidth="25" fitHeight="25"/>
+                                <Label text="2(3)">
+                                    <HBox.margin>
+                                        <Insets left="2.5"/>
+                                    </HBox.margin>
+                                </Label>
+                            </HBox>
+                            <HBox>
+                                <VBox.margin>
+                                    <Insets bottom="2.0" top="2.0"/>
+                                </VBox.margin>
+                                <StudentView student="RED" fitWidth="25" fitHeight="25"/>
+                                <Label text="2(3)">
+                                    <HBox.margin>
+                                        <Insets left="2.5"/>
+                                    </HBox.margin>
+                                </Label>
+                            </HBox>
+                            <HBox>
+                                <VBox.margin>
+                                    <Insets bottom="2.0" top="2.0"/>
+                                </VBox.margin>
+                                <StudentView student="YELLOW" fitWidth="25" fitHeight="25"/>
+                                <Label text="2(3)">
+                                    <HBox.margin>
+                                        <Insets left="2.5"/>
+                                    </HBox.margin>
+                                </Label>
+                            </HBox>
+                            <HBox>
+                                <VBox.margin>
+                                    <Insets bottom="2.0" top="2.0"/>
+                                </VBox.margin>
+                                <ImageView fitHeight="25.0" fitWidth="25.0" pickOnBounds="true"
+                                           preserveRatio="true">
+                                    <Image url="@../assets/coin.png"/>
+                                </ImageView>
+                                <Label text="2">
+                                    <HBox.margin>
+                                        <Insets left="2.5"/>
+                                    </HBox.margin>
+                                </Label>
+                            </HBox>
+                            <HBox alignment="CENTER_LEFT">
+                                <VBox.margin>
+                                    <Insets bottom="2.0" top="2.0"/>
+                                </VBox.margin>
+                                <TowerView fitHeight="50.0" fitWidth="20.0" pickOnBounds="true"
+                                           preserveRatio="true">
+                                    <HBox.margin>
+                                        <Insets left="2.5" right="5.0"/>
+                                    </HBox.margin>
+                                </TowerView>
+                                <Label text="7/8"/>
+                            </HBox>
+                        </VBox>
+                    </HBox>
+                    <HBox prefHeight="100.0" prefWidth="200.0" GridPane.columnIndex="2"
+                          GridPane.rowIndex="1">
+                        <AssistantCardView fitWidth="100" fitHeight="200" preserveRatio="true">
+                            <HBox.margin>
+                                <Insets bottom="10.0" left="10.0" right="10.0" top="10.0"/>
+                            </HBox.margin>
+                        </AssistantCardView>
+                        <VBox prefHeight="200.0" prefWidth="100.0">
+                            <HBox.margin>
+                                <Insets bottom="10.0" right="10.0" top="10.0"/>
+                            </HBox.margin>
+                            <HBox>
+                                <VBox.margin>
+                                    <Insets bottom="2.0" top="2.0"/>
+                                </VBox.margin>
+                                <StudentView student="BLUE" fitWidth="25" fitHeight="25"/>
+                                <Label text="2(3)">
+                                    <HBox.margin>
+                                        <Insets left="2.5"/>
+                                    </HBox.margin>
+                                </Label>
+                            </HBox>
+                            <HBox>
+                                <VBox.margin>
+                                    <Insets bottom="2.0" top="2.0"/>
+                                </VBox.margin>
+                                <StudentView student="GREEN" fitWidth="25" fitHeight="25"/>
+                                <Label text="2(3)">
+                                    <HBox.margin>
+                                        <Insets left="2.5"/>
+                                    </HBox.margin>
+                                </Label>
+                            </HBox>
+                            <HBox>
+                                <VBox.margin>
+                                    <Insets bottom="2.0" top="2.0"/>
+                                </VBox.margin>
+                                <StudentView student="PINK" fitWidth="25" fitHeight="25"/>
+                                <Label text="2(3)">
+                                    <HBox.margin>
+                                        <Insets left="2.5"/>
+                                    </HBox.margin>
+                                </Label>
+                            </HBox>
+                            <HBox>
+                                <VBox.margin>
+                                    <Insets bottom="2.0" top="2.0"/>
+                                </VBox.margin>
+                                <StudentView student="RED" fitWidth="25" fitHeight="25"/>
+                                <Label text="2(3)">
+                                    <HBox.margin>
+                                        <Insets left="2.5"/>
+                                    </HBox.margin>
+                                </Label>
+                            </HBox>
+                            <HBox>
+                                <VBox.margin>
+                                    <Insets bottom="2.0" top="2.0"/>
+                                </VBox.margin>
+                                <StudentView student="YELLOW" fitWidth="25" fitHeight="25"/>
+                                <Label text="2(3)">
+                                    <HBox.margin>
+                                        <Insets left="2.5"/>
+                                    </HBox.margin>
+                                </Label>
+                            </HBox>
+                            <HBox>
+                                <VBox.margin>
+                                    <Insets bottom="2.0" top="2.0"/>
+                                </VBox.margin>
+                                <ImageView fitHeight="25.0" fitWidth="25.0" pickOnBounds="true"
+                                           preserveRatio="true">
+                                    <Image url="@../assets/coin.png"/>
+                                </ImageView>
+                                <Label text="2">
+                                    <HBox.margin>
+                                        <Insets left="2.5"/>
+                                    </HBox.margin>
+                                </Label>
+                            </HBox>
+                            <HBox alignment="CENTER_LEFT">
+                                <VBox.margin>
+                                    <Insets bottom="2.0" top="2.0"/>
+                                </VBox.margin>
+                                <TowerView fitHeight="50.0" fitWidth="20.0" pickOnBounds="true"
+                                           preserveRatio="true">
+                                    <HBox.margin>
+                                        <Insets left="2.5" right="5.0"/>
+                                    </HBox.margin>
+                                </TowerView>
+                                <Label text="8/8"/>
+                            </HBox>
+                        </VBox>
+                    </HBox>
+                </GridPane>
+                <GridPane id="board_students" alignment="CENTER" hgap="10.0" vgap="10.0">
+                    <columnConstraints>
+                        <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0"/>
+                        <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0"/>
+                        <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0"/>
+                        <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0"/>
+                        <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0"/>
+                    </columnConstraints>
+                    <rowConstraints>
+                        <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES"/>
+                        <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES"/>
+                        <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES"/>
+                        <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES"/>
+                        <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES"/>
+                    </rowConstraints>
+                    <VBox.margin>
+                        <Insets left="25.0" right="25.0"/>
+                    </VBox.margin>
+                    <padding>
+                        <Insets bottom="15.0" left="15.0" right="15.0" top="15.0"/>
+                    </padding>
+                    <Label id="entrance_label" text="Entrata" GridPane.columnIndex="2"
+                           GridPane.halignment="CENTER" GridPane.rowIndex="1"
+                           GridPane.valignment="CENTER"/>
+                    <Label id="school_label" text="Sala" GridPane.columnIndex="2"
+                           GridPane.halignment="CENTER" GridPane.rowIndex="3"
+                           GridPane.valignment="CENTER"/>
 
-                                        <Label text="2" GridPane.halignment="CENTER" GridPane.rowIndex="2"/>
-                                    </children>
-                                    <padding>
-                                        <Insets bottom="15.0" left="15.0" right="15.0" top="15.0"/>
-                                    </padding>
-                                </GridPane>
-                            </children>
-                        </VBox>
-                        <VBox layoutX="41.0" layoutY="581.0" prefHeight="114.0"
-                              prefWidth="417.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0"
-                              AnchorPane.rightAnchor="0.0">
-                            <children>
-                                <HBox alignment="CENTER_RIGHT" maxWidth="70">
-                                    <Label text="3">
-                                        <HBox.margin>
-                                            <Insets left="15.0"/>
-                                        </HBox.margin>
-                                    </Label>
-                                    <ImageView fitHeight="40.0" fitWidth="40.0" pickOnBounds="true"
-                                               preserveRatio="true">
-                                        <image>
-                                            <Image url="@../assets/coin.png"/>
-                                        </image>
-                                        <HBox.margin>
-                                            <Insets left="10.0"/>
-                                        </HBox.margin>
-                                    </ImageView>
-                                </HBox>
-                                <HBox alignment="CENTER_RIGHT" maxWidth="70">
-                                    <Label text="7/8">
-                                        <HBox.margin>
-                                            <Insets left="25.0"/>
-                                        </HBox.margin>
-                                    </Label>
-                                    <ImageView fitHeight="150.0" fitWidth="35.0" pickOnBounds="true"
-                                               preserveRatio="true">
-                                        <image>
-                                            <Image url="@../assets/white_tower.png"/>
-                                        </image>
-                                        <HBox.margin>
-                                            <Insets left="10.0"/>
-                                        </HBox.margin>
-                                    </ImageView>
-                                </HBox>
-                            </children>
-                        </VBox>
-                        <VBox alignment="CENTER" layoutX="377.0" layoutY="484.0" prefHeight="134.0" prefWidth="240.0"
-                              AnchorPane.bottomAnchor="15.0" AnchorPane.rightAnchor="15.0">
-                            <children>
-                                <Label alignment="CENTER" text="Carte personaggio"/>
-                                <HBox prefHeight="100.0" prefWidth="200.0">
-                                    <AssistantCardView fitWidth="100" fitHeight="200" preserveRatio="true">
-                                        <HBox.margin>
-                                            <Insets bottom="5.0" left="5.0" right="5.0" top="5.0"/>
-                                        </HBox.margin>
-                                    </AssistantCardView>
-                                    <AssistantCardView fitWidth="100" fitHeight="200" preserveRatio="true">
-                                        <HBox.margin>
-                                            <Insets bottom="5.0" left="5.0" right="5.0" top="5.0"/>
-                                        </HBox.margin>
-                                    </AssistantCardView>
-                                    <AssistantCardView fitWidth="100" fitHeight="200" preserveRatio="true">
-                                        <HBox.margin>
-                                            <Insets bottom="5.0" left="5.0" right="5.0" top="5.0"/>
-                                        </HBox.margin>
-                                    </AssistantCardView>
-                                </HBox>
-                            </children>
-                        </VBox>
-                    </children>
-                </AnchorPane>
-                <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="160.0" prefWidth="100.0"
-                            SplitPane.resizableWithParent="false"/>
-            </items>
-        </SplitPane>
-        <Button id="leave_button" fx:id="leaveButton" mnemonicParsing="false" onAction="#onLeavePressed" text="ABBANDONA"
-                AnchorPane.rightAnchor="20.0" AnchorPane.topAnchor="20.0">
-            <font>
-                <Font size="18.0"/>
-            </font>
-        </Button>
-    </children>
+                    <StudentView fitHeight="35.0" student="BLUE" fitWidth="35.0" pickOnBounds="true"
+                                 preserveRatio="true" GridPane.columnIndex="0"
+                                 GridPane.halignment="CENTER" GridPane.valignment="CENTER"/>
+                    <StudentView fitHeight="35.0" student="GREEN" fitWidth="35.0"
+                                 pickOnBounds="true" preserveRatio="true" GridPane.columnIndex="1"
+                                 GridPane.halignment="CENTER" GridPane.valignment="CENTER"/>
+                    <StudentView fitHeight="35.0" student="PINK" fitWidth="35.0" pickOnBounds="true"
+                                 preserveRatio="true" GridPane.columnIndex="2"
+                                 GridPane.halignment="CENTER" GridPane.valignment="CENTER"/>
+                    <StudentView fitHeight="35.0" student="RED" fitWidth="35.0" pickOnBounds="true"
+                                 preserveRatio="true" GridPane.columnIndex="3"
+                                 GridPane.halignment="CENTER" GridPane.valignment="CENTER"/>
+                    <StudentView fitHeight="35.0" student="YELLOW" fitWidth="35.0"
+                                 pickOnBounds="true" preserveRatio="true" GridPane.columnIndex="4"
+                                 GridPane.halignment="CENTER" GridPane.valignment="CENTER"/>
+
+                    <Label text="2" GridPane.halignment="CENTER" GridPane.rowIndex="2"/>
+                </GridPane>
+            </VBox>
+            <VBox AnchorPane.bottomAnchor="20.0" AnchorPane.leftAnchor="20.0">
+                <HBox alignment="CENTER_LEFT">
+                    <VBox.margin>
+                        <Insets bottom="15.0"/>
+                    </VBox.margin>
+                    <ImageView fitHeight="40.0" fitWidth="40.0" pickOnBounds="true"
+                               preserveRatio="true">
+                        <Image url="@../assets/coin.png"/>
+                    </ImageView>
+                    <Label text="3">
+                        <HBox.margin>
+                            <Insets left="15.0"/>
+                        </HBox.margin>
+                    </Label>
+                </HBox>
+                <HBox alignment="CENTER_LEFT">
+                    <TowerView towerColor="GREY" fitHeight="150.0" fitWidth="35.0" pickOnBounds="true"
+                               preserveRatio="true"/>
+                    <Label text="7/8">
+                        <HBox.margin>
+                            <Insets left="15.0"/>
+                        </HBox.margin>
+                    </Label>
+                </HBox>
+            </VBox>
+            <VBox alignment="CENTER" layoutX="377.0" layoutY="484.0" prefHeight="134.0" prefWidth="240.0"
+                  AnchorPane.bottomAnchor="15.0" AnchorPane.rightAnchor="15.0">
+                <Label alignment="CENTER" text="Carte personaggio"/>
+                <HBox prefHeight="100.0" prefWidth="200.0">
+                    <AssistantCardView fitWidth="100" fitHeight="200" preserveRatio="true">
+                        <HBox.margin>
+                            <Insets bottom="5.0" left="5.0" right="5.0" top="5.0"/>
+                        </HBox.margin>
+                    </AssistantCardView>
+                    <AssistantCardView fitWidth="100" fitHeight="200" preserveRatio="true">
+                        <HBox.margin>
+                            <Insets bottom="5.0" left="5.0" right="5.0" top="5.0"/>
+                        </HBox.margin>
+                    </AssistantCardView>
+                    <AssistantCardView fitWidth="100" fitHeight="200" preserveRatio="true">
+                        <HBox.margin>
+                            <Insets bottom="5.0" left="5.0" right="5.0" top="5.0"/>
+                        </HBox.margin>
+                    </AssistantCardView>
+                </HBox>
+            </VBox>
+        </AnchorPane>
+        <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="160.0" prefWidth="100.0"
+                    SplitPane.resizableWithParent="false"/>
+    </SplitPane>
+    <Button id="leave_button" fx:id="leaveButton" mnemonicParsing="false" onAction="#onLeavePressed" text="ABBANDONA"
+            AnchorPane.rightAnchor="20.0" AnchorPane.topAnchor="20.0">
+        <font>
+            <Font size="18.0"/>
+        </font>
+    </Button>
 </AnchorPane>

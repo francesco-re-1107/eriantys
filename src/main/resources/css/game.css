@@ -71,9 +71,10 @@
     -fx-border-radius: 20;
     -fx-background-radius: 20;
     -fx-padding: 5px;
-    -fx-border-insets: 5px;
-    -fx-background-insets: 10px;
+    -fx-border-insets: 10px;
+    -fx-background-insets: 15px;
     -fx-font-family: 'Recursive Casual';
+    -fx-effect: dropshadow(three-pass-box, rgba(0, 0, 0, 0.5), 10, 0, 0, 0);
 }
 
 .label {
@@ -94,4 +95,12 @@
 
 #players_grid .label{
     -fx-font-size: 18px;
+}
+
+#info_label {
+    -fx-border-color: #fff;
+    -fx-border-width: 3;
+    -fx-border-radius: 5;
+    -fx-padding: 5px;
+    -fx-font-size: 22px;
 }

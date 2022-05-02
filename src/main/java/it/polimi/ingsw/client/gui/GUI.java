@@ -14,8 +14,8 @@ public class GUI extends Application {
 
         Scene scene = new Scene(root);
 
-        stage.setMinWidth(1280);
-        stage.setMinHeight(720);
+        stage.setMinWidth(1600);
+        stage.setMinHeight(900);
         stage.setMaximized(true);
         stage.setTitle("Eriantys");
         stage.setScene(scene);
