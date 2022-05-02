@@ -17,6 +17,7 @@ public class TowerView extends ImageView {
     public TowerView(Tower towerColor) {
         this.towerColor = towerColor;
         setImage(new Image(getImageStream()));
+        setPreserveRatio(true);
     }
 
     public Tower getTowerColor() {

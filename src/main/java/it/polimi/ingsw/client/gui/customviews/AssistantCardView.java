@@ -15,6 +15,7 @@ public class AssistantCardView extends ImageView {
         super();
 
         setImage(new Image(getImageStream()));
+        setPreserveRatio(true);
     }
 
     public AssistantCardView(AssistantCard card) {

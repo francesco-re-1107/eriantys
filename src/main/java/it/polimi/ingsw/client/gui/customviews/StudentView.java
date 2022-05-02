@@ -17,8 +17,6 @@ public class StudentView extends ImageView {
 
     public StudentView(Student student) {
         this(student, false);
-        setFitWidth(35);
-        setFitHeight(35);
     }
 
     public StudentView(Student student, boolean isProfessor) {
@@ -27,6 +25,9 @@ public class StudentView extends ImageView {
         this.isProfessor = isProfessor;
 
         setImage(new Image(getImageStream()));
+        setFitWidth(35);
+        setFitHeight(35);
+        setPreserveRatio(true);
     }
 
     public void setProfessor(boolean isProfessor) {
