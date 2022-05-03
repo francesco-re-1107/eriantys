@@ -10,6 +10,8 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.*;
 
+import java.util.Random;
+
 public class IslandView extends StackPane {
 
     private ReducedIsland island;
@@ -23,12 +25,10 @@ public class IslandView extends StackPane {
                 new ReducedIsland(
                         new StudentsContainer()
                                 .addStudents(Student.BLUE, 1)
-                                .addStudents(Student.YELLOW, 2)
-                                .addStudents(Student.RED, 3)
-                                .addStudents(Student.GREEN, 1)
-                                .addStudents(Student.PINK, 2),
+                                .addStudents(Student.RED, 1)
+                                .addStudents(Student.PINK, 1),
                         1,
-                        3,
+                        0,
                         Tower.GREY,
                         false
                 )
@@ -47,19 +47,16 @@ public class IslandView extends StackPane {
         var size = Math.min(400, Math.max(island.size() * 50, 200));
         setWidth(size);
         setHeight(size);
-        prefWidth(size);
-        prefHeight(size);
-        minWidth(size);
-        minHeight(size);
+        setPrefWidth(size);
+        setPrefHeight(size);
+        setMinWidth(size);
+        setMinHeight(size);
 
         setAlignment(Pos.CENTER);
 
         setId("island");
 
-        Image image = new Image(getClass().getResource("/assets/island1.png").toExternalForm());
-        BackgroundSize backgroundSize = new BackgroundSize(size, size, true, true, true, true);
-        BackgroundImage backgroundImage = new BackgroundImage(image, BackgroundRepeat.REPEAT, BackgroundRepeat.NO_REPEAT, BackgroundPosition.CENTER, backgroundSize);
-        setBackground(new Background(backgroundImage));
+        setupBackground();
 
         vbox.getChildren().add(getTowersView());
         vbox.getChildren().add(getStudentsView());
@@ -70,14 +67,23 @@ public class IslandView extends StackPane {
         noEntry = new ImageView(new Image(getClass().getResourceAsStream("/assets/no_entry.png")));
         noEntry.setFitWidth(200);
         noEntry.setFitHeight(200);
-        noEntry.setVisible(!island.noEntry());
+        noEntry.setVisible(island.noEntry());
         noEntry.setOpacity(0.4);
         getChildren().add(noEntry);
 
     }
 
+    private void setupBackground() {
+        //random number from 1 to 3
+        var random = new Random().nextInt(3) + 1;
+        Image image = new Image(getClass().getResource("/assets/island" + random + ".png").toExternalForm());
+        BackgroundSize backgroundSize = new BackgroundSize(200, 200, true, true, true, true);
+        BackgroundImage backgroundImage = new BackgroundImage(image, BackgroundRepeat.REPEAT, BackgroundRepeat.NO_REPEAT, BackgroundPosition.CENTER, backgroundSize);
+        setBackground(new Background(backgroundImage));
+    }
+
     private Node getMotherNatureView() {
-        var mn = new MotherNatureView(MotherNatureView.State.DISABLED);
+        var mn = new MotherNatureView(MotherNatureView.State.INVISIBLE);
         mn.setFitWidth(50);
         mn.setFitHeight(100);
 
