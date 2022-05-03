@@ -7,6 +7,7 @@ import it.polimi.ingsw.server.model.Tower;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.*;
 
 public class IslandView extends StackPane {
@@ -14,6 +15,8 @@ public class IslandView extends StackPane {
     private ReducedIsland island;
 
     private final VBox vbox;
+
+    private final ImageView noEntry;
 
     public IslandView() {
         this(
@@ -39,7 +42,7 @@ public class IslandView extends StackPane {
         vbox = new VBox();
 
         vbox.setSpacing(10);
-        vbox.setAlignment(Pos.TOP_CENTER);
+        vbox.setAlignment(Pos.CENTER);
 
         var size = Math.min(400, Math.max(island.size() * 50, 200));
         setWidth(size);
@@ -64,10 +67,12 @@ public class IslandView extends StackPane {
 
         getChildren().add(vbox);
 
-        /*var noEntry = new ImageView(new Image(getClass().getResourceAsStream("/assets/no_entry.png")));
-        noEntry.setFitWidth(150);
-        noEntry.setFitHeight(150);
-        getChildren().add(noEntry);*/
+        noEntry = new ImageView(new Image(getClass().getResourceAsStream("/assets/no_entry.png")));
+        noEntry.setFitWidth(200);
+        noEntry.setFitHeight(200);
+        noEntry.setVisible(!island.noEntry());
+        noEntry.setOpacity(0.4);
+        getChildren().add(noEntry);
 
     }
 
