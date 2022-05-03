@@ -3,7 +3,9 @@ package it.polimi.ingsw.server.model;
 import it.polimi.ingsw.common.exceptions.StudentNotFoundException;
 import it.polimi.ingsw.common.exceptions.StudentsMaxReachedException;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -163,6 +165,17 @@ public class StudentsContainer extends AStudentsContainer {
         anotherContainer.students.forEach(this::removeStudents);
 
         return this;
+    }
+
+    public List<Student> toList() {
+        var array = new ArrayList<Student>();
+
+        this.students.forEach((student, count) -> {
+            for (int i = 0; i < count; i++)
+                array.add(student);
+        });
+
+        return array;
     }
 
     /**
