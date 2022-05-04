@@ -4,10 +4,12 @@ import it.polimi.ingsw.common.reducedmodel.ReducedIsland;
 import it.polimi.ingsw.server.model.Student;
 import it.polimi.ingsw.server.model.StudentsContainer;
 import it.polimi.ingsw.server.model.Tower;
+import javafx.animation.FadeTransition;
 import javafx.geometry.Pos;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.*;
+import javafx.util.Duration;
 
 import java.util.Random;
 
@@ -135,10 +137,23 @@ public class IslandView extends StackPane {
 
     private void setupNoEntry() {
         noEntry = new ImageView(new Image(getClass().getResourceAsStream("/assets/no_entry.png")));
-        noEntry.setFitWidth(size/2);
-        noEntry.setFitHeight(size/2);
-        noEntry.setOpacity(0.4);
-        noEntry.setVisible(false);
+        noEntry.setFitWidth(size/1.4);
+        noEntry.setFitHeight(size/1.4);
+        noEntry.setOpacity(1);
+        noEntry.setOnMouseEntered(event -> {
+            FadeTransition ft = new FadeTransition(Duration.millis(100), noEntry);
+            ft.setFromValue(1);
+            ft.setToValue(0);
+            ft.play();
+        });
+
+        noEntry.setOnMouseExited(event -> {
+            FadeTransition ft = new FadeTransition(Duration.millis(100), noEntry);
+            ft.setFromValue(0);
+            ft.setToValue(1);
+            ft.play();
+        });
+        noEntry.setVisible(island.noEntry());
         getChildren().add(noEntry);
     }
 
@@ -154,7 +169,7 @@ public class IslandView extends StackPane {
     }
 
     private void setupMotherNatureView() {
-        motherNatureView = new MotherNatureView(MotherNatureView.State.INVISIBLE);
+        motherNatureView = new MotherNatureView(MotherNatureView.State.DISABLED);
         motherNatureView.setFitWidth(Math.min(50, size/5));
 
         vbox.getChildren().add(motherNatureView);

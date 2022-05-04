@@ -52,7 +52,5 @@ public class CloudsCircularPane extends Pane {
             layoutInArea(node, x - node.getBoundsInLocal().getWidth() / 2, y - node.getBoundsInLocal().getHeight() / 2, getWidth(), getHeight(), 0.0, HPos.LEFT, VPos.TOP);
             degree += increment;
         }
-
     }
-
 }
