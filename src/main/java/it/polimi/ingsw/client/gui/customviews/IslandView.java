@@ -120,11 +120,13 @@ public class IslandView extends StackPane {
     }
 
     public void addStudent(Student student) {
+
+        var studentsPerRow = 5 + Math.floor(island.size() / 2.5);
         var sv = new StudentView(student);
         sv.setFitWidth(Math.min(27, size/8));
         studentsViewCurrentHBox.getChildren().add(sv);
 
-        if(studentsViewCurrentHBox.getChildren().size() % 6 == 0) {
+        if(studentsViewCurrentHBox.getChildren().size() % studentsPerRow == 0) {
             studentsViewCurrentHBox = new HBox();
             studentsViewCurrentHBox.setSpacing(5);
             studentsViewCurrentHBox.setAlignment(Pos.CENTER);
@@ -169,10 +171,14 @@ public class IslandView extends StackPane {
     }
 
     private void setupMotherNatureView() {
-        motherNatureView = new MotherNatureView(MotherNatureView.State.DISABLED);
+        motherNatureView = new MotherNatureView();
         motherNatureView.setFitWidth(Math.min(50, size/5));
 
         vbox.getChildren().add(motherNatureView);
+    }
+
+    public MotherNatureView getMotherNatureView() {
+        return motherNatureView;
     }
 
     public void updateIsland(ReducedIsland island) {

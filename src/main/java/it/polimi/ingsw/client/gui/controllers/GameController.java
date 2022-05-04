@@ -12,6 +12,9 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.stage.Stage;
 
+import java.util.Arrays;
+import java.util.List;
+
 public class GameController {
     @FXML
     public IslandCircularPane islandsPane;
@@ -129,8 +132,8 @@ public class GameController {
                 new StudentsContainer()
                         .addStudents(Student.RED, 1)
                         .addStudents(Student.YELLOW, 4),
-                2,
-                2,
+                5,
+                5,
                 Tower.WHITE,
                 false
         );
@@ -151,6 +154,14 @@ public class GameController {
         islandsPane.addIsland(i);
         islandsPane.addIsland(i2);
         islandsPane.addIsland(i3);
+
+        //setIslands();
+        var c = new StudentsContainer()
+                .addStudents(Student.BLUE, 1)
+                .addStudents(Student.GREEN, 1)
+                .addStudents(Student.PINK, 1);
+        var l = Arrays.asList(c, c, c);
+        setClouds(l);
     }
 
     @FXML
@@ -204,5 +215,10 @@ public class GameController {
             myStudentsBoard.add(schoolLabel, s.ordinal(), 4);
         }
 
+    }
+
+    public void setClouds(List<StudentsContainer> clouds) {
+        cloudsPane.getChildren().clear();
+        clouds.forEach(c -> cloudsPane.addCloud(c));
     }
 }
