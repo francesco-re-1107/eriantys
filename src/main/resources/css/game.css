@@ -51,11 +51,8 @@
     -fx-scale-y: 0.98;
     -fx-scale-x: 0.98;
 }
-#game_background {
-    -fx-background-color: #6ABCEA;
-}
 
-#game_background_2{
+#game_background{
     -fx-background-color: #6ABCEA;
 }
 

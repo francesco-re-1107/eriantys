@@ -1,22 +1,30 @@
 package it.polimi.ingsw.client.gui.customviews;
 
+import it.polimi.ingsw.common.reducedmodel.ReducedIsland;
+import it.polimi.ingsw.server.model.Student;
 import javafx.geometry.HPos;
 import javafx.geometry.VPos;
 import javafx.scene.Node;
 import javafx.scene.layout.Pane;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class IslandCircularPane extends Pane {
 
+    private List<ReducedIsland> islands;
+
     public IslandCircularPane(){
+        this(new ArrayList<>());
+    }
 
-        for (int i = 0; i < 12; i++){
-            var iv = new IslandView();
-            iv.setMaxHeight(100.0);
-            iv.setMaxWidth(100.0);
+    public IslandCircularPane(List<ReducedIsland> islands) {
+        super();
+        this.islands = islands;
 
-            getChildren().add(iv);
+        for (var i : islands) {
+            addIsland(i);
         }
-
     }
 
     @Override
@@ -33,5 +41,14 @@ public class IslandCircularPane extends Pane {
             degree += increment;
         }
 
+    }
+
+    public void addIsland(ReducedIsland i) {
+        islands.add(i);
+        var iv = new IslandView(i);
+
+        iv.setOnMouseClicked(event -> iv.addStudent(Student.RED));
+
+        getChildren().add(iv);
     }
 }

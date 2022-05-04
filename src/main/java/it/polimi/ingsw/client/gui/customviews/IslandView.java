@@ -5,7 +5,6 @@ import it.polimi.ingsw.server.model.Student;
 import it.polimi.ingsw.server.model.StudentsContainer;
 import it.polimi.ingsw.server.model.Tower;
 import javafx.geometry.Pos;
-import javafx.scene.Node;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.*;
@@ -18,13 +17,21 @@ public class IslandView extends StackPane {
 
     private final VBox vbox;
 
-    private final ImageView noEntry;
+    private ImageView noEntry;
+
+    private final double size;
+
+    private MotherNatureView motherNatureView;
+
+    private VBox studentsViewVBox;
+
+    private HBox studentsViewCurrentHBox;
 
     public IslandView() {
         this(
                 new ReducedIsland(
                         new StudentsContainer()
-                                .addStudents(Student.BLUE, 1)
+                                .addStudents(Student.GREEN, 1)
                                 .addStudents(Student.RED, 1)
                                 .addStudents(Student.PINK, 1),
                         1,
@@ -44,13 +51,16 @@ public class IslandView extends StackPane {
         vbox.setSpacing(10);
         vbox.setAlignment(Pos.CENTER);
 
-        var size = Math.min(400, Math.max(island.size() * 50, 200));
+        size = Math.min(400, Math.max(150 + island.size() * 25, 175));
+
         setWidth(size);
         setHeight(size);
         setPrefWidth(size);
         setPrefHeight(size);
         setMinWidth(size);
         setMinHeight(size);
+        setMaxWidth(size);
+        setMaxHeight(size);
 
         setAlignment(Pos.CENTER);
 
@@ -58,86 +68,96 @@ public class IslandView extends StackPane {
 
         setupBackground();
 
-        vbox.getChildren().add(getTowersView());
-        vbox.getChildren().add(getStudentsView());
-        vbox.getChildren().add(getMotherNatureView());
+        setupTowersView();
+        setupStudents();
+        setupMotherNatureView();
 
         getChildren().add(vbox);
 
-        noEntry = new ImageView(new Image(getClass().getResourceAsStream("/assets/no_entry.png")));
-        noEntry.setFitWidth(200);
-        noEntry.setFitHeight(200);
-        noEntry.setVisible(island.noEntry());
-        noEntry.setOpacity(0.4);
-        getChildren().add(noEntry);
+        setupNoEntry();
 
+    }
+
+    private void setupTowersView() {
+        var towersView = new HBox();
+        towersView.prefWidth(100);
+        towersView.prefHeight(100);
+        towersView.setSpacing(-15);
+        towersView.setAlignment(Pos.TOP_CENTER);
+
+        for(int i = 0; i < island.towersCount(); i++) {
+            var tv = new TowerView(island.towerColor());
+            tv.setFitWidth(Math.min(37, size/6));
+            towersView.getChildren().add(tv);
+        }
+
+        vbox.getChildren().add(towersView);
+    }
+
+    private void setupStudents() {
+        studentsViewVBox = new VBox();
+
+        studentsViewVBox.setMaxWidth(size);
+        studentsViewVBox.setMaxHeight(size);
+        studentsViewVBox.setSpacing(5);
+        studentsViewVBox.setAlignment(Pos.TOP_CENTER);
+
+        studentsViewCurrentHBox = new HBox();
+        studentsViewCurrentHBox.setSpacing(5);
+        studentsViewCurrentHBox.setAlignment(Pos.CENTER);
+        studentsViewCurrentHBox.prefWidth(size);
+        studentsViewCurrentHBox.prefHeight(100);
+
+        studentsViewVBox.getChildren().add(studentsViewCurrentHBox);
+
+        for (Student s : island.students().toList()) {
+            addStudent(s);
+        }
+
+        vbox.getChildren().add(studentsViewVBox);
+    }
+
+    public void addStudent(Student student) {
+        var sv = new StudentView(student);
+        sv.setFitWidth(Math.min(27, size/8));
+        studentsViewCurrentHBox.getChildren().add(sv);
+
+        if(studentsViewCurrentHBox.getChildren().size() % 6 == 0) {
+            studentsViewCurrentHBox = new HBox();
+            studentsViewCurrentHBox.setSpacing(5);
+            studentsViewCurrentHBox.setAlignment(Pos.CENTER);
+            studentsViewCurrentHBox.prefWidth(100);
+            studentsViewCurrentHBox.prefHeight(size);
+
+            studentsViewVBox.getChildren().add(studentsViewCurrentHBox);
+        }
+    }
+
+    private void setupNoEntry() {
+        noEntry = new ImageView(new Image(getClass().getResourceAsStream("/assets/no_entry.png")));
+        noEntry.setFitWidth(size/2);
+        noEntry.setFitHeight(size/2);
+        noEntry.setOpacity(0.4);
+        noEntry.setVisible(false);
+        getChildren().add(noEntry);
     }
 
     private void setupBackground() {
         //random number from 1 to 3
         var random = new Random().nextInt(3) + 1;
         Image image = new Image(getClass().getResource("/assets/island" + random + ".png").toExternalForm());
-        BackgroundSize backgroundSize = new BackgroundSize(200, 200, true, true, true, true);
+        BackgroundSize backgroundSize = new BackgroundSize(size, size, true, true, true, true);
         BackgroundImage backgroundImage = new BackgroundImage(image, BackgroundRepeat.REPEAT, BackgroundRepeat.NO_REPEAT, BackgroundPosition.CENTER, backgroundSize);
         setBackground(new Background(backgroundImage));
+
+        //setBackground(new Background(new BackgroundFill(Paint.valueOf("#f5f5f5"), CornerRadii.EMPTY, Insets.EMPTY)));
     }
 
-    private Node getMotherNatureView() {
-        var mn = new MotherNatureView(MotherNatureView.State.INVISIBLE);
-        mn.setFitWidth(50);
-        mn.setFitHeight(100);
+    private void setupMotherNatureView() {
+        motherNatureView = new MotherNatureView(MotherNatureView.State.INVISIBLE);
+        motherNatureView.setFitWidth(Math.min(50, size/5));
 
-        return mn;
-    }
-
-    private Node getStudentsView() {
-        var studentsView = new VBox();
-
-        studentsView.prefWidth(100);
-        studentsView.prefHeight(100);
-        studentsView.setSpacing(5);
-        studentsView.setAlignment(Pos.TOP_CENTER);
-
-        var currentHBox = new HBox();
-        currentHBox.setSpacing(5);
-        currentHBox.setAlignment(Pos.CENTER);
-        currentHBox.prefWidth(100);
-        currentHBox.prefHeight(100);
-
-        studentsView.getChildren().add(currentHBox);
-
-        for (Student s : island.students().toList()) {
-            var sv = new StudentView(s);
-            sv.setFitWidth(30);
-            currentHBox.getChildren().add(sv);
-
-            if(currentHBox.getChildren().size() % 5 == 0) {
-                currentHBox = new HBox();
-                currentHBox.setSpacing(5);
-                currentHBox.setAlignment(Pos.CENTER);
-                currentHBox.prefWidth(100);
-                currentHBox.prefHeight(100);
-
-                studentsView.getChildren().add(currentHBox);
-            }
-        }
-
-        return studentsView;
-    }
-
-    private Node getTowersView() {
-        var towersView = new HBox();
-        towersView.prefWidth(100);
-        towersView.prefHeight(100);
-        towersView.setSpacing(-18);
-        towersView.setAlignment(Pos.TOP_CENTER);
-        for(int i = 0; i < island.towersCount(); i++) {
-            var tv = new TowerView(island.towerColor());
-            tv.setFitWidth(36);
-            towersView.getChildren().add(tv);
-        }
-
-        return towersView;
+        vbox.getChildren().add(motherNatureView);
     }
 
     public void updateIsland(ReducedIsland island) {
