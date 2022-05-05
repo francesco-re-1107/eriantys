@@ -53,7 +53,7 @@ public class IslandView extends StackPane {
         vbox.setSpacing(10);
         vbox.setAlignment(Pos.CENTER);
 
-        size = Math.min(400, Math.max(150 + island.size() * 25, 175));
+        size = Math.min(350, Math.max(150 + island.size() * 25, 175));
 
         setWidth(size);
         setHeight(size);
@@ -142,15 +142,16 @@ public class IslandView extends StackPane {
         noEntry.setFitWidth(size/1.4);
         noEntry.setFitHeight(size/1.4);
         noEntry.setOpacity(1);
-        noEntry.setOnMouseEntered(event -> {
-            FadeTransition ft = new FadeTransition(Duration.millis(100), noEntry);
+
+        setOnMouseEntered(event -> {
+            FadeTransition ft = new FadeTransition(Duration.millis(150), noEntry);
             ft.setFromValue(1);
             ft.setToValue(0);
             ft.play();
         });
 
-        noEntry.setOnMouseExited(event -> {
-            FadeTransition ft = new FadeTransition(Duration.millis(100), noEntry);
+        setOnMouseExited(event -> {
+            FadeTransition ft = new FadeTransition(Duration.millis(150), noEntry);
             ft.setFromValue(0);
             ft.setToValue(1);
             ft.play();

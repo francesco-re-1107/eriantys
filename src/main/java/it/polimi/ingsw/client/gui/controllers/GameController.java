@@ -2,6 +2,8 @@ package it.polimi.ingsw.client.gui.controllers;
 
 import it.polimi.ingsw.client.gui.customviews.*;
 import it.polimi.ingsw.common.reducedmodel.ReducedIsland;
+import it.polimi.ingsw.common.reducedmodel.ReducedPlayer;
+import it.polimi.ingsw.server.model.AssistantCard;
 import it.polimi.ingsw.server.model.Student;
 import it.polimi.ingsw.server.model.StudentsContainer;
 import it.polimi.ingsw.server.model.Tower;
@@ -10,6 +12,7 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
 import java.util.Arrays;
@@ -21,31 +24,21 @@ public class GameController {
     @FXML
     public CloudsCircularPane cloudsPane;
     @FXML
-    public HBox player2Board;
+    public HBox player3Board;
     @FXML
-    public Label player2BoardLabel;
+    public Label player3BoardLabel;
+    @FXML
+    public VBox player2Students;
+    @FXML
+    public VBox player3Students;
     @FXML
     Button leaveButton;
-    @FXML
-    private Label player3YellowLabel;
-    @FXML
-    private Label player3RedLabel;
-    @FXML
-    private StudentView player2Yellow;
     @FXML
     private AssistantCardView player2Card;
     @FXML
     private HBox player2Coin;
     @FXML
-    private Label player3GreenLabel;
-    @FXML
     private Label player2TowerLabel;
-    @FXML
-    private Label player3PinkLabel;
-    @FXML
-    private StudentView player2Blue;
-    @FXML
-    private Label player2PinkLabel;
     @FXML
     private AssistantCardView player3Card;
     @FXML
@@ -53,25 +46,11 @@ public class GameController {
     @FXML
     private HBox player3Coin;
     @FXML
-    private Label player3BlueLabel;
-    @FXML
-    private StudentView player3Green;
-    @FXML
     private HBox myCoin;
     @FXML
     private AssistantCardView myCard;
     @FXML
     private Label player2CoinLabel;
-    @FXML
-    private Label player2RedLabel;
-    @FXML
-    private Label player2GreenLabel;
-    @FXML
-    private StudentView player3Blue;
-    @FXML
-    private StudentView player3Yellow;
-    @FXML
-    private StudentView player3Red;
     @FXML
     private Label player3CoinLabel;
     @FXML
@@ -79,32 +58,22 @@ public class GameController {
     @FXML
     private TowerView myTower;
     @FXML
-    private StudentView player2Pink;
-    @FXML
     private TowerView player3Tower;
     @FXML
-    private StudentView player3Pink;
-    @FXML
     private Label infoLabel;
-    @FXML
-    private Label player2YellowLabel;
     @FXML
     private GridPane myStudentsBoard;
     @FXML
     private Label myCoinLabel;
     @FXML
-    private Label player2BlueLabel;
-    @FXML
     private TowerView player2Tower;
-    @FXML
-    private StudentView player2Red;
-    @FXML
-    private StudentView player2Green;
 
     @Deprecated
     public void initialize() {
         setVisibilityForNumberOfPlayers(3);
         setVisibilityForExpertMode(true);
+
+        myCard.setCard(AssistantCard.getDefaultDeck().get(6));
 
         setMyStudentsBoard(
                 new StudentsContainer()
@@ -149,19 +118,58 @@ public class GameController {
                 false
         );
 
-        islandsPane.addIsland(i);
-        islandsPane.addIsland(i);
-        islandsPane.addIsland(i);
-        islandsPane.addIsland(i2);
-        islandsPane.addIsland(i3);
+        var islands = Arrays.asList(i, i, i, i2, i3);
 
-        //setIslands();
+        setIslands(islands);
+
         var c = new StudentsContainer()
                 .addStudents(Student.BLUE, 1)
                 .addStudents(Student.GREEN, 1)
                 .addStudents(Student.PINK, 1);
         var l = Arrays.asList(c, c, c);
         setClouds(l);
+
+        setMyCoin(0);
+        setMyTowers(Tower.WHITE, 7);
+
+        setPlayer2Board(new ReducedPlayer(
+                "p2",
+                true,
+                new StudentsContainer()
+                        .addStudents(Student.BLUE, 1)
+                        .addStudents(Student.GREEN, 1)
+                        .addStudents(Student.PINK, 1),
+                new StudentsContainer()
+                        .addStudents(Student.BLUE, 1)
+                        .addStudents(Student.GREEN, 1)
+                        .addStudents(Student.PINK, 1),
+                6,
+                Tower.BLACK,
+                null,
+                0
+        ));
+
+        setPlayer3Board(new ReducedPlayer(
+                "p3",
+                true,
+                new StudentsContainer()
+                        .addStudents(Student.BLUE, 1)
+                        .addStudents(Student.GREEN, 1)
+                        .addStudents(Student.PINK, 1),
+                new StudentsContainer()
+                        .addStudents(Student.BLUE, 1)
+                        .addStudents(Student.GREEN, 1)
+                        .addStudents(Student.PINK, 1),
+                7,
+                Tower.GREY,
+                null,
+                0
+        ));
+    }
+
+    private void setMyTowers(Tower towerColor, int numberOfTowers) {
+        myTower.setTowerColor(towerColor);
+        myTowerLabel.setText(numberOfTowers + "");
     }
 
     @FXML
@@ -182,11 +190,11 @@ public class GameController {
     }
 
     public void setVisibilityForNumberOfPlayers(int numberOfPlayers) {
-        player2Board.setVisible(numberOfPlayers == 3);
-        player2Board.setManaged(numberOfPlayers == 3);
+        player3Board.setVisible(numberOfPlayers == 3);
+        player3Board.setManaged(numberOfPlayers == 3);
 
-        player2BoardLabel.setVisible(numberOfPlayers == 3);
-        player2BoardLabel.setManaged(numberOfPlayers == 3);
+        player3BoardLabel.setVisible(numberOfPlayers == 3);
+        player3BoardLabel.setManaged(numberOfPlayers == 3);
     }
 
     public void setMyStudentsBoard(StudentsContainer entrance, StudentsContainer school) {
@@ -220,5 +228,44 @@ public class GameController {
     public void setClouds(List<StudentsContainer> clouds) {
         cloudsPane.getChildren().clear();
         clouds.forEach(c -> cloudsPane.addCloud(c));
+    }
+
+    public void setIslands(List<ReducedIsland> islands) {
+        islandsPane.getChildren().clear();
+        islands.forEach(i -> islandsPane.addIsland(i));
+    }
+
+    public void setMyCoin(int coin) {
+        myCoinLabel.setText(coin + "");
+    }
+
+    public void setPlayer2Board(ReducedPlayer player2) {
+        setPlayerBoard(player2, player2Students, player2CoinLabel, player2TowerLabel, player2Tower);
+    }
+
+    public void setPlayer3Board(ReducedPlayer player3) {
+        setPlayerBoard(player3, player3Students, player3CoinLabel, player3TowerLabel, player3Tower);
+    }
+
+    private void setPlayerBoard(ReducedPlayer player, VBox playerStudents, Label playerCoinLabel, Label playerTowerLabel, TowerView playerTower) {
+        playerStudents.getChildren().clear();
+
+        for(Student s : Student.values()) {
+            var hbox = new HBox();
+            hbox.setSpacing(5);
+            var sv = new StudentView(s);
+            sv.setFitWidth(25);
+            sv.setFitHeight(25);
+
+            var label = new Label(player.school().getCountForStudent(s) + "(" + player.entrance().getCountForStudent(s) + ")");
+
+            hbox.getChildren().addAll(sv, label);
+
+            playerStudents.getChildren().add(hbox);
+        }
+
+        playerCoinLabel.setText(player.coins() + "");
+        playerTowerLabel.setText(player.towersCount() + "");
+        playerTower.setTowerColor(player.towerColor());
     }
 }

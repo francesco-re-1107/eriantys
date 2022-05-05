@@ -137,3 +137,12 @@
     -fx-scale-x: 0.98;
     -fx-cursor: hand;
 }
+
+#assistant_card_description{
+    -fx-background-color: rgba(0, 0, 0, 0.8);
+    -fx-background-radius: 17;
+}
+
+#assistant_card_description .label{
+    -fx-font-size: 32px;
+}

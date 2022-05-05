@@ -15,8 +15,10 @@ public class App
 {
     public static void main( String[] args )
     {
+        startClient(true);
+
         //rough arguments parsing to determine if server or client must be started
-        try {
+        /*try {
             if (args[0].equals("server")) {
                 startServer();
             } else if (args[0].equals("client")) {
@@ -25,7 +27,7 @@ public class App
         }catch (Exception e) {
             Utils.LOGGER.severe("Arguments error");
             System.exit(0);
-        }
+        }*/
     }
 
     /**

@@ -38,9 +38,9 @@
                     <Label alignment="CENTER" text="Tu" GridPane.halignment="CENTER"/>
                     <Label alignment="CENTER" text="Giocatore1" GridPane.columnIndex="1"
                            GridPane.halignment="CENTER"/>
-                    <Label fx:id="player2BoardLabel" alignment="CENTER" text="Giocatore2" GridPane.columnIndex="2"
+                    <Label fx:id="player3BoardLabel" alignment="CENTER" text="Giocatore2" GridPane.columnIndex="2"
                            GridPane.halignment="CENTER"/>
-                    <AssistantCardView fx:id="myCard" fitWidth="100" fitHeight="200" preserveRatio="true"
+                    <AssistantCardView fx:id="myCard" maxWidth="100" maxHeight="200"
                                        GridPane.halignment="CENTER" GridPane.valignment="TOP"
                                        GridPane.rowIndex="1">
                         <GridPane.margin>
@@ -49,7 +49,7 @@
                     </AssistantCardView>
                     <HBox prefHeight="100.0" prefWidth="200.0" GridPane.columnIndex="1"
                           GridPane.rowIndex="1">
-                        <AssistantCardView fx:id="player2Card" fitWidth="100" fitHeight="200" preserveRatio="true">
+                        <AssistantCardView fx:id="player2Card" maxWidth="100" maxHeight="200">
                             <HBox.margin>
                                 <Insets bottom="10.0" left="10.0" right="10.0" top="10.0"/>
                             </HBox.margin>
@@ -58,61 +58,7 @@
                             <HBox.margin>
                                 <Insets bottom="10.0" right="10.0" top="10.0"/>
                             </HBox.margin>
-                            <HBox>
-                                <VBox.margin>
-                                    <Insets bottom="2.0" top="2.0"/>
-                                </VBox.margin>
-                                <StudentView fx:id="player2Blue" student="BLUE" fitWidth="25" fitHeight="25"/>
-                                <Label fx:id="player2BlueLabel" text="2(3)">
-                                    <HBox.margin>
-                                        <Insets left="2.5"/>
-                                    </HBox.margin>
-                                </Label>
-                            </HBox>
-                            <HBox>
-                                <VBox.margin>
-                                    <Insets bottom="2.0" top="2.0"/>
-                                </VBox.margin>
-                                <StudentView fx:id="player2Green" student="GREEN" fitWidth="25" fitHeight="25"/>
-                                <Label fx:id="player2GreenLabel" text="2(3)">
-                                    <HBox.margin>
-                                        <Insets left="2.5"/>
-                                    </HBox.margin>
-                                </Label>
-                            </HBox>
-                            <HBox>
-                                <VBox.margin>
-                                    <Insets bottom="2.0" top="2.0"/>
-                                </VBox.margin>
-                                <StudentView fx:id="player2Pink" student="PINK" fitWidth="25" fitHeight="25"/>
-                                <Label fx:id="player2PinkLabel" text="2(3)">
-                                    <HBox.margin>
-                                        <Insets left="2.5"/>
-                                    </HBox.margin>
-                                </Label>
-                            </HBox>
-                            <HBox>
-                                <VBox.margin>
-                                    <Insets bottom="2.0" top="2.0"/>
-                                </VBox.margin>
-                                <StudentView fx:id="player2Red" student="RED" fitWidth="25" fitHeight="25"/>
-                                <Label fx:id="player2RedLabel" text="2(3)">
-                                    <HBox.margin>
-                                        <Insets left="2.5"/>
-                                    </HBox.margin>
-                                </Label>
-                            </HBox>
-                            <HBox>
-                                <VBox.margin>
-                                    <Insets bottom="2.0" top="2.0"/>
-                                </VBox.margin>
-                                <StudentView fx:id="player2Yellow" student="YELLOW" fitWidth="25" fitHeight="25"/>
-                                <Label fx:id="player2YellowLabel" text="2(3)">
-                                    <HBox.margin>
-                                        <Insets left="2.5"/>
-                                    </HBox.margin>
-                                </Label>
-                            </HBox>
+                            <VBox prefHeight="200.0" prefWidth="100.0" fx:id="player2Students" spacing="5" />
                             <HBox fx:id="player2Coin">
                                 <VBox.margin>
                                     <Insets bottom="2.0" top="2.0"/>
@@ -123,7 +69,7 @@
                                 </ImageView>
                                 <Label fx:id="player2CoinLabel" text="2">
                                     <HBox.margin>
-                                        <Insets left="2.5"/>
+                                        <Insets left="5"/>
                                     </HBox.margin>
                                 </Label>
                             </HBox>
@@ -141,9 +87,9 @@
                             </HBox>
                         </VBox>
                     </HBox>
-                    <HBox fx:id="player2Board" prefHeight="100.0" prefWidth="200.0" GridPane.columnIndex="2"
+                    <HBox fx:id="player3Board" prefHeight="100.0" prefWidth="200.0" GridPane.columnIndex="2"
                           GridPane.rowIndex="1">
-                        <AssistantCardView fx:id="player3Card" fitWidth="100" fitHeight="200" preserveRatio="true">
+                        <AssistantCardView fx:id="player3Card" maxWidth="100" maxHeight="200">
                             <HBox.margin>
                                 <Insets bottom="10.0" left="10.0" right="10.0" top="10.0"/>
                             </HBox.margin>
@@ -152,61 +98,7 @@
                             <HBox.margin>
                                 <Insets bottom="10.0" right="10.0" top="10.0"/>
                             </HBox.margin>
-                            <HBox>
-                                <VBox.margin>
-                                    <Insets bottom="2.0" top="2.0"/>
-                                </VBox.margin>
-                                <StudentView fx:id="player3Blue" student="BLUE" fitWidth="25" fitHeight="25"/>
-                                <Label fx:id="player3BlueLabel" text="2(3)">
-                                    <HBox.margin>
-                                        <Insets left="2.5"/>
-                                    </HBox.margin>
-                                </Label>
-                            </HBox>
-                            <HBox>
-                                <VBox.margin>
-                                    <Insets bottom="2.0" top="2.0"/>
-                                </VBox.margin>
-                                <StudentView fx:id="player3Green" student="GREEN" fitWidth="25" fitHeight="25"/>
-                                <Label fx:id="player3GreenLabel" text="2(3)">
-                                    <HBox.margin>
-                                        <Insets left="2.5"/>
-                                    </HBox.margin>
-                                </Label>
-                            </HBox>
-                            <HBox>
-                                <VBox.margin>
-                                    <Insets bottom="2.0" top="2.0"/>
-                                </VBox.margin>
-                                <StudentView fx:id="player3Pink" student="PINK" fitWidth="25" fitHeight="25"/>
-                                <Label fx:id="player3PinkLabel" text="2(3)">
-                                    <HBox.margin>
-                                        <Insets left="2.5"/>
-                                    </HBox.margin>
-                                </Label>
-                            </HBox>
-                            <HBox>
-                                <VBox.margin>
-                                    <Insets bottom="2.0" top="2.0"/>
-                                </VBox.margin>
-                                <StudentView fx:id="player3Red" student="RED" fitWidth="25" fitHeight="25"/>
-                                <Label fx:id="player3RedLabel" text="2(3)">
-                                    <HBox.margin>
-                                        <Insets left="2.5"/>
-                                    </HBox.margin>
-                                </Label>
-                            </HBox>
-                            <HBox>
-                                <VBox.margin>
-                                    <Insets bottom="2.0" top="2.0"/>
-                                </VBox.margin>
-                                <StudentView fx:id="player3Yellow" student="YELLOW" fitWidth="25" fitHeight="25"/>
-                                <Label fx:id="player3YellowLabel" text="2(3)">
-                                    <HBox.margin>
-                                        <Insets left="2.5"/>
-                                    </HBox.margin>
-                                </Label>
-                            </HBox>
+                            <VBox prefHeight="200.0" prefWidth="100.0" fx:id="player3Students" spacing="5" />
                             <HBox fx:id="player3Coin">
                                 <VBox.margin>
                                     <Insets bottom="2.0" top="2.0"/>
@@ -217,7 +109,7 @@
                                 </ImageView>
                                 <Label fx:id="player3CoinLabel" text="2">
                                     <HBox.margin>
-                                        <Insets left="2.5"/>
+                                        <Insets left="5"/>
                                     </HBox.margin>
                                 </Label>
                             </HBox>
@@ -228,7 +120,7 @@
                                 <TowerView fx:id="player3Tower" fitHeight="50.0" fitWidth="20.0" pickOnBounds="true"
                                            preserveRatio="true">
                                     <HBox.margin>
-                                        <Insets left="2.5" right="5.0"/>
+                                        <Insets left="5" right="5.0"/>
                                     </HBox.margin>
                                 </TowerView>
                                 <Label fx:id="player3TowerLabel" text="8/8"/>
@@ -300,7 +192,7 @@
                     </Label>
                 </HBox>
                 <HBox alignment="CENTER_LEFT">
-                    <TowerView fx:id="myTower" towerColor="GREY" fitHeight="150.0" fitWidth="35.0" pickOnBounds="true"
+                    <TowerView fx:id="myTower" towerColor="GREY" fitHeight="150.0" fitWidth="40.0" pickOnBounds="true"
                                preserveRatio="true"/>
                     <Label fx:id="myTowerLabel" text="7/8">
                         <HBox.margin>

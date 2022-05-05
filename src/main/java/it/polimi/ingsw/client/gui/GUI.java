@@ -10,7 +10,7 @@ public class GUI extends Application {
 
     @Override
     public void start(Stage stage) throws Exception  {
-        Parent root = FXMLLoader.load(getClass().getResource("/fxml/game.fxml"));
+        Parent root = FXMLLoader.load(getClass().getResource("/fxml/main_menu.fxml"));
 
         Scene scene = new Scene(root);
 
