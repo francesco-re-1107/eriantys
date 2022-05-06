@@ -10,9 +10,7 @@ import javafx.scene.paint.Paint;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 
-import java.util.Arrays;
-import java.util.Map;
-import java.util.Stack;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class NavigationManager {
@@ -23,16 +21,21 @@ public class NavigationManager {
 
     private Scene scene;
 
-    private Stack<Parent> backStack;
+    private Stack<BackstackEntry> backstack;
 
     private Map<Screen, Parent> screens;
 
     private boolean currentlyNavigating = false;
 
+    private List<ScreenChangedListener> listeners;
+
+    private Screen currentScreen;
+
     private NavigationManager(Stage stage) {
         this.stage = stage;
-        this.backStack = new Stack<>();
+        this.backstack = new Stack<>();
         this.screens = new ConcurrentHashMap<>();
+        this.listeners = new ArrayList<>();
 
         //load first screen
         screens.put(Screen.MAIN_MENU, loadScreen(Screen.MAIN_MENU));
@@ -78,6 +81,8 @@ public class NavigationManager {
             scene.setFill(Paint.valueOf("#000000"));
             stage.setScene(scene);
 
+            currentScreen = screen;
+            notifyListeners();
         } else {
             currentlyNavigating = true;
 
@@ -86,9 +91,11 @@ public class NavigationManager {
             ft.setToValue(0.0);
             ft.setOnFinished(event -> {
                 if(withBackStack)
-                    backStack.push(scene.getRoot());
+                    backstack.push(new BackstackEntry(screen, scene.getRoot()));
                 scene.setRoot(newRoot);
 
+                currentScreen = screen;
+                notifyListeners();
                 currentlyNavigating = false;
             });
 
@@ -99,27 +106,48 @@ public class NavigationManager {
     }
 
     public void clearBackStack() {
-        backStack.clear();
+        backstack.clear();
     }
 
     public void goBack() {
         if(currentlyNavigating) return;
 
-        if (!backStack.isEmpty()) {
+        if (!backstack.isEmpty()) {
             currentlyNavigating = true;
 
-            scene.setRoot(backStack.peek());
+            scene.setRoot(backstack.peek().root());
 
             var ft = new FadeTransition(new Duration(200), scene.getRoot());
             ft.setFromValue(0.0);
             ft.setToValue(1.0);
             ft.setOnFinished(event -> {
-                backStack.pop();
+                backstack.pop();
                 currentlyNavigating = false;
+
+                currentScreen = backstack.peek().screen();
+                notifyListeners();
             });
             ft.play();
         }
         Utils.LOGGER.info("Go back");
+    }
+
+    private void notifyListeners() {
+        listeners.forEach(l -> l.onScreenChanged(currentScreen));
+    }
+
+    public void addOnScreenChangedListener(ScreenChangedListener listener) {
+        this.listeners.add(listener);
+    }
+
+    public void removeOnScreenChangedListener(ScreenChangedListener listener) {
+        this.listeners.remove(listener);
+    }
+
+    private record BackstackEntry(Screen screen, Parent root) { }
+
+    public interface ScreenChangedListener {
+        void onScreenChanged(Screen screen);
     }
 
     public enum Screen {

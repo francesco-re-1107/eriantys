@@ -1,12 +1,14 @@
 package it.polimi.ingsw.client.gui.customviews;
 
 import it.polimi.ingsw.common.reducedmodel.GameListItem;
+import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.HBox;
 
 import java.util.UUID;
@@ -43,6 +45,10 @@ public class GameListItemView extends HBox {
         joinButton = new Button("UNISCITI");
 
         getChildren().addAll(playerIcon, playersLabel, expertLabel, joinButton);
+    }
+
+    public void setOnJoinButtonClicked(EventHandler<MouseEvent> event) {
+        joinButton.setOnMouseClicked(event);
     }
 
 }
