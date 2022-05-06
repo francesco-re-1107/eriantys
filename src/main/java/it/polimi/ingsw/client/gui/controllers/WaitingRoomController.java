@@ -1,5 +1,6 @@
 package it.polimi.ingsw.client.gui.controllers;
 
+import it.polimi.ingsw.client.gui.NavigationManager;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.stage.Stage;
@@ -14,4 +15,7 @@ public class WaitingRoomController {
         stage.close();
     }
 
+    public void leaveGame() {
+        NavigationManager.getInstance().navigateTo(NavigationManager.Screen.MAIN_MENU, false);
+    }
 }

@@ -73,3 +73,29 @@
     -fx-background-position: center center;
     -fx-background-size: 1920 1080;
 }
+
+.radio-button .radio {
+    -fx-border-color: transparent;
+    -fx-border-width: 3;
+    -fx-border-radius: 30px;
+    -fx-background-insets: 3px;
+}
+
+.radio-button:selected .radio {
+    -fx-border-color: #57639c;
+    -fx-border-width: 3;
+    -fx-border-radius: 30px;
+    -fx-background-insets: 3px;
+}
+
+.radio-button .dot {
+    -fx-background-radius: 20px;
+    -fx-background-color: transparent;
+    -fx-effect: none;
+}
+
+.radio-button:selected .dot {
+    -fx-background-radius: 20px;
+    -fx-background-color: #57639c;
+    -fx-effect: none;
+}

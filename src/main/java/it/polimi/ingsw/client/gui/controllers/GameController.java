@@ -68,7 +68,7 @@ public class GameController {
     @FXML
     private TowerView player2Tower;
 
-    @Deprecated
+    @FXML
     public void initialize() {
         setVisibilityForNumberOfPlayers(3);
         setVisibilityForExpertMode(true);

@@ -13,7 +13,7 @@
                AnchorPane.topAnchor="0.0">
         <AnchorPane id="board" minWidth="650.0" maxWidth="650.0" SplitPane.resizableWithParent="false">
             <VBox prefHeight="800.0" prefWidth="500.0" AnchorPane.leftAnchor="0.0"
-                  AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                  AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" spacing="25">
                 <Label fx:id="infoLabel" wrapText="true" text="È il tuo turno: lorem ipsum" id="info_label" prefWidth="Infinity">
                     <VBox.margin>
                         <Insets top="20.0" bottom="20.0" left="20.0" right="20.0"/>

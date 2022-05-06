@@ -23,7 +23,7 @@
 
     <VBox alignment="BOTTOM_CENTER" AnchorPane.bottomAnchor="100.0" AnchorPane.leftAnchor="100.0"
           AnchorPane.rightAnchor="100.0" spacing="30">
-        <Button alignment="CENTER" mnemonicParsing="false" prefHeight="70.0" prefWidth="450.0"
+        <Button onMouseClicked="#leaveGame" alignment="CENTER" mnemonicParsing="false" prefHeight="70.0" prefWidth="450.0"
                 text="ABBANDONA PARTITA" textAlignment="CENTER">
         </Button>
     </VBox>

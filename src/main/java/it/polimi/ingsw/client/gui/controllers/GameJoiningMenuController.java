@@ -1,5 +1,6 @@
 package it.polimi.ingsw.client.gui.controllers;
 
+import it.polimi.ingsw.Utils;
 import it.polimi.ingsw.client.gui.NavigationManager;
 import it.polimi.ingsw.client.gui.customviews.GameListItemView;
 import it.polimi.ingsw.common.reducedmodel.GameListItem;
@@ -10,6 +11,7 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
+import java.util.List;
 import java.util.UUID;
 
 public class GameJoiningMenuController {
@@ -21,13 +23,29 @@ public class GameJoiningMenuController {
 
     @FXML
     public void initialize() {
-        for (int i = 0; i < 10; i++) {
-            var item = new GameListItemView(new GameListItem(UUID.randomUUID(), 3, 1, true));
-            item.setOnJoinButtonClicked(e -> {
+        var i = new GameListItem(UUID.randomUUID(), 3, 1, true);
+        setGamesList(List.of(i, i, i, i, i));
 
-            });
+        setupRefreshTimer();
+    }
+
+    private void setupRefreshTimer() {
+        //setup timer every 5 seconds
+    }
+
+    public void setGamesList(List<GameListItem> list) {
+        gamesList.getChildren().clear();
+        list.forEach(i -> {
+            var item = new GameListItemView(i);
+            item.setOnJoinButtonClicked(e -> joinGame(i));
             gamesList.getChildren().add(item);
-        }
+        });
+    }
+
+    private void joinGame(GameListItem item) {
+        Utils.LOGGER.info("Joining game " + item.uuid());
+        //...
+        NavigationManager.getInstance().navigateTo(NavigationManager.Screen.WAITING_ROOM);
     }
 
     public void onLeavePressed(ActionEvent actionEvent) {
