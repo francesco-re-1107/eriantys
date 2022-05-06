@@ -1,5 +1,6 @@
 package it.polimi.ingsw.client.gui.controllers;
 
+import it.polimi.ingsw.client.gui.NavigationManager;
 import it.polimi.ingsw.client.gui.customviews.*;
 import it.polimi.ingsw.common.reducedmodel.ReducedIsland;
 import it.polimi.ingsw.common.reducedmodel.ReducedPlayer;
@@ -13,7 +14,6 @@ import javafx.scene.control.Label;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
-import javafx.stage.Stage;
 
 import java.util.Arrays;
 import java.util.List;
@@ -174,8 +174,8 @@ public class GameController {
 
     @FXML
     private void onLeavePressed(){
-        Stage stage = (Stage) leaveButton.getScene().getWindow();
-        stage.close();
+        NavigationManager.getInstance().clearBackStack();
+        NavigationManager.getInstance().navigateTo(NavigationManager.Screen.MAIN_MENU, false);
     }
 
     public void setVisibilityForExpertMode(boolean expertMode) {

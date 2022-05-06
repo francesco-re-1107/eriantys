@@ -48,7 +48,8 @@ public class NavigationManager {
         try {
             return FXMLLoader.load(getClass().getResource("/fxml/" + screen.name().toLowerCase() + ".fxml"));
         } catch (Exception e) {
-            return new Label("Error loading screen " + screen.name());
+            e.printStackTrace();
+            return new Label("Error loading screen " + screen.name() + ": " + e.getMessage());
         }
     }
 
@@ -61,7 +62,12 @@ public class NavigationManager {
     }
 
     public void navigateTo(Screen screen) {
+        navigateTo(screen, true);
+    }
+
+    public void navigateTo(Screen screen, boolean withBackStack) {
         var newRoot = screens.get(screen);
+        newRoot.setOpacity(1.0);
 
         if (scene == null) {
             scene = new Scene(newRoot);
@@ -73,7 +79,8 @@ public class NavigationManager {
             ft.setFromValue(1.0);
             ft.setToValue(0.0);
             ft.setOnFinished(event -> {
-                backStack.push(scene.getRoot());
+                if(withBackStack)
+                    backStack.push(scene.getRoot());
                 scene.setRoot(newRoot);
             });
 
@@ -81,6 +88,10 @@ public class NavigationManager {
         }
 
         Utils.LOGGER.info("Navigate to screen " + screen.name());
+    }
+
+    public void clearBackStack() {
+        backStack.clear();
     }
 
     public void goBack() {
