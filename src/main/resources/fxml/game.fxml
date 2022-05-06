@@ -202,18 +202,18 @@
             <VBox alignment="CENTER" layoutX="377.0" layoutY="484.0" prefHeight="134.0" prefWidth="240.0"
                   AnchorPane.bottomAnchor="15.0" AnchorPane.rightAnchor="15.0">
                 <Label alignment="CENTER" text="Carte personaggio"/>
-                <HBox prefHeight="100.0" prefWidth="200.0">
-                    <CharacterCardView fitWidth="100" fitHeight="200" preserveRatio="true">
+                <HBox fx:id="characterCards" prefHeight="100.0" prefWidth="200.0">
+                    <CharacterCardView fx:id="characterCard1" fitWidth="100" fitHeight="200" preserveRatio="true">
                         <HBox.margin>
                             <Insets bottom="5.0" left="5.0" right="5.0" top="5.0"/>
                         </HBox.margin>
                     </CharacterCardView>
-                    <CharacterCardView fitWidth="100" fitHeight="200" preserveRatio="true">
+                    <CharacterCardView fx:id="characterCard2" fitWidth="100" fitHeight="200" preserveRatio="true">
                         <HBox.margin>
                             <Insets bottom="5.0" left="5.0" right="5.0" top="5.0"/>
                         </HBox.margin>
                     </CharacterCardView>
-                    <CharacterCardView fitWidth="100" fitHeight="200" preserveRatio="true">
+                    <CharacterCardView fx:id="characterCard3" fitWidth="100" fitHeight="200" preserveRatio="true">
                         <HBox.margin>
                             <Insets bottom="5.0" left="5.0" right="5.0" top="5.0"/>
                         </HBox.margin>

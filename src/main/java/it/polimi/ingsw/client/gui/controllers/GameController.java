@@ -1,10 +1,10 @@
 package it.polimi.ingsw.client.gui.controllers;
 
+import it.polimi.ingsw.client.gui.InfoStrings;
 import it.polimi.ingsw.client.gui.NavigationManager;
 import it.polimi.ingsw.client.gui.customviews.*;
 import it.polimi.ingsw.common.reducedmodel.ReducedIsland;
 import it.polimi.ingsw.common.reducedmodel.ReducedPlayer;
-import it.polimi.ingsw.server.model.AssistantCard;
 import it.polimi.ingsw.server.model.Student;
 import it.polimi.ingsw.server.model.StudentsContainer;
 import it.polimi.ingsw.server.model.Tower;
@@ -31,6 +31,14 @@ public class GameController {
     public VBox player2Students;
     @FXML
     public VBox player3Students;
+    @FXML
+    public HBox characterCards;
+    @FXML
+    public CharacterCardView characterCard1;
+    @FXML
+    public CharacterCardView characterCard2;
+    @FXML
+    public CharacterCardView characterCard3;
     @FXML
     Button leaveButton;
     @FXML
@@ -72,8 +80,6 @@ public class GameController {
     public void initialize() {
         setVisibilityForNumberOfPlayers(3);
         setVisibilityForExpertMode(true);
-
-        myCard.setCard(AssistantCard.getDefaultDeck().get(6));
 
         setMyStudentsBoard(
                 new StudentsContainer()
@@ -122,6 +128,13 @@ public class GameController {
 
         setIslands(islands);
 
+        characterCards.setDisable(true);
+
+        setMotherNatureIndex(4);
+        setMotherNaturePossibleSteps(4, 1);
+
+        setInfoString(InfoStrings.OTHER_PLAYER_WAIT_FOR_HIS_TURN, "player2");
+
         var c = new StudentsContainer()
                 .addStudents(Student.BLUE, 1)
                 .addStudents(Student.GREEN, 1)
@@ -167,6 +180,18 @@ public class GameController {
         ));
     }
 
+    private void setInfoString(String info, String... optionalArgs) {
+        if(InfoStrings.EMPTY.equals(info)) {
+            infoLabel.setVisible(false);
+            infoLabel.setManaged(false);
+
+        }else {
+            infoLabel.setVisible(true);
+            infoLabel.setManaged(true);
+        }
+        infoLabel.setText(String.format(info, optionalArgs));
+    }
+
     private void setMyTowers(Tower towerColor, int numberOfTowers) {
         myTower.setTowerColor(towerColor);
         myTowerLabel.setText(numberOfTowers + "");
@@ -176,6 +201,36 @@ public class GameController {
     private void onLeavePressed(){
         NavigationManager.getInstance().clearBackStack();
         NavigationManager.getInstance().navigateTo(NavigationManager.Screen.MAIN_MENU, false);
+    }
+
+    public void setMotherNatureIndex(int index){
+        //reset
+        for (var iv : islandsPane.getChildren())
+            ((IslandView) iv).getMotherNatureView().setState(MotherNatureView.State.INVISIBLE);
+
+        var iv = (IslandView) islandsPane.getChildren().get(index);
+        iv.getMotherNatureView().setState(MotherNatureView.State.ENABLED);
+    }
+
+    public void setMotherNaturePossibleSteps(int index, int steps){
+        //reset previous possible steps
+        for (var iv : islandsPane.getChildren()) {
+            var mn = ((IslandView) iv).getMotherNatureView();
+
+            if(mn.getState() != MotherNatureView.State.ENABLED)
+                mn.setState(MotherNatureView.State.INVISIBLE);
+        }
+
+        var currIndex = (index + 1) % islandsPane.getChildren().size();;
+
+        while (steps > 0){
+            if(currIndex != index) {
+                var iv = (IslandView) islandsPane.getChildren().get(currIndex);
+                iv.getMotherNatureView().setState(MotherNatureView.State.DISABLED);
+            }
+            currIndex = (currIndex + 1) % islandsPane.getChildren().size();
+            steps--;
+        }
     }
 
     public void setVisibilityForExpertMode(boolean expertMode) {
