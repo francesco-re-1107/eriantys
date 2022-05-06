@@ -24,6 +24,8 @@ public class ServerClientCommunicator {
      */
     private final CommunicatorListener communicatorListener;
 
+    private boolean isConnected = true;
+
     /**
      * Instantiates a communicator
      * @param socket the client socket
@@ -53,9 +55,11 @@ public class ServerClientCommunicator {
             in.close();
             socket.close();
             communicatorListener.onDisconnect();
+            isConnected = false;
         } catch (Exception e){
             Utils.LOGGER.info("Client disconnected");
             communicatorListener.onDisconnect();
+            isConnected = false;
         }
     }
 
@@ -64,13 +68,19 @@ public class ServerClientCommunicator {
      * @param r the response to send
      */
     public void send(Response r){
+        if(!isConnected) {
+            Utils.LOGGER.info("Cannot send response, client is not connected");
+            return;
+        }
+
         try {
             var out = new ObjectOutputStream(socket.getOutputStream());
             out.writeObject(r);
         }catch (IOException e){
             //client disconnected
-            Utils.LOGGER.info("Client disconnected " + e.getMessage());
+            Utils.LOGGER.info("Client disconnected");
             communicatorListener.onDisconnect();
+            isConnected = false;
         }
     }
 
