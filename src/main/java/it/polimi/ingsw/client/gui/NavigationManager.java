@@ -27,6 +27,8 @@ public class NavigationManager {
 
     private Map<Screen, Parent> screens;
 
+    private boolean currentlyNavigating = false;
+
     private NavigationManager(Stage stage) {
         this.stage = stage;
         this.backStack = new Stack<>();
@@ -66,6 +68,8 @@ public class NavigationManager {
     }
 
     public void navigateTo(Screen screen, boolean withBackStack) {
+        if(currentlyNavigating) return;
+
         var newRoot = screens.get(screen);
         newRoot.setOpacity(1.0);
 
@@ -75,6 +79,8 @@ public class NavigationManager {
             stage.setScene(scene);
 
         } else {
+            currentlyNavigating = true;
+
             var ft = new FadeTransition(new Duration(200), scene.getRoot());
             ft.setFromValue(1.0);
             ft.setToValue(0.0);
@@ -82,6 +88,8 @@ public class NavigationManager {
                 if(withBackStack)
                     backStack.push(scene.getRoot());
                 scene.setRoot(newRoot);
+
+                currentlyNavigating = false;
             });
 
             ft.play();
@@ -95,7 +103,11 @@ public class NavigationManager {
     }
 
     public void goBack() {
+        if(currentlyNavigating) return;
+
         if (!backStack.isEmpty()) {
+            currentlyNavigating = true;
+
             scene.setRoot(backStack.peek());
 
             var ft = new FadeTransition(new Duration(200), scene.getRoot());
@@ -103,6 +115,7 @@ public class NavigationManager {
             ft.setToValue(1.0);
             ft.setOnFinished(event -> {
                 backStack.pop();
+                currentlyNavigating = false;
             });
             ft.play();
         }
