@@ -10,7 +10,7 @@
             xmlns="http://javafx.com/javafx/18" xmlns:fx="http://javafx.com/fxml/1"
             fx:controller="it.polimi.ingsw.client.gui.controllers.WaitingRoomController">
 
-    <VBox AnchorPane.topAnchor="100" AnchorPane.rightAnchor="0" AnchorPane.leftAnchor="0" alignment="TOP_CENTER">
+    <VBox AnchorPane.topAnchor="60" AnchorPane.rightAnchor="0" AnchorPane.leftAnchor="0" alignment="TOP_CENTER">
         <ImageView fitWidth="500.0" pickOnBounds="true" preserveRatio="true">
             <Image url="@../assets/title.png"/>
         </ImageView>

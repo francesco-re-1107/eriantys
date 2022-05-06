@@ -10,17 +10,21 @@
             xmlns="http://javafx.com/javafx/18" xmlns:fx="http://javafx.com/fxml/1"
             fx:controller="it.polimi.ingsw.client.gui.controllers.GameJoiningMenuController">
 
-    <VBox AnchorPane.topAnchor="100" AnchorPane.rightAnchor="0" AnchorPane.leftAnchor="0" alignment="TOP_CENTER">
+    <VBox AnchorPane.topAnchor="60" AnchorPane.rightAnchor="0" AnchorPane.leftAnchor="0" alignment="TOP_CENTER">
         <ImageView fitWidth="500.0" pickOnBounds="true" preserveRatio="true">
             <Image url="@../assets/title.png"/>
         </ImageView>
     </VBox>
 
-    <VBox alignment="BOTTOM_CENTER" AnchorPane.bottomAnchor="100.0" AnchorPane.leftAnchor="100.0"
-          AnchorPane.rightAnchor="100.0" spacing="40" maxHeight="500">
-        <ScrollPane id="games_list_scroll_pane" maxHeight="500" maxWidth="700">
+    <VBox alignment="CENTER" AnchorPane.bottomAnchor="0" AnchorPane.topAnchor="0" AnchorPane.rightAnchor="0"
+          AnchorPane.leftAnchor="0" maxWidth="700" maxHeight="400">
+        <ScrollPane id="games_list_scroll_pane" maxHeight="400" maxWidth="700">
             <VBox fx:id="gamesList" spacing="10" alignment="TOP_CENTER" prefWidth="680"/>
         </ScrollPane>
+    </VBox>
+
+    <VBox alignment="BOTTOM_CENTER" AnchorPane.bottomAnchor="100.0" AnchorPane.leftAnchor="100.0"
+          AnchorPane.rightAnchor="100.0">
 
         <Button onMouseClicked="#goBack" alignment="CENTER" mnemonicParsing="false" minHeight="70.0" prefWidth="450.0"
                 text="INDIETRO" textAlignment="CENTER">
