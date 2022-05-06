@@ -14,9 +14,8 @@ public class CLI {
         var cfg = Utils.GetAppConfig();
         try {
             Client client = new Client(cfg.server_url(), cfg.port());
-
+            client.registerNickname("CLI");
         } catch (IOException e) {
-            e.printStackTrace();
             Utils.LOGGER.severe(e.getMessage());
         }
     }

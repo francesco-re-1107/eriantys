@@ -1,15 +1,13 @@
 package it.polimi.ingsw.server;
 
 import it.polimi.ingsw.Utils;
-import it.polimi.ingsw.common.Parser;
-import it.polimi.ingsw.common.SerializationParser;
-import it.polimi.ingsw.common.responses.Response;
 import it.polimi.ingsw.common.requests.Request;
+import it.polimi.ingsw.common.responses.Response;
 
 import java.io.IOException;
-import java.io.PrintWriter;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.net.Socket;
-import java.util.Scanner;
 
 /**
  * This class handles the low level communication from server to client
@@ -27,11 +25,6 @@ public class ServerClientCommunicator {
     private final CommunicatorListener communicatorListener;
 
     /**
-     * Used for serialization of the data, could be json or java serialization
-     */
-    private final Parser parser;
-
-    /**
      * Instantiates a communicator
      * @param socket the client socket
      * @param listener request listener
@@ -39,7 +32,6 @@ public class ServerClientCommunicator {
     public ServerClientCommunicator(Socket socket, CommunicatorListener listener) {
         this.socket = socket;
         this.communicatorListener = listener;
-        this.parser = new SerializationParser(); //or JsonParser
     }
 
     /**
@@ -47,22 +39,23 @@ public class ServerClientCommunicator {
      */
     public void startListening() {
         try {
-            Scanner in = new Scanner(socket.getInputStream());
+            var in = new ObjectInputStream(socket.getInputStream());
 
             while (socket.isConnected()){
-                String line = in.nextLine();
-
-                Request r = parser.decodeRequest(line);
+                var o = in.readObject();
+                var r = (Request) o;
                 communicatorListener.onRequest(r);
+
+                Utils.LOGGER.info("Request received: " + r.getClass().getSimpleName());
             }
 
             //close connections
             in.close();
             socket.close();
             communicatorListener.onDisconnect();
-
         } catch (Exception e){
-            Utils.LOGGER.severe(e.getMessage());
+            Utils.LOGGER.info("Client disconnected");
+            communicatorListener.onDisconnect();
         }
     }
 
@@ -72,10 +65,12 @@ public class ServerClientCommunicator {
      */
     public void send(Response r){
         try {
-            PrintWriter out = new PrintWriter(socket.getOutputStream());
-            out.println(parser.encodeResponse(r));
+            var out = new ObjectOutputStream(socket.getOutputStream());
+            out.writeObject(r);
         }catch (IOException e){
-            Utils.LOGGER.severe(e.getMessage());
+            //client disconnected
+            Utils.LOGGER.info("Client disconnected " + e.getMessage());
+            communicatorListener.onDisconnect();
         }
     }
 

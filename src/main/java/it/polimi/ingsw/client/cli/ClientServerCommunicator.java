@@ -1,15 +1,13 @@
 package it.polimi.ingsw.client.cli;
 
 import it.polimi.ingsw.Utils;
-import it.polimi.ingsw.common.Parser;
-import it.polimi.ingsw.common.SerializationParser;
-import it.polimi.ingsw.common.responses.Response;
 import it.polimi.ingsw.common.requests.Request;
+import it.polimi.ingsw.common.responses.Response;
 
 import java.io.IOException;
-import java.io.PrintWriter;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.net.Socket;
-import java.util.Scanner;
 
 /**
  * This class handles the low level communication from client to server
@@ -19,12 +17,6 @@ public class ClientServerCommunicator {
      * Server socket
      */
     private final Socket socket;
-
-
-    /**
-     * Used for serialization of the data, could be json or java serialization
-     */
-    private final Parser parser;
 
     /**
      * Stores the listener for every request received
@@ -39,7 +31,6 @@ public class ClientServerCommunicator {
     public ClientServerCommunicator(Socket socket, CommunicatorListener listener) {
         this.socket = socket;
         this.communicatorListener = listener;
-        this.parser = new SerializationParser(); //or JsonParser
     }
 
     /**
@@ -47,12 +38,11 @@ public class ClientServerCommunicator {
      */
     public void startListening() {
         try {
-            Scanner in = new Scanner(socket.getInputStream());
+            var in = new ObjectInputStream(socket.getInputStream());
 
             while (socket.isConnected()){
-                String line = in.nextLine();
-
-                Response r = parser.decodeResponse(line);
+                var o = in.readObject();
+                var r = (Response) o;
                 communicatorListener.onResponse(r);
             }
 
@@ -72,8 +62,8 @@ public class ClientServerCommunicator {
      */
     public void send(Request r){
         try {
-            PrintWriter out = new PrintWriter(socket.getOutputStream());
-            out.println(parser.encodeRequest(r));
+            var out = new ObjectOutputStream(socket.getOutputStream());
+            out.writeObject(r);
         }catch (IOException e){
             Utils.LOGGER.severe(e.getMessage());
         }
