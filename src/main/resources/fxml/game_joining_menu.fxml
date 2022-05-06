@@ -22,7 +22,7 @@
             <VBox fx:id="gamesList" spacing="10" alignment="TOP_CENTER" prefWidth="680"/>
         </ScrollPane>
 
-        <Button alignment="CENTER" mnemonicParsing="false" minHeight="70.0" prefWidth="450.0"
+        <Button onMouseClicked="#goBack" alignment="CENTER" mnemonicParsing="false" minHeight="70.0" prefWidth="450.0"
                 text="INDIETRO" textAlignment="CENTER">
         </Button>
     </VBox>

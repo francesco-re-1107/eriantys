@@ -69,10 +69,10 @@
 
     <VBox alignment="BOTTOM_CENTER" AnchorPane.bottomAnchor="100.0" AnchorPane.leftAnchor="100.0"
           AnchorPane.rightAnchor="100.0" spacing="30">
-        <Button alignment="CENTER" mnemonicParsing="false" prefHeight="70.0" prefWidth="450.0" text="CREA PARTITA"
+        <Button onMouseClicked="#createGame" alignment="CENTER" mnemonicParsing="false" prefHeight="70.0" prefWidth="450.0" text="CREA PARTITA"
                 textAlignment="CENTER">
         </Button>
-        <Button alignment="CENTER" mnemonicParsing="false" prefHeight="70.0" prefWidth="450.0"
+        <Button onMouseClicked="#goBack" alignment="CENTER" mnemonicParsing="false" prefHeight="70.0" prefWidth="450.0"
                 text="INDIETRO" textAlignment="CENTER">
         </Button>
     </VBox>

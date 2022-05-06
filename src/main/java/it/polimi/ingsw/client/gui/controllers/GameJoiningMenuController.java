@@ -1,9 +1,11 @@
 package it.polimi.ingsw.client.gui.controllers;
 
+import it.polimi.ingsw.client.gui.NavigationManager;
 import it.polimi.ingsw.client.gui.customviews.GameListItemView;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
@@ -24,5 +26,9 @@ public class GameJoiningMenuController {
     public void onLeavePressed(ActionEvent actionEvent) {
         Stage stage = (Stage) leaveButton.getScene().getWindow();
         stage.close();
+    }
+
+    public void goBack(MouseEvent mouseEvent) {
+        NavigationManager.getInstance().goBack();
     }
 }
