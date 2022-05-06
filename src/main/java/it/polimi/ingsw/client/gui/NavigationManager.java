@@ -121,10 +121,11 @@ public class NavigationManager {
             ft.setFromValue(0.0);
             ft.setToValue(1.0);
             ft.setOnFinished(event -> {
+                currentScreen = backstack.peek().screen();
+
                 backstack.pop();
                 currentlyNavigating = false;
 
-                currentScreen = backstack.peek().screen();
                 notifyListeners();
             });
             ft.play();
