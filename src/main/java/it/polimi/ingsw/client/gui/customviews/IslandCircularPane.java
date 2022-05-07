@@ -41,7 +41,7 @@ public class IslandCircularPane extends Pane {
             islandSize = maxSize.getAsDouble();
         }
 
-        var radius = Math.min(getWidth()/2, getHeight()/2) - islandSize/3;
+        var radius = Math.min(getWidth()/2, getHeight()/2) - islandSize/2;
 
         for (Node node : getChildren()) {
             double x = radius * Math.cos(Math.toRadians(degree)) + getWidth() / 2;

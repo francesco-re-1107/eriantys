@@ -50,7 +50,7 @@ public class IslandView extends StackPane {
 
         vbox = new VBox();
 
-        vbox.setSpacing(10);
+        vbox.setSpacing(5);
         vbox.setAlignment(Pos.CENTER);
 
         size = Math.min(350, Math.max(150 + island.size() * 25, 175));
@@ -63,6 +63,8 @@ public class IslandView extends StackPane {
         setMinHeight(size);
         setMaxWidth(size);
         setMaxHeight(size);
+
+        setDisable(true);
 
         setAlignment(Pos.CENTER);
 
@@ -101,11 +103,11 @@ public class IslandView extends StackPane {
 
         studentsViewVBox.setMaxWidth(size);
         studentsViewVBox.setMaxHeight(size);
-        studentsViewVBox.setSpacing(5);
+        studentsViewVBox.setSpacing(3);
         studentsViewVBox.setAlignment(Pos.TOP_CENTER);
 
         studentsViewCurrentHBox = new HBox();
-        studentsViewCurrentHBox.setSpacing(5);
+        studentsViewCurrentHBox.setSpacing(3);
         studentsViewCurrentHBox.setAlignment(Pos.CENTER);
         studentsViewCurrentHBox.prefWidth(size);
         studentsViewCurrentHBox.prefHeight(100);
@@ -128,7 +130,7 @@ public class IslandView extends StackPane {
 
         if(studentsViewCurrentHBox.getChildren().size() % studentsPerRow == 0) {
             studentsViewCurrentHBox = new HBox();
-            studentsViewCurrentHBox.setSpacing(5);
+            studentsViewCurrentHBox.setSpacing(3);
             studentsViewCurrentHBox.setAlignment(Pos.CENTER);
             studentsViewCurrentHBox.prefWidth(100);
             studentsViewCurrentHBox.prefHeight(size);

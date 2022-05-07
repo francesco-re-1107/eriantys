@@ -6,6 +6,7 @@ import javafx.event.EventHandler;
 import javafx.geometry.Pos;
 import javafx.scene.Cursor;
 import javafx.scene.control.Label;
+import javafx.scene.effect.ColorAdjust;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
@@ -29,6 +30,7 @@ public class AssistantCardView extends StackPane implements EventHandler<MouseEv
     public AssistantCardView() {
         super();
 
+        setId("assistant_card");
         image = new ImageView();
 
         image.setImage(new Image(getImageStream()));
@@ -56,9 +58,24 @@ public class AssistantCardView extends StackPane implements EventHandler<MouseEv
         setOnMouseExited(this);
     }
 
+    //TODO: fix
     public AssistantCardView(AssistantCard card) {
         this();
         this.card = Optional.of(card);
+    }
+
+    public void setGrayedOut(boolean grayedOut) {
+        var desaturate = new ColorAdjust();
+        desaturate.setSaturation(-1);
+
+        var original = new ColorAdjust();
+        original.setSaturation(0);
+
+        if (grayedOut) {
+            image.setEffect(desaturate);
+        } else {
+            image.setEffect(original);
+        }
     }
 
     public AssistantCardView(int index) {

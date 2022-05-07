@@ -5,10 +5,12 @@ import it.polimi.ingsw.client.gui.NavigationManager;
 import it.polimi.ingsw.client.gui.customviews.*;
 import it.polimi.ingsw.common.reducedmodel.ReducedIsland;
 import it.polimi.ingsw.common.reducedmodel.ReducedPlayer;
+import it.polimi.ingsw.server.model.AssistantCard;
 import it.polimi.ingsw.server.model.Student;
 import it.polimi.ingsw.server.model.StudentsContainer;
 import it.polimi.ingsw.server.model.Tower;
 import javafx.fxml.FXML;
+import javafx.geometry.Pos;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.layout.GridPane;
@@ -16,7 +18,9 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class GameController {
     @FXML
@@ -39,6 +43,10 @@ public class GameController {
     public CharacterCardView characterCard2;
     @FXML
     public CharacterCardView characterCard3;
+    @FXML
+    public VBox assistantCardsDeck;
+    @FXML
+    public VBox assistantCardsLayer;
     @FXML
     Button leaveButton;
     @FXML
@@ -124,14 +132,14 @@ public class GameController {
                 false
         );
 
-        var islands = Arrays.asList(i, i, i, i2, i3);
+        var islands = Arrays.asList(i, i, i, i, i, i, i, i, i, i, i, i);
 
         setIslands(islands);
 
         characterCards.setDisable(true);
 
         setMotherNatureIndex(4);
-        setMotherNaturePossibleSteps(4, 1);
+        setMotherNaturePossibleSteps(4, 3);
 
         setInfoString(InfoStrings.OTHER_PLAYER_WAIT_FOR_HIS_TURN, "player2");
 
@@ -144,6 +152,15 @@ public class GameController {
 
         setMyCoin(0);
         setMyTowers(Tower.WHITE, 7);
+
+        var deck = new HashMap<AssistantCard, Boolean>();
+        for(var card : AssistantCard.getDefaultDeck()) {
+            deck.put(card, false);
+        }
+        deck.put(AssistantCard.getDefaultDeck().get(0), true);
+
+        setAssistantCardsDeck(deck);
+        assistantCardsLayer.setVisible(false);
 
         setPlayer2Board(new ReducedPlayer(
                 "p2",
@@ -178,6 +195,36 @@ public class GameController {
                 null,
                 0
         ));
+    }
+
+    private void setAssistantCardsDeck(Map<AssistantCard, Boolean> deck) {
+        assistantCardsDeck.getChildren().clear();
+        assistantCardsDeck.getChildren().add(new Label("Seleziona una carta"));
+
+        var hbox = new HBox();
+        hbox.setSpacing(30);
+        hbox.setAlignment(Pos.CENTER);
+
+        assistantCardsDeck.getChildren().add(hbox);
+
+        for(var c : AssistantCard.getDefaultDeck()) {
+            var acv = new AssistantCardView();
+            acv.setCard(c);
+            acv.setGrayedOut(deck.get(c));
+            acv.setDisable(deck.get(c));
+            acv.setMaxWidth(120);
+
+            hbox.getChildren().add(acv);
+
+            if (AssistantCard.getDefaultDeck().indexOf(c) == 4) {
+                hbox = new HBox();
+                hbox.setSpacing(30);
+                hbox.setAlignment(Pos.CENTER);
+
+                assistantCardsDeck.getChildren().add(hbox);
+            }
+        }
+
     }
 
     private void setInfoString(String info, String... optionalArgs) {
@@ -216,6 +263,7 @@ public class GameController {
         //reset previous possible steps
         for (var iv : islandsPane.getChildren()) {
             var mn = ((IslandView) iv).getMotherNatureView();
+            iv.setDisable(true);
 
             if(mn.getState() != MotherNatureView.State.ENABLED)
                 mn.setState(MotherNatureView.State.INVISIBLE);
@@ -224,10 +272,10 @@ public class GameController {
         var currIndex = (index + 1) % islandsPane.getChildren().size();;
 
         while (steps > 0){
-            if(currIndex != index) {
-                var iv = (IslandView) islandsPane.getChildren().get(currIndex);
+            var iv = (IslandView) islandsPane.getChildren().get(currIndex);
+            if(currIndex != index)
                 iv.getMotherNatureView().setState(MotherNatureView.State.DISABLED);
-            }
+            iv.setDisable(false);
             currIndex = (currIndex + 1) % islandsPane.getChildren().size();
             steps--;
         }
