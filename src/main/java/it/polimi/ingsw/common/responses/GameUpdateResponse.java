@@ -2,7 +2,7 @@ package it.polimi.ingsw.common.responses;
 
 import it.polimi.ingsw.common.reducedmodel.ReducedGame;
 
-public class GameUpdateResponse extends Response {
+public class GameUpdateResponse extends UpdateResponse {
 
     private final ReducedGame game;
 

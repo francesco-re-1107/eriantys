@@ -9,6 +9,7 @@ public class GamesListResponse extends Response {
     private final List<GameListItem> gamesList;
 
     public GamesListResponse(List<GameListItem> games) {
+        super(true);
         gamesList = games;
     }
 

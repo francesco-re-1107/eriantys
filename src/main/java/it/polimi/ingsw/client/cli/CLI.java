@@ -10,11 +10,24 @@ import java.io.IOException;
 import java.util.Collections;
 
 public class CLI {
+
     public static void main(String[] args){
         var cfg = Utils.GetAppConfig();
         try {
             Client client = new Client(cfg.server_url(), cfg.port());
-            client.registerNickname("CLI");
+            client.registerNickname("CLI", r -> {
+                if(r.isSuccessful()) {
+                    System.out.println("Registered successfully");
+                } else {
+                    System.out.println("Registration failed");
+                    r.getThrowable().printStackTrace();
+                }
+            }, e -> {
+                System.out.println("Registration failed");
+                System.out.println(e.getMessage());
+            });
+
+
         } catch (IOException e) {
             Utils.LOGGER.severe(e.getMessage());
         }

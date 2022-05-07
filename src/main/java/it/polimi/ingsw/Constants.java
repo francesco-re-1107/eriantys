@@ -29,6 +29,7 @@ public final class Constants {
      * Port number used by default by server
      */
     public static final int DEFAULT_SERVER_PORT = 6001;
+    public static final long RESPONSE_TIMEOUT = 10000;
 
     /**
      * These constants are used in a game with 2 players (commented only once)

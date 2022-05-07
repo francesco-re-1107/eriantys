@@ -1,8 +1,10 @@
 package it.polimi.ingsw.client.cli;
 
+import it.polimi.ingsw.Constants;
 import it.polimi.ingsw.Utils;
 import it.polimi.ingsw.common.requests.Request;
 import it.polimi.ingsw.common.responses.Response;
+import it.polimi.ingsw.common.responses.UpdateResponse;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
@@ -24,6 +26,9 @@ public class ClientServerCommunicator {
     private final ClientServerCommunicator.CommunicatorListener communicatorListener;
 
     private boolean isConnected = true;
+    private ResponseListener lastRequestSuccessListener;
+    private ErrorListener lastRequestErrorListener;
+    private long lastRequestTime;
 
     /**
      * Instantiates a communicator
@@ -45,7 +50,17 @@ public class ClientServerCommunicator {
             while (socket.isConnected()){
                 var o = in.readObject();
                 var r = (Response) o;
-                communicatorListener.onResponse(r);
+
+                //it's an update response
+                if(r instanceof UpdateResponse u) {
+                    communicatorListener.onUpdate(u);
+                }else{ //it's a request response
+                    if(System.currentTimeMillis() - lastRequestTime < Constants.RESPONSE_TIMEOUT) {
+                        this.lastRequestSuccessListener.onResponse(r);
+                    }else{
+                        this.lastRequestErrorListener.onError(new Exception("Response timeout"));
+                    }
+                }
             }
 
             //close connections
@@ -54,6 +69,7 @@ public class ClientServerCommunicator {
             communicatorListener.onDisconnect();
             isConnected = false;
         } catch (Exception e){
+            e.printStackTrace();
             Utils.LOGGER.info("Server disconnected");
             communicatorListener.onDisconnect();
             isConnected = false;
@@ -64,8 +80,9 @@ public class ClientServerCommunicator {
      * This method sends a request to the server
      * @param r the request to send
      */
-    public void send(Request r){
+    public void send(Request r, ResponseListener successListener, ErrorListener errorListener) {
         if(!isConnected) {
+            errorListener.onError(new Exception("Server not connected"));
             Utils.LOGGER.info("Cannot send request, client is not connected");
             return;
         }
@@ -73,18 +90,32 @@ public class ClientServerCommunicator {
         try {
             var out = new ObjectOutputStream(socket.getOutputStream());
             out.writeObject(r);
+
+            this.lastRequestSuccessListener = successListener;
+            this.lastRequestErrorListener = errorListener;
+            this.lastRequestTime = System.currentTimeMillis();
+
         }catch (IOException e){
-            Utils.LOGGER.severe("Client disconnected");
+            errorListener.onError(e);
+            Utils.LOGGER.severe("Cannot send request");
             communicatorListener.onDisconnect();
             isConnected = false;
         }
+    }
+
+    public interface ResponseListener {
+        void onResponse(Response r);
+    }
+
+    public interface ErrorListener {
+        void onError(Exception error);
     }
 
     /**
      * Listener interface
      */
     public interface CommunicatorListener {
-        void onResponse(Response r);
+        void onUpdate(UpdateResponse r);
         void onDisconnect();
     }
 
