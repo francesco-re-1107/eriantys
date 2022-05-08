@@ -29,6 +29,7 @@ public class ClientServerCommunicator {
     private ResponseListener lastRequestSuccessListener;
     private ErrorListener lastRequestErrorListener;
     private long lastRequestTime;
+    private ObjectOutputStream outputStream;
 
     /**
      * Instantiates a communicator
@@ -69,7 +70,6 @@ public class ClientServerCommunicator {
             communicatorListener.onDisconnect();
             isConnected = false;
         } catch (Exception e){
-            e.printStackTrace();
             Utils.LOGGER.info("Server disconnected");
             communicatorListener.onDisconnect();
             isConnected = false;
@@ -88,8 +88,10 @@ public class ClientServerCommunicator {
         }
 
         try {
-            var out = new ObjectOutputStream(socket.getOutputStream());
-            out.writeObject(r);
+            if(outputStream == null)
+                outputStream = new ObjectOutputStream(socket.getOutputStream());
+
+            outputStream.writeObject(r);
 
             this.lastRequestSuccessListener = successListener;
             this.lastRequestErrorListener = errorListener;

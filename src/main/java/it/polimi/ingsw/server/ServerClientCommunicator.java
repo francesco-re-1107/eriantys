@@ -25,6 +25,7 @@ public class ServerClientCommunicator {
     private final CommunicatorListener communicatorListener;
 
     private boolean isConnected = true;
+    private ObjectOutputStream outputStream;
 
     /**
      * Instantiates a communicator
@@ -74,8 +75,9 @@ public class ServerClientCommunicator {
         }
 
         try {
-            var out = new ObjectOutputStream(socket.getOutputStream());
-            out.writeObject(r);
+            if(outputStream == null)
+                outputStream = new ObjectOutputStream(socket.getOutputStream());
+            outputStream.writeObject(r);
         }catch (IOException e){
             //client disconnected
             Utils.LOGGER.info("Client disconnected");
