@@ -5,7 +5,7 @@ import it.polimi.ingsw.common.reducedmodel.ReducedGame;
 import it.polimi.ingsw.common.requests.*;
 import it.polimi.ingsw.common.responses.AckResponse;
 import it.polimi.ingsw.common.responses.ErrorResponse;
-import it.polimi.ingsw.common.responses.GameUpdateResponse;
+import it.polimi.ingsw.common.responses.GameUpdate;
 import it.polimi.ingsw.common.responses.GamesListResponse;
 import it.polimi.ingsw.server.controller.Controller;
 import it.polimi.ingsw.server.controller.GameController;
@@ -161,7 +161,7 @@ public class VirtualView implements ServerClientCommunicator.CommunicatorListene
      */
     @Override
     public void onGameUpdate(ReducedGame game) {
-        communicator.send(new GameUpdateResponse(game));
+        communicator.send(new GameUpdate(game));
 
         var state = game.currentState();
 
