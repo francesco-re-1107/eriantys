@@ -32,7 +32,7 @@ public class ClientServerCommunicator {
 
     private boolean isConnected = true;
 
-    private Map<UUID, SuccessListener> requests;
+    private final Map<UUID, ListenersPair> pendingRequests;
     private ObjectOutputStream outputStream;
 
     /**
@@ -43,7 +43,7 @@ public class ClientServerCommunicator {
     public ClientServerCommunicator(Socket socket, CommunicatorListener listener) {
         this.socket = socket;
         this.communicatorListener = listener;
-        this.requests = new HashMap<>();
+        this.pendingRequests = new HashMap<>();
     }
 
     /**
@@ -62,7 +62,8 @@ public class ClientServerCommunicator {
                 if(r instanceof Update u) {
                     communicatorListener.onUpdate(u);
                 }else if(r instanceof Reply re){ //it's a request reply
-                    this.requests.get(re.getRequestId()).onSuccess(re);
+                    pendingRequests.get(re.getRequestId()).successListener.onSuccess(re);
+                    pendingRequests.remove(re.getRequestId());
                 }
             }
 
@@ -94,6 +95,9 @@ public class ClientServerCommunicator {
         Utils.LOGGER.info("Server disconnected");
         isConnected = false;
         communicatorListener.onDisconnect();
+
+        //notify error for all pending requests
+        pendingRequests.values().forEach(v -> v.errorListener.onError(new IOException("Server disconnected")));
         try {
             socket.close();
         } catch (IOException e) {
@@ -143,7 +147,7 @@ public class ClientServerCommunicator {
                 outputStream = new ObjectOutputStream(socket.getOutputStream());
 
             outputStream.writeObject(request);
-            requests.put(request.getId(), successListener);
+            pendingRequests.put(request.getId(), new ListenersPair(successListener, errorListener));
         }catch (IOException e){
             errorListener.onError(e);
             disconnect();
@@ -166,4 +170,5 @@ public class ClientServerCommunicator {
         void onDisconnect();
     }
 
+    private record ListenersPair(SuccessListener successListener, ErrorListener errorListener) {}
 }

@@ -1,5 +1,6 @@
 package it.polimi.ingsw.server;
 
+import it.polimi.ingsw.Constants;
 import it.polimi.ingsw.Utils;
 import it.polimi.ingsw.common.requests.PingRequest;
 import it.polimi.ingsw.common.requests.Request;
@@ -45,7 +46,7 @@ public class ServerClientCommunicator {
      */
     public void startListening() {
         try {
-            this.socket.setSoTimeout(5000);
+            this.socket.setSoTimeout(Constants.DISCONNECTION_TIMEOUT);
             var in = new ObjectInputStream(socket.getInputStream());
 
             while (socket.isConnected()) {
