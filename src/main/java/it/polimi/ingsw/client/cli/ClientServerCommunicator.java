@@ -48,13 +48,13 @@ public class ClientServerCommunicator {
      * This method binds to the socket input stream and listens for response from the server
      */
     public void startListening() {
-        //setupDisconnectionTimer();
+        setupDisconnectionTimer();
         try {
             var in = new ObjectInputStream(socket.getInputStream());
 
             while (socket.isConnected()){
                 var r = (Response) in.readObject();
-                //this.disconnectionTimer.restart();
+                this.disconnectionTimer.restart();
 
                 //it's an update response
                 if(r instanceof UpdateResponse u) {
@@ -87,7 +87,7 @@ public class ClientServerCommunicator {
     private void disconnect() {
         Utils.LOGGER.info("Server disconnected");
         isConnected = false;
-        //disconnectionTimer.stop();
+        disconnectionTimer.stop();
         communicatorListener.onDisconnect();
         try {
             socket.close();

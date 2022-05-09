@@ -43,7 +43,7 @@ public class ServerClientCommunicator {
      * This method binds to the socket input stream and listens for requests from the client
      */
     public void startListening() {
-        //startPinging();
+        startPinging();
 
         try {
             var in = new ObjectInputStream(socket.getInputStream());
@@ -78,9 +78,9 @@ public class ServerClientCommunicator {
         Utils.LOGGER.info("Client disconnected");
         isConnected = false;
         communicatorListener.onDisconnect();
-        /*try {
+        try {
             socket.close();
-        } catch (IOException e) { }*/
+        } catch (IOException e) { }
     }
 
     /**

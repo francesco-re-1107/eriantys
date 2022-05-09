@@ -3,7 +3,7 @@ package it.polimi.ingsw.common;
 import java.util.Timer;
 import java.util.TimerTask;
 
-public class BetterTimer extends TimerTask {
+public class BetterTimer {
 
     private Timer timer;
 
@@ -16,24 +16,26 @@ public class BetterTimer extends TimerTask {
         this.delay = delay;
 
         timer = new Timer();
-    }
-
-    public void start() {
-        timer.schedule(this, delay);
+        start();
     }
 
     public void restart() {
+        stop();
         timer = new Timer();
-        timer.schedule(this, delay);
-    }
-
-    @Override
-    public void run() {
-        runnable.run();
+        start();
     }
 
     public void stop() {
         timer.cancel();
         timer.purge();
+    }
+
+    public void start(){
+        timer.schedule(new TimerTask() {
+            @Override
+            public void run() {
+                runnable.run();
+            }
+        }, delay);
     }
 }
