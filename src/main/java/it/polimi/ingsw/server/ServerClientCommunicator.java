@@ -31,7 +31,8 @@ public class ServerClientCommunicator {
 
     /**
      * Instantiates a communicator
-     * @param socket the client socket
+     *
+     * @param socket   the client socket
      * @param listener request listener
      */
     public ServerClientCommunicator(Socket socket, CommunicatorListener listener) {
@@ -47,51 +48,54 @@ public class ServerClientCommunicator {
             this.socket.setSoTimeout(5000);
             var in = new ObjectInputStream(socket.getInputStream());
 
-            while (socket.isConnected()){
+            while (socket.isConnected()) {
                 var r = (Request) in.readObject();
-                Utils.LOGGER.info("Request received: " + r.getClass().getSimpleName());
 
-                if(r instanceof PingRequest)
+                if (r instanceof PingRequest) {
                     send(new AckReply(r.getId()));
-                else
+                } else {
+                    Utils.LOGGER.info("Request received: " + r.getClass().getSimpleName());
                     communicatorListener.onRequest(r);
+                }
             }
 
             disconnect();
-        } catch (Exception e){
-            e.printStackTrace();
+        } catch (IOException e) {
             disconnect();
+        } catch (ClassNotFoundException e) {
+            Utils.LOGGER.warning("Client transmitted something illegal");
+            e.printStackTrace();
         }
     }
 
     private void disconnect() {
-        if(!isConnected) return;
+        if (!isConnected) return;
 
         Utils.LOGGER.info("Client disconnected");
         isConnected = false;
         communicatorListener.onDisconnect();
         try {
             socket.close();
-        } catch (IOException e) { }
+        } catch (IOException e) {
+        }
     }
 
     /**
      * This method sends a response to the client
+     *
      * @param r the response to send
      */
-    public void send(Response r){
-        if(!isConnected) {
+    public void send(Response r) {
+        if (!isConnected) {
             Utils.LOGGER.info("Cannot send response, client is not connected");
             return;
         }
 
         try {
-            if(outputStream == null)
+            if (outputStream == null)
                 outputStream = new ObjectOutputStream(socket.getOutputStream());
             outputStream.writeObject(r);
-        }catch (IOException e){
-            e.printStackTrace();
-            //client disconnected
+        } catch (IOException e) {
             disconnect();
         }
     }
@@ -101,6 +105,7 @@ public class ServerClientCommunicator {
      */
     public interface CommunicatorListener {
         void onRequest(Request r);
+
         void onDisconnect();
     }
 }

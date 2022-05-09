@@ -29,8 +29,17 @@ public final class Constants {
      * Port number used by default by server
      */
     public static final int DEFAULT_SERVER_PORT = 6001;
-    public static final long RESPONSE_TIMEOUT = 10000;
+
+    /**
+     * Interval between two ping requests sent by the client
+     */
     public static final long PING_INTERVAL = 1000;
+
+    /**
+     * Timeout used to determine if a client is still connected
+     * If a ping request (or ping reply) doesn't arrive in this time, the client is considered disconnected
+     */
+    public static final int DISCONNECTION_TIMEOUT = 5000;
 
     /**
      * These constants are used in a game with 2 players (commented only once)

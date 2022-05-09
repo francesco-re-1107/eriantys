@@ -35,7 +35,7 @@ public class Client implements CommunicatorListener {
 
     }
 
-    public void registerNickname(String nickname, ClientServerCommunicator.ReplyListener successListener,
+    public void registerNickname(String nickname, ClientServerCommunicator.SuccessListener successListener,
                                  ClientServerCommunicator.ErrorListener errorListener) {
         communicator.send(new RegisterNicknameRequest(nickname), successListener, errorListener);
     }
