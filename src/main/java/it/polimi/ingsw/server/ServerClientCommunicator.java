@@ -1,10 +1,10 @@
 package it.polimi.ingsw.server;
 
-import it.polimi.ingsw.Constants;
 import it.polimi.ingsw.Utils;
+import it.polimi.ingsw.common.requests.PingRequest;
 import it.polimi.ingsw.common.requests.Request;
-import it.polimi.ingsw.common.responses.PingUpdate;
 import it.polimi.ingsw.common.responses.Response;
+import it.polimi.ingsw.common.responses.replies.AckReply;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
@@ -43,16 +43,18 @@ public class ServerClientCommunicator {
      * This method binds to the socket input stream and listens for requests from the client
      */
     public void startListening() {
-        startPinging();
-
         try {
+            this.socket.setSoTimeout(5000);
             var in = new ObjectInputStream(socket.getInputStream());
 
             while (socket.isConnected()){
                 var r = (Request) in.readObject();
-                communicatorListener.onRequest(r);
-
                 Utils.LOGGER.info("Request received: " + r.getClass().getSimpleName());
+
+                if(r instanceof PingRequest)
+                    send(new AckReply(r.getId()));
+                else
+                    communicatorListener.onRequest(r);
             }
 
             disconnect();
@@ -62,19 +64,9 @@ public class ServerClientCommunicator {
         }
     }
 
-    private void startPinging() {
-        new Thread(() -> {
-            while (isConnected) {
-                try {
-                    Utils.LOGGER.info("Sending ping");
-                    Thread.sleep(Constants.PING_INTERVAL);
-                    send(new PingUpdate());
-                } catch (InterruptedException e) { }
-            }
-        }).start();
-    }
-
     private void disconnect() {
+        if(!isConnected) return;
+
         Utils.LOGGER.info("Client disconnected");
         isConnected = false;
         communicatorListener.onDisconnect();
@@ -98,8 +90,7 @@ public class ServerClientCommunicator {
                 outputStream = new ObjectOutputStream(socket.getOutputStream());
             outputStream.writeObject(r);
         }catch (IOException e){
-            Utils.LOGGER.info("Sending ping");
-
+            e.printStackTrace();
             //client disconnected
             disconnect();
         }

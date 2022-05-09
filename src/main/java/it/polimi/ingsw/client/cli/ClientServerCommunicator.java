@@ -3,9 +3,11 @@ package it.polimi.ingsw.client.cli;
 import it.polimi.ingsw.Constants;
 import it.polimi.ingsw.Utils;
 import it.polimi.ingsw.common.BetterTimer;
+import it.polimi.ingsw.common.requests.PingRequest;
 import it.polimi.ingsw.common.requests.Request;
+import it.polimi.ingsw.common.responses.Reply;
 import it.polimi.ingsw.common.responses.Response;
-import it.polimi.ingsw.common.responses.UpdateResponse;
+import it.polimi.ingsw.common.responses.Update;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
@@ -27,7 +29,7 @@ public class ClientServerCommunicator {
     private final ClientServerCommunicator.CommunicatorListener communicatorListener;
 
     private boolean isConnected = true;
-    private ResponseListener lastRequestSuccessListener;
+    private ReplyListener lastRequestSuccessListener;
     private ErrorListener lastRequestErrorListener;
     private long lastRequestTime;
     private ObjectOutputStream outputStream;
@@ -48,8 +50,9 @@ public class ClientServerCommunicator {
      * This method binds to the socket input stream and listens for response from the server
      */
     public void startListening() {
-        setupDisconnectionTimer();
+        startPinging();
         try {
+            this.socket.setSoTimeout(5000);
             var in = new ObjectInputStream(socket.getInputStream());
 
             while (socket.isConnected()){
@@ -57,48 +60,57 @@ public class ClientServerCommunicator {
                 this.disconnectionTimer.restart();
 
                 //it's an update response
-                if(r instanceof UpdateResponse u) {
+                if(r instanceof Update u) {
                     communicatorListener.onUpdate(u);
                 }else{ //it's a request response
                     if(System.currentTimeMillis() - lastRequestTime < Constants.RESPONSE_TIMEOUT) {
-                        this.lastRequestSuccessListener.onResponse(r);
+                        this.lastRequestSuccessListener.onReply((Reply) r);
                     }else{
                         this.lastRequestErrorListener.onError(new Exception("Response timeout"));
                     }
                 }
             }
 
-            Utils.LOGGER.info("BOH");
             disconnect();
-        } catch (Exception e){
-            Utils.LOGGER.info("BOH2");
+        } catch (IOException e){
+            disconnect();
+        } catch (ClassNotFoundException e) {
+            Utils.LOGGER.warning("Server transmitted something illegal");
             e.printStackTrace();
-            disconnect();
         }
     }
 
-    private void setupDisconnectionTimer() {
-        this.disconnectionTimer = new BetterTimer(() -> {
-            Utils.LOGGER.info("Timer expired, disconnecting");
-            disconnect();
-        }, Constants.PING_INTERVAL * 3);
+    private void startPinging() {
+        new Thread(() -> {
+            while (isConnected) {
+                try {
+                    Utils.LOGGER.info("Sending ping");
+                    send(new PingRequest(),r -> {} ,e -> {});
+                    Thread.sleep(Constants.PING_INTERVAL);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+        }).start();
     }
 
     private void disconnect() {
+        if(!isConnected) return;
+
         Utils.LOGGER.info("Server disconnected");
         isConnected = false;
         disconnectionTimer.stop();
         communicatorListener.onDisconnect();
         try {
             socket.close();
-        } catch (IOException e) { }
+        } catch (IOException e) {}
     }
 
     /**
      * This method sends a request to the server
      * @param r the request to send
      */
-    public void send(Request r, ResponseListener successListener, ErrorListener errorListener) {
+    public void send(Request r, ReplyListener successListener, ErrorListener errorListener) {
         if(!isConnected) {
             errorListener.onError(new Exception("Server not connected"));
             Utils.LOGGER.info("Cannot send request, client is not connected");
@@ -121,8 +133,8 @@ public class ClientServerCommunicator {
         }
     }
 
-    public interface ResponseListener {
-        void onResponse(Response r);
+    public interface ReplyListener {
+        void onReply(Reply r);
     }
 
     public interface ErrorListener {
@@ -133,7 +145,7 @@ public class ClientServerCommunicator {
      * Listener interface
      */
     public interface CommunicatorListener {
-        void onUpdate(UpdateResponse r);
+        void onUpdate(Update r);
         void onDisconnect();
     }
 

@@ -3,10 +3,10 @@ package it.polimi.ingsw.server;
 import it.polimi.ingsw.common.exceptions.InvalidOperationException;
 import it.polimi.ingsw.common.reducedmodel.ReducedGame;
 import it.polimi.ingsw.common.requests.*;
-import it.polimi.ingsw.common.responses.AckResponse;
-import it.polimi.ingsw.common.responses.ErrorResponse;
-import it.polimi.ingsw.common.responses.GameUpdate;
-import it.polimi.ingsw.common.responses.GamesListResponse;
+import it.polimi.ingsw.common.responses.replies.AckReply;
+import it.polimi.ingsw.common.responses.replies.GamesListReply;
+import it.polimi.ingsw.common.responses.replies.NackReply;
+import it.polimi.ingsw.common.responses.updates.GameUpdate;
 import it.polimi.ingsw.server.controller.Controller;
 import it.polimi.ingsw.server.controller.GameController;
 import it.polimi.ingsw.server.model.Game;
@@ -80,32 +80,33 @@ public class VirtualView implements ServerClientCommunicator.CommunicatorListene
      * @param request the request to handle
      */
     private void processRequest(Request request) {
+        var rId = request.getId();
         try {
             if (request instanceof RegisterNicknameRequest r) {
                 //TODO: check if already registered
                 gameController = controller.registerNickname(r.getNickname(), this);
                 nickname = r.getNickname();
-                communicator.send(new AckResponse());
+                communicator.send(new AckReply(rId));
             } else if (request instanceof ListGamesRequest) {
-                communicator.send(new GamesListResponse(controller.listGames()));
+                communicator.send(new GamesListReply(rId, controller.listGames()));
             } else if (request instanceof JoinGameRequest r) {
                 //TODO: check if already in a game
                 //game joined -> new game controller
                 gameController = controller.joinGame(nickname, r.getUUID());
                 gameController.setOnGameUpdateListener(this);
-                communicator.send(new AckResponse());
+                communicator.send(new AckReply(rId));
             } else if (request instanceof CreateGameRequest r) {
                 //TODO: check if already in a game
 
                 //game created -> new game controller
                 gameController = controller.createGame(nickname, r.getNumberOfPlayers(), r.isExpertMode());
                 gameController.setOnGameUpdateListener(this);
-                communicator.send(new AckResponse());
+                communicator.send(new AckReply(rId));
             } else if (request instanceof GameRequest r) {
                 processGameRequest(r);
             }
         } catch (Exception | Error e) {
-            communicator.send(new ErrorResponse(e));
+            communicator.send(new NackReply(rId, e));
         }
     }
 
@@ -131,7 +132,7 @@ public class VirtualView implements ServerClientCommunicator.CommunicatorListene
             gameController.leaveGame();
         }
         //if no exception is thrown send an ack
-        communicator.send(new AckResponse());
+        communicator.send(new AckReply(request.getId()));
     }
 
     /**

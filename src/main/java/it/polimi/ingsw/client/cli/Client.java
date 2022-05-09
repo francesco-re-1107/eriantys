@@ -3,7 +3,7 @@ package it.polimi.ingsw.client.cli;
 import it.polimi.ingsw.Utils;
 import it.polimi.ingsw.client.cli.ClientServerCommunicator.CommunicatorListener;
 import it.polimi.ingsw.common.requests.RegisterNicknameRequest;
-import it.polimi.ingsw.common.responses.UpdateResponse;
+import it.polimi.ingsw.common.responses.Update;
 
 import java.io.IOException;
 import java.net.Socket;
@@ -26,7 +26,7 @@ public class Client implements CommunicatorListener {
     }
 
     @Override
-    public void onUpdate(UpdateResponse r) {
+    public void onUpdate(Update r) {
         Utils.LOGGER.info("Received update: " + r.getClass().getSimpleName());
     }
 
@@ -35,7 +35,7 @@ public class Client implements CommunicatorListener {
 
     }
 
-    public void registerNickname(String nickname, ClientServerCommunicator.ResponseListener successListener,
+    public void registerNickname(String nickname, ClientServerCommunicator.ReplyListener successListener,
                                  ClientServerCommunicator.ErrorListener errorListener) {
         communicator.send(new RegisterNicknameRequest(nickname), successListener, errorListener);
     }
