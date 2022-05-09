@@ -2,6 +2,7 @@ package it.polimi.ingsw.client.cli;
 
 import it.polimi.ingsw.Constants;
 import it.polimi.ingsw.Utils;
+import it.polimi.ingsw.common.BetterTimer;
 import it.polimi.ingsw.common.requests.Request;
 import it.polimi.ingsw.common.responses.Response;
 import it.polimi.ingsw.common.responses.UpdateResponse;
@@ -31,6 +32,8 @@ public class ClientServerCommunicator {
     private long lastRequestTime;
     private ObjectOutputStream outputStream;
 
+    private BetterTimer disconnectionTimer;
+
     /**
      * Instantiates a communicator
      * @param socket the server socket
@@ -45,12 +48,13 @@ public class ClientServerCommunicator {
      * This method binds to the socket input stream and listens for response from the server
      */
     public void startListening() {
+        //setupDisconnectionTimer();
         try {
             var in = new ObjectInputStream(socket.getInputStream());
 
             while (socket.isConnected()){
-                var o = in.readObject();
-                var r = (Response) o;
+                var r = (Response) in.readObject();
+                //this.disconnectionTimer.restart();
 
                 //it's an update response
                 if(r instanceof UpdateResponse u) {
@@ -64,16 +68,30 @@ public class ClientServerCommunicator {
                 }
             }
 
-            //close connections
-            in.close();
-            socket.close();
-            communicatorListener.onDisconnect();
-            isConnected = false;
+            Utils.LOGGER.info("BOH");
+            disconnect();
         } catch (Exception e){
-            Utils.LOGGER.info("Server disconnected");
-            communicatorListener.onDisconnect();
-            isConnected = false;
+            Utils.LOGGER.info("BOH2");
+            e.printStackTrace();
+            disconnect();
         }
+    }
+
+    private void setupDisconnectionTimer() {
+        this.disconnectionTimer = new BetterTimer(() -> {
+            Utils.LOGGER.info("Timer expired, disconnecting");
+            disconnect();
+        }, Constants.PING_INTERVAL * 3);
+    }
+
+    private void disconnect() {
+        Utils.LOGGER.info("Server disconnected");
+        isConnected = false;
+        //disconnectionTimer.stop();
+        communicatorListener.onDisconnect();
+        try {
+            socket.close();
+        } catch (IOException e) { }
     }
 
     /**
@@ -99,9 +117,7 @@ public class ClientServerCommunicator {
 
         }catch (IOException e){
             errorListener.onError(e);
-            Utils.LOGGER.severe("Cannot send request");
-            communicatorListener.onDisconnect();
-            isConnected = false;
+            disconnect();
         }
     }
 

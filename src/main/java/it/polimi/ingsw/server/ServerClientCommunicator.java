@@ -1,7 +1,9 @@
 package it.polimi.ingsw.server;
 
+import it.polimi.ingsw.Constants;
 import it.polimi.ingsw.Utils;
 import it.polimi.ingsw.common.requests.Request;
+import it.polimi.ingsw.common.responses.PingUpdate;
 import it.polimi.ingsw.common.responses.Response;
 
 import java.io.IOException;
@@ -41,27 +43,44 @@ public class ServerClientCommunicator {
      * This method binds to the socket input stream and listens for requests from the client
      */
     public void startListening() {
+        //startPinging();
+
         try {
             var in = new ObjectInputStream(socket.getInputStream());
 
             while (socket.isConnected()){
-                var o = in.readObject();
-                var r = (Request) o;
+                var r = (Request) in.readObject();
                 communicatorListener.onRequest(r);
 
                 Utils.LOGGER.info("Request received: " + r.getClass().getSimpleName());
             }
 
-            //close connections
-            in.close();
-            socket.close();
-            communicatorListener.onDisconnect();
-            isConnected = false;
+            disconnect();
         } catch (Exception e){
-            Utils.LOGGER.info("Client disconnected");
-            communicatorListener.onDisconnect();
-            isConnected = false;
+            e.printStackTrace();
+            disconnect();
         }
+    }
+
+    private void startPinging() {
+        new Thread(() -> {
+            while (isConnected) {
+                try {
+                    Utils.LOGGER.info("Sending ping");
+                    Thread.sleep(Constants.PING_INTERVAL);
+                    send(new PingUpdate());
+                } catch (InterruptedException e) { }
+            }
+        }).start();
+    }
+
+    private void disconnect() {
+        Utils.LOGGER.info("Client disconnected");
+        isConnected = false;
+        communicatorListener.onDisconnect();
+        /*try {
+            socket.close();
+        } catch (IOException e) { }*/
     }
 
     /**
@@ -79,10 +98,10 @@ public class ServerClientCommunicator {
                 outputStream = new ObjectOutputStream(socket.getOutputStream());
             outputStream.writeObject(r);
         }catch (IOException e){
+            Utils.LOGGER.info("Sending ping");
+
             //client disconnected
-            Utils.LOGGER.info("Client disconnected");
-            communicatorListener.onDisconnect();
-            isConnected = false;
+            disconnect();
         }
     }
 
