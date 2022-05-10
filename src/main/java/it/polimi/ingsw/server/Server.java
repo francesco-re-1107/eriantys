@@ -61,6 +61,7 @@ public class Server {
         while (true){
             try{
                 Socket socket = serverSocket.accept();
+                Utils.LOGGER.log(Level.INFO, "New client connected");
                 executor.submit(new VirtualView(controller, socket));
             }catch(IOException e){
                 Utils.LOGGER.severe(e.getMessage()); //socket closed
