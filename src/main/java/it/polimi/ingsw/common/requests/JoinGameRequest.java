@@ -7,13 +7,13 @@ import java.util.UUID;
  */
 public class JoinGameRequest extends Request{
 
-    private final UUID uuid;
+    private final UUID gameId;
 
-    public JoinGameRequest(UUID uuid) {
-        this.uuid = uuid;
+    public JoinGameRequest(UUID gameId) {
+        this.gameId = gameId;
     }
 
     public UUID getUUID() {
-        return uuid;
+        return gameId;
     }
 }

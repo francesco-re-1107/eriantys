@@ -1,0 +1,37 @@
+@startuml
+top to bottom direction
+skinparam linetype ortho
+
+abstract class Response
+abstract class Reply {
+    -isSuccessful: boolean
+    -throwable: Throwable
+    -requestId: UUID
+
+    +Reply(requestId : UUID, isSuccessful : boolean)
+    +Reply(requestId : UUID, throwable : Throwable)
+}
+abstract class Update
+class GameUpdate {
+    -game : ReducedGame
+    +GameUpdate(game: ReducedGame)
+}
+class GamesListReply {
+    -gamesList : List<GamesListReply>
+    +GamesListReply(requestId : UUID, games : List<GameListItem>)
+}
+class AckReply {
+    +AckReply(requestId : UUID)
+}
+class NackReply {
+    +NackReply(requestId : UUID, throwable : Throwable)
+}
+
+Reply     -[#000000,plain]-^  Response
+Update    -[#000000,plain]-^  Response
+GameUpdate    -[#000000,plain]-^  Update
+AckReply    -[#000000,plain]-^  Reply
+NackReply    -[#000000,plain]-^  Reply
+GamesListReply     -[#000000,plain]-^  Reply
+
+@enduml

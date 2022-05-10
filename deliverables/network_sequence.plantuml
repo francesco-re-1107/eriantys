@@ -11,30 +11,30 @@ Client3 -> Server : ...
 
 Client1 -> Server: Connect
 Client1 -> Server: RegisterNicknameRequest
-Client1 <-[#FF0000]- Server: ErrorResponse
+Client1 <-[#FF0000]- Server: NackReply
 Client1 -> Server: RegisterNicknameRequest
-Client1 <-[#2fb52f]- Server: AckResponse
+Client1 <-[#2fb52f]- Server: AckReply
 
 Client1 -> Server: ListGamesRequest
-Client1 <-- Server: GamesListResponse
+Client1 <-- Server: GamesListReply
 
 Client1 -> Server: JoinGameRequest
-Client1 <-[#2fb52f]- Server: AckResponse
+Client1 <-[#2fb52f]- Server: AckReply
 
-Client1 <-[#e6c109]- Server: GameUpdateResponse
-Client2 <-[#e6c109]- Server: GameUpdateResponse
-Client3 <-[#e6c109]- Server: GameUpdateResponse
+Client1 <-[#e6c109]- Server: GameUpdate
+Client2 <-[#e6c109]- Server: GameUpdate
+Client3 <-[#e6c109]- Server: GameUpdate
 
 Client1 -> Server: PlayAssistantCardRequest
-Client1 <-[#2fb52f]- Server: AckResponse
-Client1 <-[#e6c109]- Server: GameUpdateResponse
-Client2 <-[#e6c109]- Server: GameUpdateResponse
-Client3 <-[#e6c109]- Server: GameUpdateResponse
+Client1 <-[#2fb52f]- Server: AckReply
+Client1 <-[#e6c109]- Server: GameUpdate
+Client2 <-[#e6c109]- Server: GameUpdate
+Client3 <-[#e6c109]- Server: GameUpdate
 
 Client2 -> Server: PlayAssistantCardRequest
-Client2 <-[#2fb52f]- Server: AckResponse
-Client2 <-[#e6c109]- Server: GameUpdateResponse
-Client1 <-[#e6c109]- Server: GameUpdateResponse
-Client3 <-[#e6c109]- Server: GameUpdateResponse
+Client2 <-[#2fb52f]- Server: AckReply
+Client2 <-[#e6c109]- Server: GameUpdate
+Client1 <-[#e6c109]- Server: GameUpdate
+Client3 <-[#e6c109]- Server: GameUpdate
 
 @enduml
