@@ -33,13 +33,13 @@ public final class Constants {
     /**
      * Interval between two ping requests sent by the client
      */
-    public static final long PING_INTERVAL = 1000;
+    public static final long PING_INTERVAL = 2000;
 
     /**
      * Timeout used to determine if a client is still connected
      * If a ping request (or ping reply) doesn't arrive in this time, the client is considered disconnected
      */
-    public static final int DISCONNECTION_TIMEOUT = 5000;
+    public static final int DISCONNECTION_TIMEOUT = 8000;
 
     /**
      * These constants are used in a game with 2 players (commented only once)

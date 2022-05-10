@@ -27,7 +27,14 @@ public class ServerClientCommunicator {
      */
     private final CommunicatorListener communicatorListener;
 
+    /**
+     * This flag represents if the client is still connected
+     */
     private boolean isConnected = true;
+
+    /**
+     * Output stream of the socket
+     */
     private ObjectOutputStream outputStream;
 
     /**
@@ -52,9 +59,10 @@ public class ServerClientCommunicator {
             while (socket.isConnected()) {
                 var r = (Request) in.readObject();
 
+                //ping requests are bounced back to the client immediately
                 if (r instanceof PingRequest) {
                     send(new AckReply(r.getId()));
-                } else {
+                } else { //otherwise, the request is forwarded to the listener
                     Utils.LOGGER.info("Request received: " + r.getClass().getSimpleName());
                     communicatorListener.onRequest(r);
                 }
@@ -62,13 +70,18 @@ public class ServerClientCommunicator {
 
             disconnect();
         } catch (IOException e) {
+            //IOException is thrown when the client is disconnected
             disconnect();
         } catch (ClassNotFoundException e) {
+            //the received object is not a request
             Utils.LOGGER.warning("Client transmitted something illegal");
             e.printStackTrace();
         }
     }
 
+    /**
+     * This method is used internally to notify listener that the client disconnected and to close the socket
+     */
     private void disconnect() {
         if (!isConnected) return;
 
@@ -78,6 +91,7 @@ public class ServerClientCommunicator {
         try {
             socket.close();
         } catch (IOException e) {
+            Utils.LOGGER.finest("Cannot close socket");
         }
     }
 
@@ -93,10 +107,13 @@ public class ServerClientCommunicator {
         }
 
         try {
+            //open the output stream if it is not already opened
             if (outputStream == null)
                 outputStream = new ObjectOutputStream(socket.getOutputStream());
+            //write request to the socket
             outputStream.writeObject(r);
         } catch (IOException e) {
+            //IOException is thrown when the client is disconnected
             disconnect();
         }
     }
@@ -105,8 +122,14 @@ public class ServerClientCommunicator {
      * Listener interface
      */
     public interface CommunicatorListener {
+        /**
+         * This method is called when a request is received
+         */
         void onRequest(Request r);
 
+        /**
+         * This method is called when the client disconnects
+         */
         void onDisconnect();
     }
 }

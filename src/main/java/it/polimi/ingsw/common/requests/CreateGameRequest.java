@@ -1,5 +1,9 @@
 package it.polimi.ingsw.common.requests;
 
+/**
+ * This class represents the request to create a game on the server with the specified parameters and automatically
+ * join it.
+ */
 public class CreateGameRequest extends Request{
 
     private final int numberOfPlayers;

@@ -30,9 +30,19 @@ public class ClientServerCommunicator {
      */
     private final ClientServerCommunicator.CommunicatorListener communicatorListener;
 
+    /**
+     * This flag represents if the client is still connected
+     */
     private boolean isConnected = true;
 
+    /**
+     * This map stores the listeners for every pending request
+     */
     private final Map<UUID, ListenersPair> pendingRequests;
+
+    /**
+     * Output stream of the socket
+     */
     private ObjectOutputStream outputStream;
 
     /**
@@ -76,6 +86,9 @@ public class ClientServerCommunicator {
         }
     }
 
+    /**
+     * Send ping requests to the client every {@link Constants#PING_INTERVAL} milliseconds
+     */
     private void startPinging() {
         new Thread(() -> {
             while (isConnected) {
@@ -89,6 +102,9 @@ public class ClientServerCommunicator {
         }).start();
     }
 
+    /**
+     * This method is used internally to notify listener that the server disconnected and to close the socket
+     */
     private void disconnect() {
         if(!isConnected) return;
 
@@ -96,8 +112,10 @@ public class ClientServerCommunicator {
         isConnected = false;
         communicatorListener.onDisconnect();
 
-        //notify error for all pending requests
+        //notify error for all pending requests and remove them from the map
         pendingRequests.values().forEach(v -> v.errorListener.onError(new IOException("Server disconnected")));
+        pendingRequests.clear();
+
         try {
             socket.close();
         } catch (IOException e) {
@@ -154,12 +172,18 @@ public class ClientServerCommunicator {
         }
     }
 
+    /**
+     * This listener is called when the request is successful.
+     */
     public interface SuccessListener {
         void onSuccess(Reply r);
     }
 
+    /**
+     * This listener is called when the request fails.
+     */
     public interface ErrorListener {
-        void onError(Exception error);
+        void onError(Exception exception);
     }
 
     /**
@@ -170,5 +194,10 @@ public class ClientServerCommunicator {
         void onDisconnect();
     }
 
+    /**
+     * This class is used internally to store the listeners for a request.
+     * @param successListener
+     * @param errorListener
+     */
     private record ListenersPair(SuccessListener successListener, ErrorListener errorListener) {}
 }

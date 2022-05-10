@@ -6,6 +6,9 @@ import it.polimi.ingsw.common.responses.Reply;
 import java.util.List;
 import java.util.UUID;
 
+/**
+ * This reply is sent by the server to the client in response to a ListGamesRequest.
+ */
 public class GamesListReply extends Reply {
 
     private final List<GameListItem> gamesList;
