@@ -1,10 +1,11 @@
 @startuml NetworkSequence
 
+title Network sequence (pings are omitted for readability)
+
 participant Client1 order 0
 participant Server order 1 #00AAFF
 participant Client2 order 2
 participant Client3 order 3
-
 
 Client2 -> Server : ...
 Client3 -> Server : ...
