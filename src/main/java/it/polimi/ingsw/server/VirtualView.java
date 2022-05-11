@@ -37,14 +37,19 @@ public class VirtualView implements ServerClientCommunicator.CommunicatorListene
     private GameController gameController;
 
     /**
-     * Whether the client disconnected from the view
+     * Whether the nickname is already registered
      */
-    private boolean isConnected = true;
+    private boolean isRegistered = false;
 
     /**
      * Stores the nickname the player registered with
      */
     private String nickname = "";
+
+    /**
+     * Whether the player is currently in a game
+     */
+    private boolean isInGame = false;
 
     /**
      * Create a VirtualView
@@ -83,26 +88,35 @@ public class VirtualView implements ServerClientCommunicator.CommunicatorListene
         var rId = request.getId();
         try {
             if (request instanceof RegisterNicknameRequest r) {
-                //TODO: check if already registered
+                if(isRegistered)
+                    throw new InvalidOperationException("Client already registered");
                 gameController = controller.registerNickname(r.getNickname(), this);
+                isRegistered = true;
                 nickname = r.getNickname();
                 communicator.send(new AckReply(rId));
             } else if (request instanceof ListGamesRequest) {
+                if(!isRegistered)
+                    throw new InvalidOperationException("Client not registered");
                 communicator.send(new GamesListReply(rId, controller.listGames()));
             } else if (request instanceof JoinGameRequest r) {
-                //TODO: check if already in a game
+                if(isInGame)
+                    throw new InvalidOperationException("Client already in game");
                 //game joined -> new game controller
+                isInGame = true;
                 gameController = controller.joinGame(nickname, r.getUUID());
                 gameController.setOnGameUpdateListener(this);
                 communicator.send(new AckReply(rId));
             } else if (request instanceof CreateGameRequest r) {
-                //TODO: check if already in a game
-
+                if(isInGame)
+                    throw new InvalidOperationException("Client already in game");
                 //game created -> new game controller
+                isInGame = true;
                 gameController = controller.createGame(nickname, r.getNumberOfPlayers(), r.isExpertMode());
                 gameController.setOnGameUpdateListener(this);
                 communicator.send(new AckReply(rId));
             } else if (request instanceof GameRequest r) {
+                if(!isInGame)
+                    throw new InvalidOperationException("Client not in game");
                 processGameRequest(r);
             }
         } catch (Exception | Error e) {
@@ -141,8 +155,6 @@ public class VirtualView implements ServerClientCommunicator.CommunicatorListene
      */
     @Override
     public void onDisconnect() {
-        isConnected = false;
-
         if(gameController != null)
             gameController.disconnect();
     }
@@ -152,7 +164,7 @@ public class VirtualView implements ServerClientCommunicator.CommunicatorListene
      * @return true if disconnected, false otherwise
      */
     public boolean isConnected() {
-        return isConnected;
+        return communicator.isConnected();
     }
 
     /**
@@ -166,8 +178,10 @@ public class VirtualView implements ServerClientCommunicator.CommunicatorListene
 
         var state = game.currentState();
 
-        //if game's finished are removed from the list
-        if(state == Game.State.TERMINATED || state == Game.State.FINISHED)
+        //game ended
+        if(state == Game.State.TERMINATED || state == Game.State.FINISHED) {
             this.gameController = null; //this game was finished
+            this.isInGame = false;
+        }
     }
 }

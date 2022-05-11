@@ -119,6 +119,14 @@ public class ServerClientCommunicator {
     }
 
     /**
+     * Whether the client is still connected
+     * @return true if the client is still connected, false otherwise
+     */
+    public boolean isConnected() {
+        return isConnected;
+    }
+
+    /**
      * Listener interface
      */
     public interface CommunicatorListener {
