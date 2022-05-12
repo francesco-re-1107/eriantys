@@ -1,14 +1,14 @@
 package it.polimi.ingsw.client.gui.controllers;
 
 import it.polimi.ingsw.Utils;
-import it.polimi.ingsw.client.gui.NavigationManager;
+import it.polimi.ingsw.client.Client;
+import it.polimi.ingsw.client.ScreenController;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.RadioButton;
 import javafx.scene.control.ToggleGroup;
-import javafx.stage.Stage;
 
-public class GameCreationMenuController {
+public class GameCreationMenuController implements ScreenController {
     public ToggleGroup playersGroup;
     public ToggleGroup expertGroup;
 
@@ -37,16 +37,33 @@ public class GameCreationMenuController {
 
     @FXML
     private void onLeavePressed(){
-        Stage stage = (Stage) leaveButton.getScene().getWindow();
-        stage.close();
+        Client.getInstance().exitApp();
     }
 
     public void goBack() {
-        NavigationManager.getInstance().goBack();
+        Client.getInstance().goBack();
     }
 
     public void createGame() {
         Utils.LOGGER.info("Creating game with " + numberOfPlayers + " players and " + (expertMode ? "expert" : "simple") + " mode");
-        NavigationManager.getInstance().navigateTo(NavigationManager.Screen.GAME);
+        Client.getInstance().createGame(numberOfPlayers, expertMode, e -> {
+            Utils.LOGGER.info(e.getMessage());
+            //show error message
+        });
+    }
+
+    @Override
+    public void onCreate() {
+        //nothing to do
+    }
+
+    @Override
+    public void onShow() {
+        //nothing to do
+    }
+
+    @Override
+    public void onHide() {
+        //nothing to do
     }
 }

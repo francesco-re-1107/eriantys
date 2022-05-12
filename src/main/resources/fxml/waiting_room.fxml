@@ -18,7 +18,7 @@
 
     <VBox alignment="CENTER" AnchorPane.leftAnchor="0" AnchorPane.rightAnchor="0" AnchorPane.topAnchor="0"
           AnchorPane.bottomAnchor="0">
-        <Label id="waiting_label" text="In attesa di x giocatori..." />
+        <Label fx:id="waitingLabel" id="waiting_label" text="In attesa di x giocatori..." />
     </VBox>
 
     <VBox alignment="BOTTOM_CENTER" AnchorPane.bottomAnchor="100.0" AnchorPane.leftAnchor="100.0"

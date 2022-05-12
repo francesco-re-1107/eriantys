@@ -1,6 +1,9 @@
 package it.polimi.ingsw.client.gui;
 
 import it.polimi.ingsw.Utils;
+import it.polimi.ingsw.client.NavigationManager;
+import it.polimi.ingsw.client.Screen;
+import it.polimi.ingsw.client.ScreenController;
 import javafx.animation.FadeTransition;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -10,32 +13,35 @@ import javafx.scene.paint.Paint;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 
-import java.util.*;
+import java.util.Arrays;
+import java.util.Map;
+import java.util.Stack;
 import java.util.concurrent.ConcurrentHashMap;
 
-public class NavigationManager {
+public class GUINavigationManager implements NavigationManager {
 
-    private static NavigationManager instance;
-
-    private Stage stage;
+    private final Stage stage;
 
     private Scene scene;
 
-    private Stack<BackstackEntry> backstack;
+    private final Stack<BackstackEntry> backstack;
 
-    private Map<Screen, Parent> screens;
+    private final Map<Screen, Parent> screens;
+
+    private final Map<Screen, ScreenController> screenControllers;
 
     private boolean currentlyNavigating = false;
 
-    private List<ScreenChangedListener> listeners;
+    //private List<ScreenChangedListener> listeners;
 
     private Screen currentScreen;
 
-    private NavigationManager(Stage stage) {
+    public GUINavigationManager(Stage stage) {
         this.stage = stage;
         this.backstack = new Stack<>();
         this.screens = new ConcurrentHashMap<>();
-        this.listeners = new ArrayList<>();
+        this.screenControllers = new ConcurrentHashMap<>();
+        //this.listeners = new ArrayList<>();
 
         //load first screen
         screens.put(Screen.MAIN_MENU, loadScreen(Screen.MAIN_MENU));
@@ -51,19 +57,14 @@ public class NavigationManager {
 
     private Parent loadScreen(Screen screen) {
         try {
-            return FXMLLoader.load(getClass().getResource("/fxml/" + screen.name().toLowerCase() + ".fxml"));
+            var loader = new FXMLLoader(getClass().getResource("/fxml/" + screen.name().toLowerCase() + ".fxml"));
+            var controller = (ScreenController) loader.getController();
+            screenControllers.put(screen, controller);
+            return loader.load();
         } catch (Exception e) {
             e.printStackTrace();
             return new Label("Error loading screen " + screen.name() + ": " + e.getMessage());
         }
-    }
-
-    public static void init(Stage stage) {
-        instance = new NavigationManager(stage);
-    }
-
-    public static NavigationManager getInstance() {
-        return instance;
     }
 
     public void navigateTo(Screen screen) {
@@ -82,7 +83,7 @@ public class NavigationManager {
             stage.setScene(scene);
 
             currentScreen = screen;
-            notifyListeners();
+            //notifyListeners();
         } else {
             currentlyNavigating = true;
 
@@ -95,7 +96,7 @@ public class NavigationManager {
                 scene.setRoot(newRoot);
 
                 currentScreen = screen;
-                notifyListeners();
+                //notifyListeners();
                 currentlyNavigating = false;
             });
 
@@ -126,13 +127,18 @@ public class NavigationManager {
                 backstack.pop();
                 currentlyNavigating = false;
 
-                notifyListeners();
+                //notifyListeners();
             });
             ft.play();
         }
         Utils.LOGGER.info("Go back");
     }
 
+    @Override
+    public void exitApp() {
+        stage.close();
+    }
+/*
     private void notifyListeners() {
         listeners.forEach(l -> l.onScreenChanged(currentScreen));
     }
@@ -145,17 +151,12 @@ public class NavigationManager {
         this.listeners.remove(listener);
     }
 
-    private record BackstackEntry(Screen screen, Parent root) { }
-
     public interface ScreenChangedListener {
         void onScreenChanged(Screen screen);
     }
 
-    public enum Screen {
-        MAIN_MENU,
-        GAME_CREATION_MENU,
-        GAME_JOINING_MENU,
-        WAITING_ROOM,
-        GAME
-    }
+ */
+
+    private record BackstackEntry(Screen screen, Parent root) { }
+
 }

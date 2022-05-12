@@ -15,6 +15,7 @@ import java.util.stream.Collectors;
  */
 public record ReducedGame(
         UUID uuid,
+        int currentNumberOfPlayers,
         int numberOfPlayers,
         boolean expertMode,
         List<ReducedPlayer> players,
@@ -44,6 +45,7 @@ public record ReducedGame(
 
         return new ReducedGame(
                 g.getUUID(),
+                g.getCurrentNumberOfPlayers(),
                 g.getNumberOfPlayers(),
                 g.isExpertMode(),
                 g.getPlayers()

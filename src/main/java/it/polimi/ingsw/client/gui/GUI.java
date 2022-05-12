@@ -1,5 +1,6 @@
 package it.polimi.ingsw.client.gui;
 
+import it.polimi.ingsw.client.Client;
 import javafx.application.Application;
 import javafx.stage.Stage;
 
@@ -7,7 +8,7 @@ public class GUI extends Application {
 
     @Override
     public void start(Stage stage) throws Exception  {
-        NavigationManager.init(stage);
+        Client.init(stage);
 
         stage.setMinWidth(1600);
         stage.setMinHeight(900);
@@ -15,7 +16,6 @@ public class GUI extends Application {
         stage.setTitle("Eriantys");
 
 
-        NavigationManager.getInstance().navigateTo(NavigationManager.Screen.MAIN_MENU);
         stage.show();
     }
 

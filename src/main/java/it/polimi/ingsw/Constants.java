@@ -40,6 +40,7 @@ public final class Constants {
      * If a ping request (or ping reply) doesn't arrive in this time, the client is considered disconnected
      */
     public static final int DISCONNECTION_TIMEOUT = 8000;
+    public static final long GAMES_LIST_REFRESH_INTERVAL = 5000;
 
     /**
      * These constants are used in a game with 2 players (commented only once)

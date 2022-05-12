@@ -1,11 +1,18 @@
 package it.polimi.ingsw.client.gui.controllers;
 
-import it.polimi.ingsw.client.gui.NavigationManager;
+import it.polimi.ingsw.Utils;
+import it.polimi.ingsw.client.Client;
+import it.polimi.ingsw.client.ScreenController;
+import it.polimi.ingsw.common.reducedmodel.ReducedGame;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
+import javafx.scene.control.Label;
 import javafx.stage.Stage;
 
-public class WaitingRoomController {
+public class WaitingRoomController implements ScreenController, Client.GameUpdateListener {
+    @FXML
+    public Label waitingLabel;
+
     @FXML
     Button leaveButton;
 
@@ -16,6 +23,34 @@ public class WaitingRoomController {
     }
 
     public void leaveGame() {
-        NavigationManager.getInstance().navigateTo(NavigationManager.Screen.MAIN_MENU, false);
+        Client.getInstance().leaveGame(e -> {
+            Utils.LOGGER.info("Error leaving game");
+            //show error...
+        });
+    }
+
+    @Override
+    public void onCreate() {
+        //nothing to do
+    }
+
+    @Override
+    public void onShow() {
+        Client.getInstance().addGameUpdateListener(this);
+    }
+
+    @Override
+    public void onHide() {
+        Client.getInstance().removeGameUpdateListener(this);
+    }
+
+    @Override
+    public void onGameUpdate(ReducedGame game) {
+        int playersLeft = game.numberOfPlayers() - game.currentNumberOfPlayers();
+
+        waitingLabel.setText("In attesa di altri " + playersLeft + " giocatori...");
+
+        if(playersLeft == 0)
+            Client.getInstance().goToGame();
     }
 }

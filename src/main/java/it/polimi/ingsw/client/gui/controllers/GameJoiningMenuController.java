@@ -1,37 +1,22 @@
 package it.polimi.ingsw.client.gui.controllers;
 
+import it.polimi.ingsw.Constants;
 import it.polimi.ingsw.Utils;
-import it.polimi.ingsw.client.gui.NavigationManager;
+import it.polimi.ingsw.client.Client;
+import it.polimi.ingsw.client.ScreenController;
 import it.polimi.ingsw.client.gui.customviews.GameListItemView;
 import it.polimi.ingsw.common.reducedmodel.GameListItem;
-import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.scene.control.Button;
-import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.VBox;
-import javafx.stage.Stage;
 
 import java.util.List;
-import java.util.UUID;
+import java.util.Timer;
+import java.util.TimerTask;
 
-public class GameJoiningMenuController {
-
-    @FXML
-    public Button leaveButton;
+public class GameJoiningMenuController implements ScreenController {
     @FXML
     public VBox gamesList;
-
-    @FXML
-    public void initialize() {
-        var i = new GameListItem(UUID.randomUUID(), 3, 1, true);
-        setGamesList(List.of(i, i, i, i, i));
-
-        setupRefreshTimer();
-    }
-
-    private void setupRefreshTimer() {
-        //setup timer every 5 seconds
-    }
+    private Timer refreshTimer;
 
     public void setGamesList(List<GameListItem> list) {
         gamesList.getChildren().clear();
@@ -44,16 +29,60 @@ public class GameJoiningMenuController {
 
     private void joinGame(GameListItem item) {
         Utils.LOGGER.info("Joining game " + item.uuid());
-        //...
-        NavigationManager.getInstance().navigateTo(NavigationManager.Screen.WAITING_ROOM);
+
+        Client.getInstance().joinGame(item.uuid(), e -> {
+            Utils.LOGGER.info(e.getMessage());
+            //show error
+        });
     }
 
-    public void onLeavePressed(ActionEvent actionEvent) {
-        Stage stage = (Stage) leaveButton.getScene().getWindow();
-        stage.close();
+    public void onLeavePressed() {
+        Client.getInstance().exitApp();
     }
 
-    public void goBack(MouseEvent mouseEvent) {
-        NavigationManager.getInstance().goBack();
+    public void goBack() {
+        Client.getInstance().goBack();
+    }
+
+    @Override
+    public void onCreate() {
+        //nothing to do
+    }
+
+    @Override
+    public void onShow() {
+        startRefreshTimer();
+    }
+
+    /**
+     * Starts the refresh timer.
+     * The timer will refresh the list of games every 5 seconds.
+     */
+    private void startRefreshTimer() {
+        refreshTimer = new Timer();
+        refreshTimer.scheduleAtFixedRate(new TimerTask() {
+            @Override
+            public void run() {
+                Client.getInstance().getGameList(
+                        list -> setGamesList(list),
+                        e -> {
+                            Utils.LOGGER.info(e.getMessage());
+                            //show error...
+                        });
+            }
+        }, 0, Constants.GAMES_LIST_REFRESH_INTERVAL);
+    }
+
+    @Override
+    public void onHide() {
+        stopRefreshTimer();
+    }
+
+    /**
+     * Stops the refresh timer.
+     */
+    private void stopRefreshTimer() {
+        refreshTimer.cancel();
+        refreshTimer.purge();
     }
 }

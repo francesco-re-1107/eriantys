@@ -1,27 +1,36 @@
 package it.polimi.ingsw.client.gui.controllers;
 
-import it.polimi.ingsw.client.gui.NavigationManager;
+import it.polimi.ingsw.client.Client;
+import it.polimi.ingsw.client.ScreenController;
 import javafx.fxml.FXML;
-import javafx.scene.control.Button;
-import javafx.scene.input.MouseEvent;
-import javafx.stage.Stage;
 
-public class MainMenuController {
-
-    @FXML
-    Button leaveButton;
+public class MainMenuController implements ScreenController {
 
     @FXML
     private void onLeavePressed(){
-        Stage stage = (Stage) leaveButton.getScene().getWindow();
-        stage.close();
+        Client.getInstance().exitApp();
     }
 
-    public void createGame(MouseEvent mouseEvent) {
-        NavigationManager.getInstance().navigateTo(NavigationManager.Screen.GAME_CREATION_MENU);
+    public void createGame() {
+        Client.getInstance().goToGameCreationMenu();
     }
 
-    public void joinGame(MouseEvent mouseEvent) {
-        NavigationManager.getInstance().navigateTo(NavigationManager.Screen.GAME_JOINING_MENU);
+    public void joinGame() {
+        Client.getInstance().goToGameJoiningMenu();
+    }
+
+    @Override
+    public void onCreate() {
+        //nothing to do
+    }
+
+    @Override
+    public void onShow() {
+
+    }
+
+    @Override
+    public void onHide() {
+
     }
 }

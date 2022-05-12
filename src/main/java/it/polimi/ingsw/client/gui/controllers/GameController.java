@@ -1,8 +1,10 @@
 package it.polimi.ingsw.client.gui.controllers;
 
+import it.polimi.ingsw.client.Client;
+import it.polimi.ingsw.client.ScreenController;
 import it.polimi.ingsw.client.gui.InfoStrings;
-import it.polimi.ingsw.client.gui.NavigationManager;
 import it.polimi.ingsw.client.gui.customviews.*;
+import it.polimi.ingsw.common.reducedmodel.ReducedGame;
 import it.polimi.ingsw.common.reducedmodel.ReducedIsland;
 import it.polimi.ingsw.common.reducedmodel.ReducedPlayer;
 import it.polimi.ingsw.server.model.AssistantCard;
@@ -22,7 +24,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class GameController {
+public class GameController implements ScreenController, Client.GameUpdateListener {
     @FXML
     public IslandCircularPane islandsPane;
     @FXML
@@ -246,8 +248,9 @@ public class GameController {
 
     @FXML
     private void onLeavePressed(){
-        NavigationManager.getInstance().clearBackStack();
-        NavigationManager.getInstance().navigateTo(NavigationManager.Screen.MAIN_MENU, false);
+        Client.getInstance().leaveGame(e -> {
+            //show error...
+        });
     }
 
     public void setMotherNatureIndex(int index){
@@ -370,5 +373,25 @@ public class GameController {
         playerCoinLabel.setText(player.coins() + "");
         playerTowerLabel.setText(player.towersCount() + "");
         playerTower.setTowerColor(player.towerColor());
+    }
+
+    @Override
+    public void onCreate() {
+        Client.getInstance().addGameUpdateListener(this);
+    }
+
+    @Override
+    public void onShow() {
+
+    }
+
+    @Override
+    public void onHide() {
+
+    }
+
+    @Override
+    public void onGameUpdate(ReducedGame game) {
+        //...
     }
 }
