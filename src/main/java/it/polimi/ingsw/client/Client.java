@@ -1,7 +1,8 @@
-package it.polimi.ingsw.client.cli;
+package it.polimi.ingsw.client;
 
 import it.polimi.ingsw.Utils;
-import it.polimi.ingsw.client.cli.ClientServerCommunicator.CommunicatorListener;
+import it.polimi.ingsw.client.ClientServerCommunicator.CommunicatorListener;
+import it.polimi.ingsw.client.cli.ClientState;
 import it.polimi.ingsw.common.requests.RegisterNicknameRequest;
 import it.polimi.ingsw.common.responses.Update;
 
@@ -11,7 +12,7 @@ import java.net.Socket;
 public class Client implements CommunicatorListener {
 
     private ClientState currentState;
-    private ClientServerCommunicator communicator;
+    private final ClientServerCommunicator communicator;
 
     /**
      * Instantiates a new Client.
