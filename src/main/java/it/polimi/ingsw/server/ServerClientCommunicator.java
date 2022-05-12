@@ -1,15 +1,16 @@
 package it.polimi.ingsw.server;
 
+import it.polimi.ingsw.Constants;
 import it.polimi.ingsw.Utils;
-import it.polimi.ingsw.common.Parser;
-import it.polimi.ingsw.common.SerializationParser;
-import it.polimi.ingsw.common.responses.Response;
+import it.polimi.ingsw.common.requests.PingRequest;
 import it.polimi.ingsw.common.requests.Request;
+import it.polimi.ingsw.common.responses.Response;
+import it.polimi.ingsw.common.responses.replies.AckReply;
 
 import java.io.IOException;
-import java.io.PrintWriter;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.net.Socket;
-import java.util.Scanner;
 
 /**
  * This class handles the low level communication from server to client
@@ -27,19 +28,24 @@ public class ServerClientCommunicator {
     private final CommunicatorListener communicatorListener;
 
     /**
-     * Used for serialization of the data, could be json or java serialization
+     * This flag represents if the client is still connected
      */
-    private final Parser parser;
+    private boolean isConnected = true;
+
+    /**
+     * Output stream of the socket
+     */
+    private ObjectOutputStream outputStream;
 
     /**
      * Instantiates a communicator
-     * @param socket the client socket
+     *
+     * @param socket   the client socket
      * @param listener request listener
      */
     public ServerClientCommunicator(Socket socket, CommunicatorListener listener) {
         this.socket = socket;
         this.communicatorListener = listener;
-        this.parser = new SerializationParser(); //or JsonParser
     }
 
     /**
@@ -47,43 +53,91 @@ public class ServerClientCommunicator {
      */
     public void startListening() {
         try {
-            Scanner in = new Scanner(socket.getInputStream());
+            this.socket.setSoTimeout(Constants.DISCONNECTION_TIMEOUT);
+            var in = new ObjectInputStream(socket.getInputStream());
 
-            while (socket.isConnected()){
-                String line = in.nextLine();
+            while (socket.isConnected()) {
+                var r = (Request) in.readObject();
 
-                Request r = parser.decodeRequest(line);
-                communicatorListener.onRequest(r);
+                //ping requests are bounced back to the client immediately
+                if (r instanceof PingRequest) {
+                    send(new AckReply(r.getId()));
+                } else { //otherwise, the request is forwarded to the listener
+                    Utils.LOGGER.info("Request received: " + r.getClass().getSimpleName());
+                    communicatorListener.onRequest(r);
+                }
             }
 
-            //close connections
-            in.close();
-            socket.close();
-            communicatorListener.onDisconnect();
+            disconnect();
+        } catch (IOException e) {
+            //IOException is thrown when the client is disconnected
+            disconnect();
+        } catch (ClassNotFoundException e) {
+            //the received object is not a request
+            Utils.LOGGER.warning("Client transmitted something illegal");
+            e.printStackTrace();
+        }
+    }
 
-        } catch (Exception e){
-            Utils.LOGGER.severe(e.getMessage());
+    /**
+     * This method is used internally to notify listener that the client disconnected and to close the socket
+     */
+    private void disconnect() {
+        if (!isConnected) return;
+
+        Utils.LOGGER.info("Client disconnected");
+        isConnected = false;
+        communicatorListener.onDisconnect();
+        try {
+            socket.close();
+        } catch (IOException e) {
+            Utils.LOGGER.finest("Cannot close socket");
         }
     }
 
     /**
      * This method sends a response to the client
+     *
      * @param r the response to send
      */
-    public void send(Response r){
-        try {
-            PrintWriter out = new PrintWriter(socket.getOutputStream());
-            out.println(parser.encodeResponse(r));
-        }catch (IOException e){
-            Utils.LOGGER.severe(e.getMessage());
+    public void send(Response r) {
+        if (!isConnected) {
+            Utils.LOGGER.info("Cannot send response, client is not connected");
+            return;
         }
+
+        try {
+            //open the output stream if it is not already opened
+            if (outputStream == null)
+                outputStream = new ObjectOutputStream(socket.getOutputStream());
+            //write request to the socket
+            outputStream.writeObject(r);
+        } catch (IOException e) {
+            //IOException is thrown when the client is disconnected
+            disconnect();
+        }
+    }
+
+    /**
+     * Whether the client is still connected
+     * @return true if the client is still connected, false otherwise
+     */
+    public boolean isConnected() {
+        return isConnected;
     }
 
     /**
      * Listener interface
      */
     public interface CommunicatorListener {
+        /**
+         * This method is called when a request is received
+         */
         void onRequest(Request r);
+
+        /**
+         * This method is called when the client disconnects
+         */
         void onDisconnect();
     }
 }

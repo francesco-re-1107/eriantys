@@ -3,10 +3,10 @@ package it.polimi.ingsw.server;
 import it.polimi.ingsw.common.exceptions.InvalidOperationException;
 import it.polimi.ingsw.common.reducedmodel.ReducedGame;
 import it.polimi.ingsw.common.requests.*;
-import it.polimi.ingsw.common.responses.AckResponse;
-import it.polimi.ingsw.common.responses.ErrorResponse;
-import it.polimi.ingsw.common.responses.GameUpdateResponse;
-import it.polimi.ingsw.common.responses.GamesListResponse;
+import it.polimi.ingsw.common.responses.replies.AckReply;
+import it.polimi.ingsw.common.responses.replies.GamesListReply;
+import it.polimi.ingsw.common.responses.replies.NackReply;
+import it.polimi.ingsw.common.responses.updates.GameUpdate;
 import it.polimi.ingsw.server.controller.Controller;
 import it.polimi.ingsw.server.controller.GameController;
 import it.polimi.ingsw.server.model.Game;
@@ -37,14 +37,19 @@ public class VirtualView implements ServerClientCommunicator.CommunicatorListene
     private GameController gameController;
 
     /**
-     * Whether the client disconnected from the view
+     * Whether the nickname is already registered
      */
-    private boolean isConnected = true;
+    private boolean isRegistered = false;
 
     /**
      * Stores the nickname the player registered with
      */
     private String nickname = "";
+
+    /**
+     * Whether the player is currently in a game
+     */
+    private boolean isInGame = false;
 
     /**
      * Create a VirtualView
@@ -80,28 +85,42 @@ public class VirtualView implements ServerClientCommunicator.CommunicatorListene
      * @param request the request to handle
      */
     private void processRequest(Request request) {
+        var rId = request.getId();
         try {
             if (request instanceof RegisterNicknameRequest r) {
+                if(isRegistered)
+                    throw new InvalidOperationException("Client already registered");
                 gameController = controller.registerNickname(r.getNickname(), this);
+                isRegistered = true;
                 nickname = r.getNickname();
-                communicator.send(new AckResponse());
+                communicator.send(new AckReply(rId));
             } else if (request instanceof ListGamesRequest) {
-                communicator.send(new GamesListResponse(controller.listGames()));
+                if(!isRegistered)
+                    throw new InvalidOperationException("Client not registered");
+                communicator.send(new GamesListReply(rId, controller.listGames()));
             } else if (request instanceof JoinGameRequest r) {
+                if(isInGame)
+                    throw new InvalidOperationException("Client already in game");
                 //game joined -> new game controller
+                isInGame = true;
                 gameController = controller.joinGame(nickname, r.getUUID());
                 gameController.setOnGameUpdateListener(this);
-                communicator.send(new AckResponse());
+                communicator.send(new AckReply(rId));
             } else if (request instanceof CreateGameRequest r) {
+                if(isInGame)
+                    throw new InvalidOperationException("Client already in game");
                 //game created -> new game controller
+                isInGame = true;
                 gameController = controller.createGame(nickname, r.getNumberOfPlayers(), r.isExpertMode());
                 gameController.setOnGameUpdateListener(this);
-                communicator.send(new AckResponse());
+                communicator.send(new AckReply(rId));
             } else if (request instanceof GameRequest r) {
+                if(!isInGame)
+                    throw new InvalidOperationException("Client not in game");
                 processGameRequest(r);
             }
         } catch (Exception | Error e) {
-            communicator.send(new ErrorResponse(e));
+            communicator.send(new NackReply(rId, e));
         }
     }
 
@@ -127,7 +146,7 @@ public class VirtualView implements ServerClientCommunicator.CommunicatorListene
             gameController.leaveGame();
         }
         //if no exception is thrown send an ack
-        communicator.send(new AckResponse());
+        communicator.send(new AckReply(request.getId()));
     }
 
     /**
@@ -136,8 +155,6 @@ public class VirtualView implements ServerClientCommunicator.CommunicatorListene
      */
     @Override
     public void onDisconnect() {
-        isConnected = false;
-
         if(gameController != null)
             gameController.disconnect();
     }
@@ -147,7 +164,7 @@ public class VirtualView implements ServerClientCommunicator.CommunicatorListene
      * @return true if disconnected, false otherwise
      */
     public boolean isConnected() {
-        return isConnected;
+        return communicator.isConnected();
     }
 
     /**
@@ -157,12 +174,14 @@ public class VirtualView implements ServerClientCommunicator.CommunicatorListene
      */
     @Override
     public void onGameUpdate(ReducedGame game) {
-        communicator.send(new GameUpdateResponse(game));
+        communicator.send(new GameUpdate(game));
 
         var state = game.currentState();
 
-        //if game's finished are removed from the list
-        if(state == Game.State.TERMINATED || state == Game.State.FINISHED)
+        //game ended
+        if(state == Game.State.TERMINATED || state == Game.State.FINISHED) {
             this.gameController = null; //this game was finished
+            this.isInGame = false;
+        }
     }
 }

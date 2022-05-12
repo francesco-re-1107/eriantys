@@ -1,0 +1,41 @@
+@startuml NetworkSequence
+
+title Network sequence (pings are omitted for readability)
+
+participant Client1 order 0
+participant Server order 1 #00AAFF
+participant Client2 order 2
+participant Client3 order 3
+
+Client2 -> Server : ...
+Client3 -> Server : ...
+
+Client1 -> Server: Connect
+Client1 -> Server: RegisterNicknameRequest
+Client1 <-[#FF0000]- Server: NackReply
+Client1 -> Server: RegisterNicknameRequest
+Client1 <-[#2fb52f]- Server: AckReply
+
+Client1 -> Server: ListGamesRequest
+Client1 <-- Server: GamesListReply
+
+Client1 -> Server: JoinGameRequest
+Client1 <-[#2fb52f]- Server: AckReply
+
+Client1 <-[#e6c109]- Server: GameUpdate
+Client2 <-[#e6c109]- Server: GameUpdate
+Client3 <-[#e6c109]- Server: GameUpdate
+
+Client1 -> Server: PlayAssistantCardRequest
+Client1 <-[#2fb52f]- Server: AckReply
+Client1 <-[#e6c109]- Server: GameUpdate
+Client2 <-[#e6c109]- Server: GameUpdate
+Client3 <-[#e6c109]- Server: GameUpdate
+
+Client2 -> Server: PlayAssistantCardRequest
+Client2 <-[#2fb52f]- Server: AckReply
+Client2 <-[#e6c109]- Server: GameUpdate
+Client1 <-[#e6c109]- Server: GameUpdate
+Client3 <-[#e6c109]- Server: GameUpdate
+
+@enduml

@@ -47,36 +47,28 @@ public class Controller implements Game.GameUpdateListener {
      * @param virtualView
      * @return the gameController if this player was in a game before disconnecting, null otherwise
      * @throws DuplicatedNicknameException if the nickname is already in use by another player
-     * @throws NicknameNotValidException if the nickname does not meet all the criteria
+     * @throws NicknameNotValidException   if the nickname does not meet all the criteria
      */
     public synchronized GameController registerNickname(String nickname, VirtualView virtualView)
             throws DuplicatedNicknameException, NicknameNotValidException {
-        if(nicknameVirtualViewMap.containsKey(nickname)) {
+        if (nicknameVirtualViewMap.containsKey(nickname)) {
             if (nicknameVirtualViewMap.get(nickname).isConnected())
                 throw new DuplicatedNicknameException();
-
-            //find the previous game
-            Game foundGame = null;
-            Player foundPlayer = null;
-
-            //TODO improve
-            for (var g : games) {
-                for (var p : g.getPlayers())
-                    if(Objects.equals(p.getNickname(), nickname)) {
-                        foundGame = g;
-                        foundPlayer = p;
-                    }
-            }
 
             //replace disconnected view with the new one
             nicknameVirtualViewMap.put(nickname, virtualView);
 
-            if(foundGame != null) {
+            //find the previous game
+            var foundGame = findGameByNickname(nickname);
+
+            if (foundGame != null) {
+                var foundPlayer = findPlayerInGame(nickname, foundGame);
+
                 foundGame.setPlayerReconnected(foundPlayer);
                 return new GameController(foundGame, foundPlayer);
             }
-        }else{
-            if(!Utils.isValidNickname(nickname))
+        } else {
+            if (!Utils.isValidNickname(nickname))
                 throw new NicknameNotValidException();
 
             //insert the virtual view in the map
@@ -85,9 +77,41 @@ public class Controller implements Game.GameUpdateListener {
         return null;
     }
 
+
+    /**
+     * Find the player in the game with the given nickname.
+     *
+     * @param nickname  The nickname of the player to find.
+     * @param foundGame The game that the player is playing.
+     * @return the player with the given nickname, or null if not found.
+     */
+    private Player findPlayerInGame(String nickname, Game foundGame) {
+        return foundGame.getPlayers()
+                .stream()
+                .filter(p -> p.getNickname().equals(nickname))
+                .findFirst()
+                .orElse(null);
+    }
+
+    /**
+     * Find the game played by the specified player nickname
+     *
+     * @param nickname the nickname of the player
+     * @return the game played by the player, null if the player is not in a game
+     */
+    private Game findGameByNickname(String nickname) {
+        for (var g : games) {
+            for (var p : g.getPlayers())
+                if (Objects.equals(p.getNickname(), nickname))
+                    return g;
+        }
+        return null;
+    }
+
     /**
      * Obtain a list of all the games available in this server.
      * Only the games not started yet and with enough space are returned
+     *
      * @return the list of games
      */
     public List<GameListItem> listGames() {
@@ -100,8 +124,9 @@ public class Controller implements Game.GameUpdateListener {
 
     /**
      * Join the specified game
+     *
      * @param nickname of the player playing this action
-     * @param uuid of the game to join
+     * @param uuid     of the game to join
      * @return the GameController needed to control this game
      */
     public synchronized GameController joinGame(String nickname, UUID uuid) {
@@ -112,31 +137,32 @@ public class Controller implements Game.GameUpdateListener {
                 .filter(g -> g.getUUID() == uuid)
                 .findFirst();
 
-        if(selectedGame.isEmpty())
+        if (selectedGame.isEmpty())
             throw new GameJoiningError("Game not found");
 
         var g = selectedGame.get();
 
         //game not started yet and with space for another player
-        if(g.getGameState() == Game.State.CREATED &&
-                g.getCurrentNumberOfPlayers() < g.getNumberOfPlayers() ) {
+        if (g.getGameState() == Game.State.CREATED &&
+                g.getCurrentNumberOfPlayers() < g.getNumberOfPlayers()) {
 
             var p = g.addPlayer(nickname);
 
-            if(g.getCurrentNumberOfPlayers() == g.getNumberOfPlayers())
+            if (g.getCurrentNumberOfPlayers() == g.getNumberOfPlayers())
                 g.startGame();
 
             return new GameController(g, p);
-        }else{
+        } else {
             throw new GameJoiningError("This game is already full");
         }
     }
 
     /**
      * Create a new game
-     * @param nickname of the player playing this action
+     *
+     * @param nickname        of the player playing this action
      * @param numberOfPlayers number of player desired for this game
-     * @param expertMode whether the game will use expert rules
+     * @param expertMode      whether the game will use expert rules
      * @return the GameController needed to control this game
      */
     public synchronized GameController createGame(String nickname, int numberOfPlayers, boolean expertMode) {
@@ -154,16 +180,18 @@ public class Controller implements Game.GameUpdateListener {
     /**
      * Check if the nickname is correctly registered on this server.
      * If not a NicknameNotRegisteredError is thrown.
+     *
      * @param nickname
      */
     private synchronized void checkIfNicknameRegistered(String nickname) {
-        if(!nicknameVirtualViewMap.containsKey(nickname))
+        if (!nicknameVirtualViewMap.containsKey(nickname))
             throw new NicknameNotRegisteredError();
     }
 
     /**
      * This callback is called for every game on this server.
      * If a game finishes this will be removed from the list
+     *
      * @param game
      */
     @Override
@@ -171,13 +199,13 @@ public class Controller implements Game.GameUpdateListener {
         var state = game.getGameState();
 
         //finished games are removed from the list
-        if(state == Game.State.TERMINATED || state == Game.State.FINISHED) {
+        if (state == Game.State.TERMINATED || state == Game.State.FINISHED) {
             games.remove(game);
 
             //when a game is finished or terminated remove all the disconnected players
-            //connected players instead are kept so they can start a new game if they want
+            //connected players instead are kept, so they can start a new game if they want
             for (Player p : game.getPlayers()) {
-                if(!nicknameVirtualViewMap.get(p.getNickname()).isConnected())
+                if (!nicknameVirtualViewMap.get(p.getNickname()).isConnected())
                     nicknameVirtualViewMap.remove(p.getNickname());
             }
         }

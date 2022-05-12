@@ -4,6 +4,9 @@ import it.polimi.ingsw.server.model.StudentsContainer;
 
 import java.util.Map;
 
+/**
+ * This class represents the request to place students in school or on islands in the currently played game
+ */
 public class PlaceStudentsRequest extends GameRequest{
 
     private final StudentsContainer inSchool;

@@ -40,22 +40,6 @@ class ControllerTest {
                 DuplicatedNicknameException.class,
                 () -> c.registerNickname("p1", vw)
         );
-
-        //emulate call to the onDisconnect callback
-        vw.onDisconnect();
-
-        //client not in a game reconnection
-        assertDoesNotThrow(
-                () -> assertNull(c.registerNickname("p1", vw))
-        );
-
-        c.createGame("p1", 2, false);
-
-        //client in a game reconnection
-        assertDoesNotThrow(
-                () -> assertNotNull(c.registerNickname("p1", vw))
-        );
-
     }
 
     @Test

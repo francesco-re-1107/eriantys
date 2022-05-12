@@ -1,5 +1,8 @@
 package it.polimi.ingsw.common.requests;
 
+/**
+ * This class represents the request to move mother nature in the currently played game.
+ */
 public class MoveMotherNatureRequest extends GameRequest{
 
     private final int steps;

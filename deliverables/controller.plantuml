@@ -47,32 +47,44 @@ class VirtualView {
 class ServerClientCommunicator{
     -socket : Socket
     -listener : CommunicatorListener
-    -parser : Parser
+    -isConnected : boolean
 
     +ServerClientCommunicator(socket : Socket, listener : CommunicatorListener)
     +startListening()
     +send(response : Response)
 }
 
-interface CommunicatorListener{
-    +onRequest(request : Request)
+class ClientServerCommunicator{
+    -socket : Socket
+    -listener : CommunicatorListener
+    -isConnected : boolean
+
+    +ServerClientCommunicator(socket : Socket, listener : CommunicatorListener)
+    +startListening()
+    +send(request : Request, Consumer<Reply> successListener, Consumer<Exception> errorListener)
+}
+
+class Client {
+    -communicator : ServerClientCommunicator
+}
+
+interface ClientServerCommunicator.CommunicatorListener{
+    +onUpdate(update : Update)
     +onDisconnect()
 }
 
-interface Parser {
-    +encodeRequest(request : Request) : String
-    +decodeRequest(string : String) : Request
-    +encodeResponse(response : Response) : String
-    +decodeResponse(string : String) : Response
+interface ServerClientCommunicator.CommunicatorListener{
+    +onRequest(request : Request)
+    +onDisconnect()
 }
 
 VirtualView "0..1" *-- GameController
 VirtualView "1" *-- Controller
 VirtualView "1" *-- ServerClientCommunicator
-ServerClientCommunicator --> Parser
-JavaSerializationParser --|> Parser
-VirtualView --|> CommunicatorListener
+VirtualView --|> ServerClientCommunicator.CommunicatorListener
 Controller --> GameController
-
+ServerClientCommunicator --> ServerClientCommunicator.CommunicatorListener
+ClientServerCommunicator --> ClientServerCommunicator.CommunicatorListener
+Client --|> ClientServerCommunicator.CommunicatorListener
 
 @enduml

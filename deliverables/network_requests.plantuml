@@ -1,0 +1,53 @@
+@startuml
+top to bottom direction
+skinparam linetype ortho
+
+abstract class Request {
+    -requestId: UUID
+    +Request(id: UUID)
+}
+abstract class GameRequest
+class CreateGameRequest {
+    -numberOfPlayers: Int
+    -expertMode: boolean
+}
+class JoinGameRequest {
+    -gameId: UUID
+}
+class LeaveGameRequest
+class ListGamesRequest
+class MoveMotherNatureRequest {
+    -steps: Int
+}
+class PingRequest
+class PlaceStudentsRequest{
+    -inSchool: StudentsContainer
+    -inIslands: Map<Island, StudentsContainer>
+}
+class PlayAssistantCardRequest {
+    -assistantCard: AssistantCard
+}
+class PlayCharacterCardRequest {
+    -characterCard: ReducedCharacterCard
+}
+class RegisterNicknameRequest {
+    -nickname: String
+}
+class SelectCloudRequest {
+    -cloud: StudentsContainer
+}
+
+CreateGameRequest         -[#000000,plain]-^  Request                  
+GameRequest               -[#000000,plain]-^  Request                  
+JoinGameRequest           -[#000000,plain]-^  Request                  
+LeaveGameRequest          -[#000000,plain]-^  GameRequest              
+ListGamesRequest          -[#000000,plain]-^  Request                  
+MoveMotherNatureRequest   -[#000000,plain]-^  GameRequest              
+PingRequest               -[#000000,plain]-^  Request                  
+PlaceStudentsRequest      -[#000000,plain]-^  GameRequest              
+PlayAssistantCardRequest  -[#000000,plain]-^  GameRequest              
+PlayCharacterCardRequest  -[#000000,plain]-^  GameRequest              
+RegisterNicknameRequest   -[#000000,plain]-^  Request                  
+SelectCloudRequest        -[#000000,plain]-^  GameRequest
+
+@enduml

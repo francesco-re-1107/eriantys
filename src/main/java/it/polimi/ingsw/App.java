@@ -9,6 +9,7 @@ import java.util.Properties;
 
 /**
  * Hello world!
+ *
  */
 public class App {
     public static void main(String[] args) {
@@ -38,7 +39,7 @@ public class App {
      * Start the server
      */
     public static void startServer() {
-        new Server(readPortFromProperties())
+        new Server(Utils.GetAppConfig().port())
                 .startListening();
     }
 
@@ -54,23 +55,5 @@ public class App {
         } else {
             Utils.LOGGER.info("Starting CLI client");
         }
-    }
-
-    /**
-     * Read server port from properties if the config file exists otherwise the DEFAULT_SERVER_PORT is used
-     *
-     * @return the server port to use
-     */
-    private static int readPortFromProperties() {
-        Properties prop = new Properties();
-
-        try (FileInputStream fis = new FileInputStream(Constants.CONFIG_FILE_PATH)) {
-            prop.load(fis);
-
-            return Integer.parseInt(prop.getProperty("server.port"));
-        } catch (Exception e) {
-            return Constants.DEFAULT_SERVER_PORT;
-        }
-
     }
 }
