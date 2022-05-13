@@ -5,12 +5,15 @@ import it.polimi.ingsw.client.Client;
 import it.polimi.ingsw.client.ScreenController;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
+import javafx.scene.control.Label;
 import javafx.scene.control.RadioButton;
 import javafx.scene.control.ToggleGroup;
 
 public class GameCreationMenuController implements ScreenController {
     public ToggleGroup playersGroup;
     public ToggleGroup expertGroup;
+    @FXML
+    public Label nicknameLabel;
 
     @FXML
     Button leaveButton;
@@ -59,7 +62,7 @@ public class GameCreationMenuController implements ScreenController {
 
     @Override
     public void onShow() {
-        //nothing to do
+        nicknameLabel.setText("Connesso come " + Client.getInstance().getNickname());
     }
 
     @Override

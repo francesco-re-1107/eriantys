@@ -90,3 +90,10 @@
     -fx-text-style: bold;
     -fx-font-family: 'Recursive Casual';
 }
+
+#nickname_label {
+    -fx-font-family: 'Recursive Casual';
+    -fx-font-size: 20px;
+    -fx-text-style: bold;
+    -fx-text-fill: #fff;
+}

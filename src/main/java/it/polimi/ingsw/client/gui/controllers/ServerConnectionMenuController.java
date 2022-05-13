@@ -41,32 +41,16 @@ public class ServerConnectionMenuController implements ScreenController {
     public void connect() {
         connectButton.setDisable(true);
 
-        var host = hostTextField.getText();
-
-        if(host.isBlank())
-            host = Constants.DEFAULT_HOSTNAME;
-
-        var port = Constants.DEFAULT_SERVER_PORT;
-
-        //if a port is defined try to parse it
-        if(!portTextField.getText().isBlank())
-            try{
-                port = Integer.parseInt(portTextField.getText());
-            }catch (NumberFormatException e){
-                showConnectionError("Inserisci una porta valida");
-                return;
-            }
-
         Client.getInstance()
                 .connect(
-                        host,
-                        port,
+                        hostTextField.getText(),
+                        portTextField.getText(),
                         () -> {
                                 showRegistrationBox();
                                 connectButton.setDisable(false);
                             },
                         e -> {
-                            showConnectionError("Impossibile connettersi al server");
+                            showConnectionError(e.getMessage());
                             connectButton.setDisable(false);
                         }
                 );
@@ -115,15 +99,9 @@ public class ServerConnectionMenuController implements ScreenController {
 
     public void register() {
         registerButton.setDisable(true);
-        var nickname = nicknameTextField.getText();
-
-        if(nickname.isBlank())
-            nickname = Utils.generateRandomNickname();
-
-        Utils.LOGGER.info("Trying to register with nickname: " + nickname);
 
         Client.getInstance()
-                .registerNickname(nickname, e -> {
+                .registerNickname(nicknameTextField.getText(), e -> {
                     if(e instanceof DuplicatedNicknameException) {
                         showRegistrationError("Nickname già presente sul server");
                     } else if(e instanceof NicknameNotValidException){

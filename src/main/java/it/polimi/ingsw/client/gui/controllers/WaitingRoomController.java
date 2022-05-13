@@ -13,6 +13,8 @@ import javafx.stage.Stage;
 public class WaitingRoomController implements ScreenController, Client.GameUpdateListener {
     @FXML
     public Label waitingLabel;
+    @FXML
+    public Label nicknameLabel;
 
     @FXML
     Button leaveButton;
@@ -38,6 +40,7 @@ public class WaitingRoomController implements ScreenController, Client.GameUpdat
     @Override
     public void onShow() {
         Client.getInstance().addGameUpdateListener(this);
+        nicknameLabel.setText("Connesso come " + Client.getInstance().getNickname());
     }
 
     @Override

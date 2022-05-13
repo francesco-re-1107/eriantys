@@ -1,5 +1,7 @@
 package it.polimi.ingsw.client;
 
+import it.polimi.ingsw.Constants;
+import it.polimi.ingsw.Utils;
 import it.polimi.ingsw.client.ClientServerCommunicator.CommunicatorListener;
 import it.polimi.ingsw.client.gui.GUINavigationManager;
 import it.polimi.ingsw.common.reducedmodel.GameListItem;
@@ -91,29 +93,46 @@ public class Client implements CommunicatorListener {
      * Connect to the server at the given host and port, and call the successListener if the connection is successful, or
      * the errorListener if the connection fails
      *
-     * @param host            the hostname of the server to connect to.
-     * @param port            the port to connect to.
+     * @param host            the hostname of the server to connect to (not parsed, raw input).
+     * @param port            the port to connect to (not parsed, raw input).
      * @param successListener a Runnable that will be executed if the connection is successful.
      * @param errorListener   an error listener that will be called if an error occurs.
      */
-    public void connect(String host, int port, Runnable successListener, Consumer<Throwable> errorListener) {
+    public void connect(String host, String port, Runnable successListener, Consumer<Throwable> errorListener) {
+        var newHost = host;
+        if(host.isBlank())
+            newHost = Constants.DEFAULT_HOSTNAME;
+
+        var newPort = Constants.DEFAULT_SERVER_PORT;
+
+        //if a port is defined try to parse it
+        if(!port.isBlank())
+            try{
+                newPort = Integer.parseInt(port);
+            }catch (NumberFormatException e){
+                errorListener.accept(new IllegalArgumentException("Inserisci una porta valida"));
+                return;
+            }
+
         try {
-            communicator = new ClientServerCommunicator(new Socket(host, port), this);
+            communicator = new ClientServerCommunicator(new Socket(newHost, newPort), this);
             communicator.startListening();
 
             successListener.run();
         } catch (IOException e) {
-            errorListener.accept(e);
+            errorListener.accept(new Error("Impossibile connettersi al server"));
         }
     }
 
 
     public void registerNickname(String nickname, Consumer<Throwable> errorListener) {
-        communicator.send(new RegisterNicknameRequest(nickname),
+        final var newNickname = nickname.isBlank() ? Utils.generateRandomNickname() : nickname;
+
+        communicator.send(new RegisterNicknameRequest(newNickname),
                 r -> {
                     if (r.isSuccessful()) {
                         navigationManager.navigateTo(Screen.MAIN_MENU);
-                        this.nickname = nickname;
+                        this.nickname = newNickname;
                     } else
                         errorListener.accept(r.getThrowable());
                 },

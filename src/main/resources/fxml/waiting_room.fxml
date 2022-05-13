@@ -30,4 +30,6 @@
 
     <Button id="leave_button" fx:id="leaveButton" mnemonicParsing="false" onAction="#onLeavePressed" text="ESCI"
             AnchorPane.rightAnchor="20.0" AnchorPane.topAnchor="20.0"/>
+
+    <Label fx:id="nicknameLabel" id="nickname_label" AnchorPane.bottomAnchor="10.0" AnchorPane.rightAnchor="10.0"/>
 </AnchorPane>

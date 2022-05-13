@@ -321,9 +321,32 @@ public class GameController implements ScreenController, Client.GameUpdateListen
         setMotherNatureIndex(game.motherNaturePosition());
         cloudsPane.setClouds(game.currentRound().clouds());
         setMyBoard(myPlayer, game.currentProfessors());
+
         setPlayer2Board(otherPlayers.get(0), game.currentProfessors());
-        if(game.numberOfPlayers() > 2)
+
+        //TODO: improve
+        //set card played by me
+        var cardPlayedByMe = game.currentRound()
+                .playedAssistantCards()
+                .get(myPlayer.nickname());
+        myCard.setCard(cardPlayedByMe);
+
+        //set card played by player 2
+        var cardPlayedByPlayer2 = game.currentRound()
+                .playedAssistantCards()
+                .get(otherPlayers.get(0).nickname());
+        player2Card.setCard(cardPlayedByPlayer2);
+
+        //set player if present
+        if(game.numberOfPlayers() > 2) {
             setPlayer3Board(otherPlayers.get(1), game.currentProfessors());
+
+            //set card played by player 3
+            var cardPlayedByPlayer3 = game.currentRound()
+                    .playedAssistantCards()
+                    .get(otherPlayers.get(1).nickname());
+            player3Card.setCard(cardPlayedByPlayer3);
+        }
 
         /*switch(game.currentState()) {
             case CREATED ->

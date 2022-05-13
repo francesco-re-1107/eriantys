@@ -3,8 +3,12 @@ package it.polimi.ingsw.client.gui.controllers;
 import it.polimi.ingsw.client.Client;
 import it.polimi.ingsw.client.ScreenController;
 import javafx.fxml.FXML;
+import javafx.scene.control.Label;
 
 public class MainMenuController implements ScreenController {
+
+    @FXML
+    public Label nicknameLabel;
 
     @FXML
     private void onLeavePressed(){
@@ -26,6 +30,7 @@ public class MainMenuController implements ScreenController {
 
     @Override
     public void onShow() {
+        nicknameLabel.setText("Connesso come " + Client.getInstance().getNickname());
     }
 
     @Override

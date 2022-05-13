@@ -106,12 +106,11 @@ public class AssistantCardView extends StackPane implements EventHandler<MouseEv
     }
 
     public void setEmpty() {
-        this.card = Optional.empty();
-        updateView();
+        setCard(null);
     }
 
     public void setCard(AssistantCard card) {
-        this.card = Optional.of(card);
+        this.card = Optional.ofNullable(card);
         updateView();
     }
 

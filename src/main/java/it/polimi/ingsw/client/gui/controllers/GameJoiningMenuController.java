@@ -19,6 +19,9 @@ import java.util.TimerTask;
 public class GameJoiningMenuController implements ScreenController {
     @FXML
     public VBox gamesList;
+    @FXML
+    public Label nicknameLabel;
+
     private Timer refreshTimer;
 
     private List<GameListItem> currentGamesList = new ArrayList<>();
@@ -65,6 +68,7 @@ public class GameJoiningMenuController implements ScreenController {
     @Override
     public void onShow() {
         startRefreshTimer();
+        nicknameLabel.setText("Connesso come " + Client.getInstance().getNickname());
     }
 
     /**

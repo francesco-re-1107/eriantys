@@ -65,3 +65,10 @@
     -fx-background-position: center center;
     -fx-background-size: 1920 1080;
 }
+
+#nickname_label {
+    -fx-font-family: 'Recursive Casual';
+    -fx-font-size: 20px;
+    -fx-text-style: bold;
+    -fx-text-fill: #fff;
+}

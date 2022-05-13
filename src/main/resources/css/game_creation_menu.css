@@ -99,3 +99,10 @@
     -fx-background-color: #57639c;
     -fx-effect: none;
 }
+
+#nickname_label {
+    -fx-font-family: 'Recursive Casual';
+    -fx-font-size: 20px;
+    -fx-text-style: bold;
+    -fx-text-fill: #fff;
+}
