@@ -5,6 +5,7 @@ import it.polimi.ingsw.client.NavigationManager;
 import it.polimi.ingsw.client.Screen;
 import it.polimi.ingsw.client.ScreenController;
 import javafx.animation.FadeTransition;
+import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
@@ -32,8 +33,6 @@ public class GUINavigationManager implements NavigationManager {
 
     private boolean currentlyNavigating = false;
 
-    //private List<ScreenChangedListener> listeners;
-
     private Screen currentScreen;
 
     public GUINavigationManager(Stage stage) {
@@ -41,14 +40,13 @@ public class GUINavigationManager implements NavigationManager {
         this.backstack = new Stack<>();
         this.screens = new ConcurrentHashMap<>();
         this.screenControllers = new ConcurrentHashMap<>();
-        //this.listeners = new ArrayList<>();
 
         //load first screen
-        screens.put(Screen.MAIN_MENU, loadScreen(Screen.MAIN_MENU));
+        screens.put(Screen.SERVER_CONNECTION_MENU, loadScreen(Screen.SERVER_CONNECTION_MENU));
 
         //load other screens in background thread
         new Thread(() -> {
-            for (Screen s : Arrays.stream(Screen.values()).filter(s -> s != Screen.MAIN_MENU).toList()) {
+            for (Screen s : Arrays.stream(Screen.values()).filter(s -> s != Screen.SERVER_CONNECTION_MENU).toList()) {
                 screens.put(s, loadScreen(s));
             }
             Utils.LOGGER.info("Finished loading screens");
@@ -58,23 +56,30 @@ public class GUINavigationManager implements NavigationManager {
     private Parent loadScreen(Screen screen) {
         try {
             var loader = new FXMLLoader(getClass().getResource("/fxml/" + screen.name().toLowerCase() + ".fxml"));
+            var root = (Parent) loader.load();
             var controller = (ScreenController) loader.getController();
             screenControllers.put(screen, controller);
-            return loader.load();
+            controller.onCreate();
+
+            return root;
         } catch (Exception e) {
             e.printStackTrace();
             return new Label("Error loading screen " + screen.name() + ": " + e.getMessage());
         }
     }
 
-    public void navigateTo(Screen screen) {
-        navigateTo(screen, true);
+    public void navigateTo(Screen destination) {
+        navigateTo(destination, true);
     }
 
-    public void navigateTo(Screen screen, boolean withBackStack) {
+    public void navigateTo(Screen destination, boolean withBackStack) {
         if(currentlyNavigating) return;
 
-        var newRoot = screens.get(screen);
+        Utils.LOGGER.info("Navigate to destination " + destination.name());
+
+        var lastScreen = currentScreen;
+
+        var newRoot = screens.get(destination);
         newRoot.setOpacity(1.0);
 
         if (scene == null) {
@@ -82,8 +87,12 @@ public class GUINavigationManager implements NavigationManager {
             scene.setFill(Paint.valueOf("#000000"));
             stage.setScene(scene);
 
-            currentScreen = screen;
-            //notifyListeners();
+            currentScreen = destination;
+            currentlyNavigating = false;
+
+            if(lastScreen != null)
+                screenControllers.get(lastScreen).onHide();
+            screenControllers.get(destination).onShow();
         } else {
             currentlyNavigating = true;
 
@@ -91,19 +100,20 @@ public class GUINavigationManager implements NavigationManager {
             ft.setFromValue(1.0);
             ft.setToValue(0.0);
             ft.setOnFinished(event -> {
-                if(withBackStack)
-                    backstack.push(new BackstackEntry(screen, scene.getRoot()));
+                if(withBackStack && currentScreen != null)
+                    backstack.push(new BackstackEntry(currentScreen, scene.getRoot()));
                 scene.setRoot(newRoot);
 
-                currentScreen = screen;
-                //notifyListeners();
+                currentScreen = destination;
                 currentlyNavigating = false;
+
+                if(lastScreen != null)
+                    screenControllers.get(lastScreen).onHide();
+                screenControllers.get(destination).onShow();
             });
 
             ft.play();
         }
-
-        Utils.LOGGER.info("Navigate to screen " + screen.name());
     }
 
     public void clearBackStack() {
@@ -116,18 +126,20 @@ public class GUINavigationManager implements NavigationManager {
         if (!backstack.isEmpty()) {
             currentlyNavigating = true;
 
+            if(currentScreen != null)
+                screenControllers.get(currentScreen).onHide();
+            screenControllers.get(backstack.peek().screen()).onShow();
+
             scene.setRoot(backstack.peek().root());
 
             var ft = new FadeTransition(new Duration(200), scene.getRoot());
             ft.setFromValue(0.0);
             ft.setToValue(1.0);
             ft.setOnFinished(event -> {
-                currentScreen = backstack.peek().screen();
+                currentScreen = backstack.pop().screen();
 
-                backstack.pop();
                 currentlyNavigating = false;
 
-                //notifyListeners();
             });
             ft.play();
         }
@@ -137,25 +149,9 @@ public class GUINavigationManager implements NavigationManager {
     @Override
     public void exitApp() {
         stage.close();
+        Platform.exit();
+        System.exit(0);
     }
-/*
-    private void notifyListeners() {
-        listeners.forEach(l -> l.onScreenChanged(currentScreen));
-    }
-
-    public void addOnScreenChangedListener(ScreenChangedListener listener) {
-        this.listeners.add(listener);
-    }
-
-    public void removeOnScreenChangedListener(ScreenChangedListener listener) {
-        this.listeners.remove(listener);
-    }
-
-    public interface ScreenChangedListener {
-        void onScreenChanged(Screen screen);
-    }
-
- */
 
     private record BackstackEntry(Screen screen, Parent root) { }
 

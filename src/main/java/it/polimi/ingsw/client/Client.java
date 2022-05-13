@@ -44,7 +44,7 @@ public class Client implements CommunicatorListener {
         gameUpdateListeners = new ArrayList<>();
         navigationManager = new GUINavigationManager(stage);
 
-        navigationManager.navigateTo(Screen.MAIN_MENU);
+        navigationManager.navigateTo(Screen.SERVER_CONNECTION_MENU);
     }
 
     public static void init() {
@@ -66,16 +66,19 @@ public class Client implements CommunicatorListener {
     public void onUpdate(Update u) {
         if (u instanceof GameUpdate gu) {
             lastGameUpdate = gu.getGame();
-            gameUpdateListeners.forEach(l -> l.onGameUpdate(gu.getGame()));
+            new ArrayList<>(gameUpdateListeners)
+                    .forEach(l -> l.onGameUpdate(gu.getGame()));
         }
 
     }
 
     @Override
     public void onDisconnect() {
-        tryReconnection();
+        //tryReconnection();
 
-        //navigationManager.navigateTo(Screen.SERVER_CONNECTION_MENU);
+        communicator = null;
+        navigationManager.clearBackStack();
+        navigationManager.navigateTo(Screen.SERVER_CONNECTION_MENU, false);
     }
 
     private void tryReconnection() {
@@ -96,6 +99,7 @@ public class Client implements CommunicatorListener {
             communicator = new ClientServerCommunicator(new Socket(host, port), this);
             communicator.startListening();
 
+            successListener.run();
         } catch (IOException e) {
             errorListener.accept(e);
         }

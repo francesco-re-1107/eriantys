@@ -377,17 +377,17 @@ public class GameController implements ScreenController, Client.GameUpdateListen
 
     @Override
     public void onCreate() {
-        Client.getInstance().addGameUpdateListener(this);
+
     }
 
     @Override
     public void onShow() {
-
+        Client.getInstance().addGameUpdateListener(this);
     }
 
     @Override
     public void onHide() {
-
+        Client.getInstance().removeGameUpdateListener(this);
     }
 
     @Override

@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
 <?import javafx.scene.control.ScrollPane?>
 <?import javafx.scene.image.Image?>
 <?import javafx.scene.image.ImageView?>
@@ -19,7 +20,9 @@
     <VBox alignment="CENTER" AnchorPane.bottomAnchor="0" AnchorPane.topAnchor="0" AnchorPane.rightAnchor="0"
           AnchorPane.leftAnchor="0" maxWidth="700" maxHeight="400">
         <ScrollPane id="games_list_scroll_pane" maxHeight="400" maxWidth="700">
-            <VBox fx:id="gamesList" spacing="10" alignment="TOP_CENTER" prefWidth="680"/>
+            <VBox fx:id="gamesList" spacing="10" alignment="TOP_CENTER" prefWidth="680">
+                <Label text="Nessuna partita in corso" />
+            </VBox>
         </ScrollPane>
     </VBox>
 

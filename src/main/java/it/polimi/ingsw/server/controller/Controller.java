@@ -134,7 +134,7 @@ public class Controller implements Game.GameUpdateListener {
 
         var selectedGame = games.stream()
                 .parallel()
-                .filter(g -> g.getUUID() == uuid)
+                .filter(g -> g.getUUID().equals(uuid))
                 .findFirst();
 
         if (selectedGame.isEmpty())
@@ -197,6 +197,11 @@ public class Controller implements Game.GameUpdateListener {
     @Override
     public void onGameUpdate(Game game) {
         var state = game.getGameState();
+
+        //if no one is connected to the game, remove it
+        if(game.getCurrentNumberOfPlayers() == 0) {
+            games.remove(game);
+        }
 
         //finished games are removed from the list
         if (state == Game.State.TERMINATED || state == Game.State.FINISHED) {

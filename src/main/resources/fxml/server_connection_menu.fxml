@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.VBox?>
+<AnchorPane xmlns="http://javafx.com/javafx"
+            xmlns:fx="http://javafx.com/fxml"
+            fx:controller="it.polimi.ingsw.client.gui.controllers.ServerConnectionMenuController"
+            prefHeight="400.0" prefWidth="600.0">
+
+    <VBox>
+        <TextField fx:id="hostTextField" prefHeight="50.0" prefWidth="100.0">localhost</TextField>
+        <TextField fx:id="portTextField" prefHeight="50.0" prefWidth="100.0" text="6001"/>
+        <Button onMouseClicked="#connect" fx:id="connectButton" prefHeight="50.0" prefWidth="100.0">Connect</Button>
+        <TextField fx:id="nicknameTextField" prefHeight="50.0" prefWidth="100.0" text="p1"/>
+        <Button onMouseClicked="#register" fx:id="registerButton" prefHeight="50.0" prefWidth="100.0">Register</Button>
+    </VBox>
+
+</AnchorPane>

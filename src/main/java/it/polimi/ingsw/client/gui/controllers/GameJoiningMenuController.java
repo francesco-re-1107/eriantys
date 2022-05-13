@@ -6,9 +6,12 @@ import it.polimi.ingsw.client.Client;
 import it.polimi.ingsw.client.ScreenController;
 import it.polimi.ingsw.client.gui.customviews.GameListItemView;
 import it.polimi.ingsw.common.reducedmodel.GameListItem;
+import javafx.application.Platform;
 import javafx.fxml.FXML;
+import javafx.scene.control.Label;
 import javafx.scene.layout.VBox;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -18,13 +21,23 @@ public class GameJoiningMenuController implements ScreenController {
     public VBox gamesList;
     private Timer refreshTimer;
 
+    private List<GameListItem> currentGamesList = new ArrayList<>();
+
     public void setGamesList(List<GameListItem> list) {
+        if(Utils.isSameList(list, currentGamesList)) return;
+
+        currentGamesList = list;
         gamesList.getChildren().clear();
-        list.forEach(i -> {
-            var item = new GameListItemView(i);
-            item.setOnJoinButtonClicked(e -> joinGame(i));
-            gamesList.getChildren().add(item);
-        });
+
+        if(list.isEmpty()) {
+            gamesList.getChildren().add(new Label("Nessuna partita in corso"));
+        } else {
+            list.forEach(i -> {
+                var item = new GameListItemView(i);
+                item.setOnJoinButtonClicked(e -> joinGame(i));
+                gamesList.getChildren().add(item);
+            });
+        }
     }
 
     private void joinGame(GameListItem item) {
@@ -64,7 +77,7 @@ public class GameJoiningMenuController implements ScreenController {
             @Override
             public void run() {
                 Client.getInstance().getGameList(
-                        list -> setGamesList(list),
+                        list -> Platform.runLater(() -> setGamesList(list)),
                         e -> {
                             Utils.LOGGER.info(e.getMessage());
                             //show error...

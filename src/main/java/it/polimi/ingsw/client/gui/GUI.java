@@ -15,8 +15,12 @@ public class GUI extends Application {
         stage.setMaximized(true);
         stage.setTitle("Eriantys");
 
-
         stage.show();
     }
 
+    @Override
+    public void stop() throws Exception {
+        super.stop();
+        System.exit(0);
+    }
 }

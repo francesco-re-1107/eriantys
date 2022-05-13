@@ -4,6 +4,7 @@ import it.polimi.ingsw.Utils;
 import it.polimi.ingsw.client.Client;
 import it.polimi.ingsw.client.ScreenController;
 import it.polimi.ingsw.common.reducedmodel.ReducedGame;
+import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
@@ -48,9 +49,13 @@ public class WaitingRoomController implements ScreenController, Client.GameUpdat
     public void onGameUpdate(ReducedGame game) {
         int playersLeft = game.numberOfPlayers() - game.currentNumberOfPlayers();
 
-        waitingLabel.setText("In attesa di altri " + playersLeft + " giocatori...");
+        Platform.runLater(
+                () -> waitingLabel.setText("In attesa di altri " + playersLeft + " giocatori...")
+        );
 
-        if(playersLeft == 0)
+        if(playersLeft == 0) {
+            Utils.LOGGER.info("Waiting room: going to game screen");
             Client.getInstance().goToGame();
+        }
     }
 }

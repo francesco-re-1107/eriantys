@@ -60,8 +60,8 @@ public class ClientServerCommunicator {
      * This method binds to the socket input stream and listens for response from the server on a new thread
      */
     public void startListening() {
+        startPinging();
         new Thread(() -> {
-            startPinging();
             try {
                 this.socket.setSoTimeout(Constants.DISCONNECTION_TIMEOUT);
                 var in = new ObjectInputStream(socket.getInputStream());

@@ -1,6 +1,8 @@
 package it.polimi.ingsw;
 
 import java.io.InputStream;
+import java.util.HashSet;
+import java.util.List;
 import java.util.Properties;
 import java.util.logging.ConsoleHandler;
 import java.util.logging.Level;
@@ -60,5 +62,17 @@ public class Utils {
             prop.getProperty("server.address"),
             Integer.parseInt(prop.getProperty("server.port"))
         );
+    }
+
+
+    /**
+     * Check if two lists are equal
+     *
+     * @param list The first list to compare.
+     * @param anotherList The second list to compare to.
+     * @return true if lists are equal (doesn't consider order and frequencies).
+     */
+    public static <T> boolean isSameList(List<T> list, List<T> anotherList) {
+        return new HashSet<>(list).equals(new HashSet<>(anotherList));
     }
 }

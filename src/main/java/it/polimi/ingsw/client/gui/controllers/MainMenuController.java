@@ -26,11 +26,9 @@ public class MainMenuController implements ScreenController {
 
     @Override
     public void onShow() {
-
     }
 
     @Override
     public void onHide() {
-
     }
 }
