@@ -9,7 +9,10 @@ import it.polimi.ingsw.common.reducedmodel.ReducedGame;
 import it.polimi.ingsw.common.reducedmodel.ReducedIsland;
 import it.polimi.ingsw.common.reducedmodel.ReducedPlayer;
 import it.polimi.ingsw.common.requests.PlayAssistantCardRequest;
-import it.polimi.ingsw.server.model.*;
+import it.polimi.ingsw.server.model.AssistantCard;
+import it.polimi.ingsw.server.model.Stage;
+import it.polimi.ingsw.server.model.Student;
+import it.polimi.ingsw.server.model.Tower;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.geometry.Pos;
@@ -28,7 +31,7 @@ public class GameController implements ScreenController, Client.GameUpdateListen
     @FXML
     public IslandCircularPane islandsPane;
     @FXML
-    public CloudsCircularPane cloudsPane;
+    public CloudsPane cloudsPane;
     @FXML
     public HBox player3Board;
     @FXML
@@ -244,11 +247,6 @@ public class GameController implements ScreenController, Client.GameUpdateListen
 
     }
 
-    public void setClouds(List<StudentsContainer> clouds) {
-        cloudsPane.getChildren().clear();
-        clouds.forEach(c -> cloudsPane.addCloud(c));
-    }
-
     public void setIslands(List<ReducedIsland> islands) {
         islandsPane.getChildren().clear();
         islands.forEach(i -> islandsPane.addIsland(i));
@@ -321,7 +319,7 @@ public class GameController implements ScreenController, Client.GameUpdateListen
         setVisibilityForExpertMode(game.expertMode());
         setIslands(game.islands());
         setMotherNatureIndex(game.motherNaturePosition());
-        setClouds(game.currentRound().clouds());
+        cloudsPane.setClouds(game.currentRound().clouds());
         setMyBoard(myPlayer, game.currentProfessors());
         setPlayer2Board(otherPlayers.get(0), game.currentProfessors());
         if(game.numberOfPlayers() > 2)
