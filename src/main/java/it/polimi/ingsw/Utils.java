@@ -4,6 +4,7 @@ import java.io.InputStream;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Properties;
+import java.util.Random;
 import java.util.logging.ConsoleHandler;
 import java.util.logging.Level;
 import java.util.logging.LogManager;
@@ -37,7 +38,7 @@ public class Utils {
      * @return true if it is valid, false otherwise
      */
     public static boolean isValidNickname(String nickname) {
-        return !nickname.isBlank();
+        return !nickname.isBlank() && nickname.length() <= Constants.MAX_NICKNAME_LENGTH;
     }
 
     static {
@@ -74,5 +75,13 @@ public class Utils {
      */
     public static <T> boolean isSameList(List<T> list, List<T> anotherList) {
         return new HashSet<>(list).equals(new HashSet<>(anotherList));
+    }
+
+    public static String generateRandomNickname() {
+        var r = new Random();
+        var part1 = Constants.NICKNAMES_PART_1.get(r.nextInt(Constants.NICKNAMES_PART_1.size()));
+        var part2 = Constants.NICKNAMES_PART_2.get(r.nextInt(Constants.NICKNAMES_PART_2.size()));
+
+        return part1 + part2;
     }
 }
