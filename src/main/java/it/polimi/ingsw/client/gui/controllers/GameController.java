@@ -1,5 +1,6 @@
 package it.polimi.ingsw.client.gui.controllers;
 
+import it.polimi.ingsw.Constants;
 import it.polimi.ingsw.Utils;
 import it.polimi.ingsw.client.Client;
 import it.polimi.ingsw.client.ScreenController;
@@ -8,11 +9,10 @@ import it.polimi.ingsw.client.gui.customviews.*;
 import it.polimi.ingsw.common.reducedmodel.ReducedGame;
 import it.polimi.ingsw.common.reducedmodel.ReducedIsland;
 import it.polimi.ingsw.common.reducedmodel.ReducedPlayer;
+import it.polimi.ingsw.common.requests.MoveMotherNatureRequest;
+import it.polimi.ingsw.common.requests.PlaceStudentsRequest;
 import it.polimi.ingsw.common.requests.PlayAssistantCardRequest;
-import it.polimi.ingsw.server.model.AssistantCard;
-import it.polimi.ingsw.server.model.Stage;
-import it.polimi.ingsw.server.model.Student;
-import it.polimi.ingsw.server.model.Tower;
+import it.polimi.ingsw.server.model.*;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.geometry.Pos;
@@ -22,10 +22,7 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class GameController implements ScreenController, Client.GameUpdateListener {
     @FXML
@@ -56,6 +53,8 @@ public class GameController implements ScreenController, Client.GameUpdateListen
     public VBox assistantCardsDeck;
     @FXML
     public VBox assistantCardsLayer;
+    @FXML
+    public Button hideAssistantCardsDeck;
     @FXML
     Button leaveButton;
     @FXML
@@ -114,7 +113,7 @@ public class GameController implements ScreenController, Client.GameUpdateListen
 
         assistantCardsDeck.getChildren().add(hbox);
 
-        for(var c : AssistantCard.getDefaultDeck()) {
+        for (var c : AssistantCard.getDefaultDeck()) {
             var acv = new AssistantCardView();
             acv.setCard(c);
             acv.setGrayedOut(deck.get(c));
@@ -141,12 +140,12 @@ public class GameController implements ScreenController, Client.GameUpdateListen
 
     }
 
-    private void setInfoString(String info, String... optionalArgs) {
-        if(InfoStrings.EMPTY.equals(info)) {
+    private void setInfoString(String info, Object... optionalArgs) {
+        if (InfoStrings.EMPTY.equals(info)) {
             infoLabel.setVisible(false);
             infoLabel.setManaged(false);
 
-        }else {
+        } else {
             infoLabel.setVisible(true);
             infoLabel.setManaged(true);
         }
@@ -159,14 +158,14 @@ public class GameController implements ScreenController, Client.GameUpdateListen
     }
 
     @FXML
-    private void onLeavePressed(){
+    private void onLeavePressed() {
         Client.getInstance().leaveGame(e -> {
             //show error...
             Utils.LOGGER.info("Error leaving game: " + e.getMessage());
         });
     }
 
-    public void setMotherNatureIndex(int index){
+    public void setMotherNatureIndex(int index) {
         //reset
         for (var iv : islandsPane.getChildren())
             ((IslandView) iv).getMotherNatureView().setState(MotherNatureView.State.INVISIBLE);
@@ -175,25 +174,38 @@ public class GameController implements ScreenController, Client.GameUpdateListen
         iv.getMotherNatureView().setState(MotherNatureView.State.ENABLED);
     }
 
-    public void setMotherNaturePossibleSteps(int index, int steps){
+    public void setMotherNaturePossibleSteps(int index, int steps) {
         //reset previous possible steps
         for (var iv : islandsPane.getChildren()) {
             var mn = ((IslandView) iv).getMotherNatureView();
             iv.setDisable(true);
 
-            if(mn.getState() != MotherNatureView.State.ENABLED)
+            if (mn.getState() != MotherNatureView.State.ENABLED)
                 mn.setState(MotherNatureView.State.INVISIBLE);
         }
 
-        var currIndex = (index + 1) % islandsPane.getChildren().size();;
+        var currIndex = (index + 1) % islandsPane.getChildren().size();
 
-        while (steps > 0){
+        var currStep = 1;
+
+        while (currStep <= steps) {
+            //TODO: improve
+            final var currStepFinal = currStep;
+
             var iv = (IslandView) islandsPane.getChildren().get(currIndex);
-            if(currIndex != index)
+            if (currIndex != index) {
                 iv.getMotherNatureView().setState(MotherNatureView.State.DISABLED);
+                iv.setOnMouseClicked(e -> {
+                    Client.getInstance().forwardGameRequest(
+                            new MoveMotherNatureRequest(currStepFinal),
+                            () -> {},
+                            err -> Utils.LOGGER.info("Error moving mother nature: " + err.getMessage())
+                    );
+                });
+            }
             iv.setDisable(false);
             currIndex = (currIndex + 1) % islandsPane.getChildren().size();
-            steps--;
+            currStep++;
         }
     }
 
@@ -230,7 +242,7 @@ public class GameController implements ScreenController, Client.GameUpdateListen
         l.setId("my_students_board_small_label");
         myStudentsBoard.add(l, 2, 3);
 
-        for(Student s : Student.values()) {
+        for (Student s : Student.values()) {
             var sv = new StudentView(s, myPlayer.equals(professors.get(s)));
             sv.setFitWidth(40);
             sv.setFitHeight(40);
@@ -269,7 +281,7 @@ public class GameController implements ScreenController, Client.GameUpdateListen
 
         nicknameLabel.setText(player.nickname());
 
-        for(Student s : Student.values()) {
+        for (Student s : Student.values()) {
             var hbox = new HBox();
             hbox.setSpacing(5);
             var sv = new StudentView(s, player.equals(professors.get(s)));
@@ -315,6 +327,8 @@ public class GameController implements ScreenController, Client.GameUpdateListen
         otherPlayers.remove(myPlayer);
         otherPlayers.sort(Comparator.comparing(ReducedPlayer::nickname));
 
+        characterCards.setDisable(true);
+        cloudsPane.setDisable(true);
         setVisibilityForNumberOfPlayers(game.numberOfPlayers());
         setVisibilityForExpertMode(game.expertMode());
         setIslands(game.islands());
@@ -338,7 +352,7 @@ public class GameController implements ScreenController, Client.GameUpdateListen
         player2Card.setCard(cardPlayedByPlayer2);
 
         //set player if present
-        if(game.numberOfPlayers() > 2) {
+        if (game.numberOfPlayers() > 2) {
             setPlayer3Board(otherPlayers.get(1), game.currentProfessors());
 
             //set card played by player 3
@@ -359,13 +373,56 @@ public class GameController implements ScreenController, Client.GameUpdateListen
         var currentPlayer = game.currentRound().currentPlayer();
 
         //my turn
-        if (currentPlayer.equals(myPlayer)){
-            if(game.currentRound().stage() instanceof Stage.Attack) { //attack
+        if (currentPlayer.equals(myPlayer)) {
+            if (game.currentRound().stage() instanceof Stage.Attack s) { //attack
+                var maxMotherNatureSteps =
+                        cardPlayedByMe.motherNatureMaxMoves() +
+                                game.currentRound().additionalMotherNatureMoves();
 
+                switch (s) {
+                    case STARTED -> {
+                        //place students...
+                        var studentsToMove =
+                                game.numberOfPlayers() == 2 ?
+                                        Constants.TwoPlayers.STUDENTS_TO_MOVE :
+                                        Constants.ThreePlayers.STUDENTS_TO_MOVE;
+
+                        setInfoString(InfoStrings.MY_TURN_PLACE_STUDENTS, studentsToMove);
+                        //simulate
+                        Client.getInstance()
+                                .forwardGameRequest(
+                                        new PlaceStudentsRequest(
+                                                new RandomizedStudentsContainer(myPlayer.entrance()).pickManyRandom(studentsToMove),
+                                                new HashMap<>()
+                                        ),
+                                        () -> {},
+                                        err -> Utils.LOGGER.info("Error placing students: " + err)
+                                );
+                    }
+                    case STUDENTS_PLACED -> {
+                        //play character card or move mother nature
+                        setInfoString(InfoStrings.MY_TURN_PLAY_CHARACTER_CARD);
+                        characterCards.setDisable(false);
+
+                        setMotherNaturePossibleSteps(game.motherNaturePosition(), maxMotherNatureSteps);
+                    }
+                    case CARD_PLAYED -> {
+                        //move mother nature
+                        setInfoString(InfoStrings.MY_TURN_MOVE_MOTHER_NATURE, maxMotherNatureSteps);
+                        setMotherNaturePossibleSteps(game.motherNaturePosition(), maxMotherNatureSteps);
+                    }
+                    case MOTHER_NATURE_MOVED -> {
+                        //select cloud
+                        setInfoString(InfoStrings.MY_TURN_SELECT_CLOUD);
+                        cloudsPane.setDisable(false);
+                    }
+                    //case SELECTED_CLOUD ->
+                }
             } else { //plan
+                setInfoString(InfoStrings.MY_TURN_PLAY_ASSISTANT_CARD);
                 setAssistantDeckVisible(true);
             }
-        }else{
+        } else {
             setInfoString(InfoStrings.OTHER_PLAYER_WAIT_FOR_HIS_TURN, currentPlayer.nickname());
         }
     }
@@ -383,5 +440,13 @@ public class GameController implements ScreenController, Client.GameUpdateListen
                 .filter(p -> p.nickname().equals(Client.getInstance().getNickname()))
                 .findFirst()
                 .orElse(null);
+    }
+
+    public void startPeekGame() {
+        assistantCardsLayer.setOpacity(0.1);
+    }
+
+    public void endPeekGame() {
+        assistantCardsLayer.setOpacity(1.0);
     }
 }

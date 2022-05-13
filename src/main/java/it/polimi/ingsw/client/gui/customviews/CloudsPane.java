@@ -1,5 +1,8 @@
 package it.polimi.ingsw.client.gui.customviews;
 
+import it.polimi.ingsw.Utils;
+import it.polimi.ingsw.client.Client;
+import it.polimi.ingsw.common.requests.SelectCloudRequest;
 import it.polimi.ingsw.server.model.StudentsContainer;
 import javafx.geometry.Pos;
 import javafx.scene.layout.HBox;
@@ -42,6 +45,12 @@ public class CloudsPane extends VBox {
             cv.setMaxHeight(155.0);
             cv.setMinWidth(155.0);
             cv.setMinHeight(155.0);
+            cv.setOnMouseClicked(e -> Client.getInstance()
+                    .forwardGameRequest(
+                            new SelectCloudRequest(cloud),
+                            () -> {},
+                            err -> Utils.LOGGER.info("Error selecting cloud " + err.getMessage())
+                    ));
 
             currentHBox.getChildren().add(cv);
 
