@@ -4,12 +4,23 @@ import it.polimi.ingsw.server.model.Student;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 
-import java.io.InputStream;
+import java.util.HashMap;
+import java.util.Map;
 
 public class StudentView extends ImageView {
 
     private Student student;
     private boolean isProfessor;
+    private static final Map<Student, Image> studentsImages = new HashMap<>();
+
+    private static final Map<Student, Image> professorsImages = new HashMap<>();
+
+    static {
+        for(Student s : Student.values()) {
+            studentsImages.put(s, new Image(StudentView.class.getResourceAsStream("/assets/students/" + s.name().toLowerCase() + ".png")));
+            professorsImages.put(s, new Image(StudentView.class.getResourceAsStream("/assets/professors/" + s.name().toLowerCase() + ".png")));
+        }
+    }
 
     public StudentView() {
         this(Student.BLUE);
@@ -24,7 +35,7 @@ public class StudentView extends ImageView {
         this.student = student;
         this.isProfessor = isProfessor;
 
-        setImage(new Image(getImageStream()));
+        setImage(getCurrentImage());
         setFitWidth(35);
         setFitHeight(35);
         setPreserveRatio(true);
@@ -32,12 +43,12 @@ public class StudentView extends ImageView {
 
     public void setProfessor(boolean isProfessor) {
         this.isProfessor = isProfessor;
-        setImage(new Image(getImageStream()));
+        setImage(getCurrentImage());
     }
 
     public void setStudent(Student student) {
         this.student = student;
-        setImage(new Image(getImageStream()));
+        setImage(getCurrentImage());
     }
 
     public boolean isProfessor() {
@@ -48,10 +59,10 @@ public class StudentView extends ImageView {
         return student;
     }
 
-    private InputStream getImageStream() {
+    private Image getCurrentImage() {
         if(isProfessor)
-            return getClass().getResourceAsStream("/assets/professors/" + student.name().toLowerCase() + ".png");
+            return professorsImages.get(student);
         else
-            return getClass().getResourceAsStream("/assets/students/" + student.name().toLowerCase() + ".png");
+            return studentsImages.get(student);
     }
 }

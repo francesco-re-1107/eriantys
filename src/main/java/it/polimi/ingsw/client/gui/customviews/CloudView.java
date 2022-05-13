@@ -12,6 +12,12 @@ public class CloudView extends VBox {
         this(new StudentsContainer());
     }
 
+    private static final Image cloudImage;
+
+    static {
+        cloudImage = new Image(CloudView.class.getResourceAsStream("/assets/cloud.png"));
+    }
+
     public CloudView(StudentsContainer cloud) {
         super();
 
@@ -40,9 +46,8 @@ public class CloudView extends VBox {
     }
 
     private void setupBackground() {
-        Image image = new Image(getClass().getResource("/assets/cloud.png").toExternalForm());
         BackgroundSize backgroundSize = new BackgroundSize(150, 150, true, true, true, true);
-        BackgroundImage backgroundImage = new BackgroundImage(image, BackgroundRepeat.REPEAT, BackgroundRepeat.NO_REPEAT, BackgroundPosition.CENTER, backgroundSize);
+        BackgroundImage backgroundImage = new BackgroundImage(cloudImage, BackgroundRepeat.REPEAT, BackgroundRepeat.NO_REPEAT, BackgroundPosition.CENTER, backgroundSize);
         setBackground(new Background(backgroundImage));
     }
 }

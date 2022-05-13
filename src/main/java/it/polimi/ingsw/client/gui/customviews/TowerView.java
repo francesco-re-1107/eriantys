@@ -4,7 +4,8 @@ import it.polimi.ingsw.server.model.Tower;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 
-import java.io.InputStream;
+import java.util.HashMap;
+import java.util.Map;
 
 public class TowerView extends ImageView {
 
@@ -14,9 +15,20 @@ public class TowerView extends ImageView {
         this(Tower.WHITE);
     }
 
+    private static final Map<Tower, Image> towersImages = new HashMap<>();
+
+    static {
+        for(Tower tower : Tower.values())
+            towersImages.put(
+                    tower,
+                    new Image(TowerView.class.getResourceAsStream("/assets/towers/" + tower.name().toLowerCase() + ".png"))
+            );
+
+    }
+
     public TowerView(Tower towerColor) {
         this.towerColor = towerColor;
-        setImage(new Image(getImageStream()));
+        setImage(getCurrentImage());
         setPreserveRatio(true);
     }
 
@@ -26,11 +38,10 @@ public class TowerView extends ImageView {
 
     public void setTowerColor(Tower towerColor) {
         this.towerColor = towerColor;
-        setImage(new Image(getImageStream()));
+        setImage(getCurrentImage());
     }
 
-    private InputStream getImageStream() {
-        var path = "/assets/towers/" + towerColor.name().toLowerCase() + ".png";
-        return getClass().getResourceAsStream(path);
+    private Image getCurrentImage() {
+        return towersImages.get(towerColor);
     }
 }

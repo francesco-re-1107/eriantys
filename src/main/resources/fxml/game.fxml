@@ -23,9 +23,9 @@
 
                 <GridPane id="players_grid" alignment="TOP_CENTER">
                     <columnConstraints>
-                        <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0"/>
-                        <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0"/>
-                        <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0"/>
+                        <ColumnConstraints hgrow="SOMETIMES" minWidth="0.0"/>
+                        <ColumnConstraints hgrow="SOMETIMES" minWidth="0.0"/>
+                        <ColumnConstraints hgrow="SOMETIMES" minWidth="0.0"/>
                     </columnConstraints>
                     <rowConstraints>
                         <RowConstraints minHeight="10.0" vgrow="SOMETIMES"/>
@@ -177,7 +177,7 @@
                     </Label>
                 </HBox>
             </VBox>
-            <VBox alignment="CENTER" layoutX="377.0" layoutY="484.0" prefHeight="134.0" prefWidth="240.0"
+            <VBox fx:id="characterCardsView" alignment="CENTER" layoutX="377.0" layoutY="484.0" prefHeight="134.0" prefWidth="240.0"
                   AnchorPane.bottomAnchor="15.0" AnchorPane.rightAnchor="15.0">
                 <Label alignment="CENTER" text="Carte personaggio"/>
                 <HBox fx:id="characterCards" prefHeight="100.0" prefWidth="200.0">

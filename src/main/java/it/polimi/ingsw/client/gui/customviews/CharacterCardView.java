@@ -4,16 +4,21 @@ import it.polimi.ingsw.common.reducedmodel.ReducedCharacterCard;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 
-import java.io.InputStream;
 import java.util.Optional;
 
 public class CharacterCardView extends ImageView {
     private Optional<ReducedCharacterCard> card = Optional.empty();
 
+    private static final Image emptyImage;
+
+    static {
+        emptyImage = new Image(CharacterCardView.class.getResourceAsStream("/assets/character_cards/empty.png"));
+    }
+
     public CharacterCardView() {
         super();
 
-        setImage(new Image(getImageStream()));
+        setImage(getCurrentImage());
         setPreserveRatio(true);
         setId("card");
     }
@@ -23,14 +28,14 @@ public class CharacterCardView extends ImageView {
         this.card = Optional.of(card);
     }
 
-    private InputStream getImageStream() {
+    private Image getCurrentImage() {
+        return emptyImage;
 
-        //if(card.isPresent()){
-        if(false){
+        /*if(card.isPresent()){
             var path = "/assets/assistant_cards/" + card.getClass().getSimpleName() + ".png";
             return getClass().getResourceAsStream(path);
         }else{
-            return getClass().getResourceAsStream("/assets/character_cards/empty.png");
-        }
+            return emptyImage;
+        }*/
     }
 }

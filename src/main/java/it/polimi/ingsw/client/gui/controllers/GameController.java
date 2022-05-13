@@ -40,6 +40,8 @@ public class GameController implements ScreenController, Client.GameUpdateListen
     @FXML
     public VBox player3Students;
     @FXML
+    public VBox characterCardsView;
+    @FXML
     public HBox characterCards;
     @FXML
     public CharacterCardView characterCard1;
@@ -202,8 +204,8 @@ public class GameController implements ScreenController, Client.GameUpdateListen
         myCoin.setVisible(expertMode);
         myCoin.setManaged(expertMode);
 
-        characterCards.setVisible(expertMode);
-        characterCards.setManaged(expertMode);
+        characterCardsView.setVisible(expertMode);
+        characterCardsView.setManaged(expertMode);
     }
 
     public void setVisibilityForNumberOfPlayers(int numberOfPlayers) {

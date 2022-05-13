@@ -11,15 +11,15 @@ import javafx.scene.image.ImageView;
 import javafx.scene.layout.*;
 import javafx.util.Duration;
 
-import java.util.Random;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 public class IslandView extends StackPane {
 
     private ReducedIsland island;
 
     private final VBox vbox;
-
-    private ImageView noEntry;
 
     private final double size;
 
@@ -28,6 +28,14 @@ public class IslandView extends StackPane {
     private VBox studentsViewVBox;
 
     private HBox studentsViewCurrentHBox;
+
+    private static final List<Image> islandImages = new ArrayList<>();
+
+    //load images statically
+    static {
+        for(int i = 1; i <= 3; i++)
+            islandImages.add(new Image(IslandView.class.getResourceAsStream("/assets/island" + i + ".png")));
+    }
 
     public IslandView() {
         this(
@@ -140,7 +148,7 @@ public class IslandView extends StackPane {
     }
 
     private void setupNoEntry() {
-        noEntry = new ImageView(new Image(getClass().getResourceAsStream("/assets/no_entry.png")));
+        var noEntry = new ImageView(new Image(getClass().getResourceAsStream("/assets/no_entry.png")));
         noEntry.setFitWidth(size/1.4);
         noEntry.setFitHeight(size/1.4);
         noEntry.setOpacity(1);
@@ -163,9 +171,10 @@ public class IslandView extends StackPane {
     }
 
     private void setupBackground() {
-        //random number from 1 to 3
-        var random = new Random().nextInt(3) + 1;
-        Image image = new Image(getClass().getResource("/assets/island" + random + ".png").toExternalForm());
+        //get a random image
+        Collections.shuffle(islandImages);
+        var image = islandImages.get(0);
+
         BackgroundSize backgroundSize = new BackgroundSize(size, size, true, true, true, true);
         BackgroundImage backgroundImage = new BackgroundImage(image, BackgroundRepeat.REPEAT, BackgroundRepeat.NO_REPEAT, BackgroundPosition.CENTER, backgroundSize);
         setBackground(new Background(backgroundImage));

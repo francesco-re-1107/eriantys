@@ -14,7 +14,8 @@ import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.util.Duration;
 
-import java.io.InputStream;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Optional;
 
 public class AssistantCardView extends StackPane implements EventHandler<MouseEvent> {
@@ -27,13 +28,31 @@ public class AssistantCardView extends StackPane implements EventHandler<MouseEv
     private final Label turnPriorityLabel;
     private final Label motherNatureLabel;
 
+    private static final Image emptyImage;
+    private static final Map<String, Image> assistantCardImages = new HashMap<>();
+
+    //load static images
+    static {
+        emptyImage = new Image(AssistantCardView.class.getResourceAsStream("/assets/assistant_cards/empty.png"));
+
+        for(AssistantCard c : AssistantCard.getDefaultDeck()) {
+            var name = getCardName(c);
+            var path = "/assets/assistant_cards/" + name + ".png";
+            assistantCardImages.put(name, new Image(AssistantCardView.class.getResourceAsStream(path)));
+        }
+    }
+
+    private static String getCardName(AssistantCard card) {
+        return card.turnPriority() + "_" +  card.motherNatureMaxMoves();
+    }
+
     public AssistantCardView() {
         super();
 
         setId("assistant_card");
         image = new ImageView();
 
-        image.setImage(new Image(getImageStream()));
+        image.setImage(getCurrentImage());
         image.setPreserveRatio(true);
 
         image.setFitHeight(150);
@@ -97,7 +116,7 @@ public class AssistantCardView extends StackPane implements EventHandler<MouseEv
     }
 
     private void updateView() {
-        image.setImage(new Image(getImageStream()));
+        image.setImage(getCurrentImage());
 
         if(card.isPresent()) {
             turnPriorityLabel.setText(String.valueOf(card.get().turnPriority()));
@@ -105,13 +124,11 @@ public class AssistantCardView extends StackPane implements EventHandler<MouseEv
         }
     }
 
-    private InputStream getImageStream() {
-
+    private Image getCurrentImage() {
         if(card.isPresent()){
-            var path = "/assets/assistant_cards/" + card.get().turnPriority() + "_" +  card.get().motherNatureMaxMoves() + ".png";
-            return getClass().getResourceAsStream(path);
+            return assistantCardImages.get(getCardName(card.get()));
         }else{
-            return getClass().getResourceAsStream("/assets/assistant_cards/empty.png");
+            return emptyImage;
         }
     }
 
