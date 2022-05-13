@@ -53,9 +53,7 @@ public class WaitingRoomController implements ScreenController, Client.GameUpdat
                 () -> waitingLabel.setText("In attesa di altri " + playersLeft + " giocatori...")
         );
 
-        if(playersLeft == 0) {
-            Utils.LOGGER.info("Waiting room: going to game screen");
+        if(playersLeft == 0)
             Client.getInstance().goToGame();
-        }
     }
 }

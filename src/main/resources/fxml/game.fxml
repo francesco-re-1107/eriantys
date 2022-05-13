@@ -35,9 +35,9 @@
                         <Insets bottom="15.0" left="15.0" right="15.0" top="15.0"/>
                     </padding>
                     <Label alignment="CENTER" text="Tu" GridPane.halignment="CENTER"/>
-                    <Label alignment="CENTER" text="Giocatore1" GridPane.columnIndex="1"
+                    <Label fx:id="player2NicknameLabel" alignment="CENTER" text="Giocatore1" GridPane.columnIndex="1"
                            GridPane.halignment="CENTER"/>
-                    <Label fx:id="player3BoardLabel" alignment="CENTER" text="Giocatore2" GridPane.columnIndex="2"
+                    <Label fx:id="player3NicknameLabel" alignment="CENTER" text="Giocatore2" GridPane.columnIndex="2"
                            GridPane.halignment="CENTER"/>
                     <AssistantCardView fx:id="myCard" maxWidth="100" maxHeight="200"
                                        GridPane.halignment="CENTER" GridPane.valignment="TOP"
@@ -208,7 +208,7 @@
             </StackPane>
         </AnchorPane>
     </SplitPane>
-    <VBox fx:id="assistantCardsLayer" id="card_selection_layer" alignment="CENTER" AnchorPane.leftAnchor="0" AnchorPane.rightAnchor="0"
+    <VBox fx:id="assistantCardsLayer" visible="false" managed="false" id="card_selection_layer" alignment="CENTER" AnchorPane.leftAnchor="0" AnchorPane.rightAnchor="0"
           AnchorPane.topAnchor="0" AnchorPane.bottomAnchor="0">
         <VBox fx:id="assistantCardsDeck" id="card_selection" maxWidth="700" maxHeight="400" spacing="30" alignment="CENTER">
             <Label text="Seleziona una carta"/>

@@ -1,5 +1,6 @@
 package it.polimi.ingsw.client.gui.controllers;
 
+import it.polimi.ingsw.Utils;
 import it.polimi.ingsw.client.Client;
 import it.polimi.ingsw.client.ScreenController;
 import it.polimi.ingsw.client.gui.InfoStrings;
@@ -7,10 +8,9 @@ import it.polimi.ingsw.client.gui.customviews.*;
 import it.polimi.ingsw.common.reducedmodel.ReducedGame;
 import it.polimi.ingsw.common.reducedmodel.ReducedIsland;
 import it.polimi.ingsw.common.reducedmodel.ReducedPlayer;
-import it.polimi.ingsw.server.model.AssistantCard;
-import it.polimi.ingsw.server.model.Student;
-import it.polimi.ingsw.server.model.StudentsContainer;
-import it.polimi.ingsw.server.model.Tower;
+import it.polimi.ingsw.common.requests.PlayAssistantCardRequest;
+import it.polimi.ingsw.server.model.*;
+import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;
@@ -19,8 +19,8 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 
-import java.util.Arrays;
-import java.util.HashMap;
+import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 
@@ -32,7 +32,9 @@ public class GameController implements ScreenController, Client.GameUpdateListen
     @FXML
     public HBox player3Board;
     @FXML
-    public Label player3BoardLabel;
+    public Label player2NicknameLabel;
+    @FXML
+    public Label player3NicknameLabel;
     @FXML
     public VBox player2Students;
     @FXML
@@ -85,118 +87,16 @@ public class GameController implements ScreenController, Client.GameUpdateListen
     private Label myCoinLabel;
     @FXML
     private TowerView player2Tower;
+    private ReducedGame lastGame;
 
     @FXML
     public void initialize() {
-        setVisibilityForNumberOfPlayers(3);
-        setVisibilityForExpertMode(true);
+        //...
+    }
 
-        setMyStudentsBoard(
-                new StudentsContainer()
-                        .addStudents(Student.GREEN, 2)
-                        .addStudents(Student.PINK, 1)
-                        .addStudents(Student.RED, 3),
-                new StudentsContainer()
-                        .addStudents(Student.GREEN, 2)
-                        .addStudents(Student.PINK, 1)
-                        .addStudents(Student.BLUE, 1)
-        );
-
-        var i = new ReducedIsland(
-                new StudentsContainer()
-                        .addStudents(Student.BLUE, 1)
-                        .addStudents(Student.RED, 1)
-                        .addStudents(Student.PINK, 1),
-                1,
-                0,
-                Tower.GREY,
-                false
-        );
-
-        var i2 = new ReducedIsland(
-                new StudentsContainer()
-                        .addStudents(Student.RED, 1)
-                        .addStudents(Student.YELLOW, 4),
-                5,
-                5,
-                Tower.WHITE,
-                false
-        );
-
-        var i3 = new ReducedIsland(
-                new StudentsContainer()
-                        .addStudents(Student.YELLOW, 2)
-                        .addStudents(Student.RED, 1)
-                        .addStudents(Student.GREEN, 1),
-                8,
-                8,
-                Tower.GREY,
-                false
-        );
-
-        var islands = Arrays.asList(i, i, i, i, i, i, i, i, i, i, i, i);
-
-        setIslands(islands);
-
-        characterCards.setDisable(true);
-
-        setMotherNatureIndex(4);
-        setMotherNaturePossibleSteps(4, 3);
-
-        setInfoString(InfoStrings.OTHER_PLAYER_WAIT_FOR_HIS_TURN, "player2");
-
-        var c = new StudentsContainer()
-                .addStudents(Student.BLUE, 1)
-                .addStudents(Student.GREEN, 1)
-                .addStudents(Student.PINK, 1);
-        var l = Arrays.asList(c, c, c);
-        setClouds(l);
-
-        setMyCoin(0);
-        setMyTowers(Tower.WHITE, 7);
-
-        var deck = new HashMap<AssistantCard, Boolean>();
-        for(var card : AssistantCard.getDefaultDeck()) {
-            deck.put(card, false);
-        }
-        deck.put(AssistantCard.getDefaultDeck().get(0), true);
-
-        setAssistantCardsDeck(deck);
-        assistantCardsLayer.setVisible(false);
-
-        setPlayer2Board(new ReducedPlayer(
-                "p2",
-                true,
-                new StudentsContainer()
-                        .addStudents(Student.BLUE, 1)
-                        .addStudents(Student.GREEN, 1)
-                        .addStudents(Student.PINK, 1),
-                new StudentsContainer()
-                        .addStudents(Student.BLUE, 1)
-                        .addStudents(Student.GREEN, 1)
-                        .addStudents(Student.PINK, 1),
-                6,
-                Tower.BLACK,
-                null,
-                0
-        ));
-
-        setPlayer3Board(new ReducedPlayer(
-                "p3",
-                true,
-                new StudentsContainer()
-                        .addStudents(Student.BLUE, 1)
-                        .addStudents(Student.GREEN, 1)
-                        .addStudents(Student.PINK, 1),
-                new StudentsContainer()
-                        .addStudents(Student.BLUE, 1)
-                        .addStudents(Student.GREEN, 1)
-                        .addStudents(Student.PINK, 1),
-                7,
-                Tower.GREY,
-                null,
-                0
-        ));
+    private void setAssistantDeckVisible(boolean visible) {
+        assistantCardsLayer.setVisible(visible);
+        assistantCardsLayer.setManaged(visible);
     }
 
     private void setAssistantCardsDeck(Map<AssistantCard, Boolean> deck) {
@@ -213,6 +113,13 @@ public class GameController implements ScreenController, Client.GameUpdateListen
             var acv = new AssistantCardView();
             acv.setCard(c);
             acv.setGrayedOut(deck.get(c));
+            acv.setOnMouseClicked(e -> {
+                Client.getInstance().forwardGameRequest(
+                        new PlayAssistantCardRequest(c),
+                        () -> setAssistantDeckVisible(false),
+                        err -> Utils.LOGGER.info("Error playing assistant card " + err.getMessage())
+                );
+            });
             acv.setDisable(deck.get(c));
             acv.setMaxWidth(120);
 
@@ -250,6 +157,7 @@ public class GameController implements ScreenController, Client.GameUpdateListen
     private void onLeavePressed(){
         Client.getInstance().leaveGame(e -> {
             //show error...
+            Utils.LOGGER.info("Error leaving game: " + e.getMessage());
         });
     }
 
@@ -293,17 +201,20 @@ public class GameController implements ScreenController, Client.GameUpdateListen
 
         myCoin.setVisible(expertMode);
         myCoin.setManaged(expertMode);
+
+        characterCards.setVisible(expertMode);
+        characterCards.setManaged(expertMode);
     }
 
     public void setVisibilityForNumberOfPlayers(int numberOfPlayers) {
         player3Board.setVisible(numberOfPlayers == 3);
         player3Board.setManaged(numberOfPlayers == 3);
 
-        player3BoardLabel.setVisible(numberOfPlayers == 3);
-        player3BoardLabel.setManaged(numberOfPlayers == 3);
+        player3NicknameLabel.setVisible(numberOfPlayers == 3);
+        player3NicknameLabel.setManaged(numberOfPlayers == 3);
     }
 
-    public void setMyStudentsBoard(StudentsContainer entrance, StudentsContainer school) {
+    public void setMyStudentsBoard(ReducedPlayer myPlayer, Map<Student, ReducedPlayer> professors) {
         myStudentsBoard.getChildren().clear();
 
         var l = new Label("Entrata");
@@ -315,16 +226,16 @@ public class GameController implements ScreenController, Client.GameUpdateListen
         myStudentsBoard.add(l, 2, 3);
 
         for(Student s : Student.values()) {
-            var sv = new StudentView(s);
+            var sv = new StudentView(s, myPlayer.equals(professors.get(s)));
             sv.setFitWidth(40);
             sv.setFitHeight(40);
             myStudentsBoard.add(sv, s.ordinal(), 0);
 
-            var entranceLabel = new Label(entrance.getCountForStudent(s) + "");
+            var entranceLabel = new Label(myPlayer.entrance().getCountForStudent(s) + "");
             entranceLabel.setId("my_students_board_label");
             myStudentsBoard.add(entranceLabel, s.ordinal(), 2);
 
-            var schoolLabel = new Label(school.getCountForStudent(s) + "");
+            var schoolLabel = new Label(myPlayer.school().getCountForStudent(s) + "");
             schoolLabel.setId("my_students_board_label");
             myStudentsBoard.add(schoolLabel, s.ordinal(), 4);
         }
@@ -345,21 +256,23 @@ public class GameController implements ScreenController, Client.GameUpdateListen
         myCoinLabel.setText(coin + "");
     }
 
-    public void setPlayer2Board(ReducedPlayer player2) {
-        setPlayerBoard(player2, player2Students, player2CoinLabel, player2TowerLabel, player2Tower);
+    public void setPlayer2Board(ReducedPlayer player2, Map<Student, ReducedPlayer> professors) {
+        setPlayerBoard(player2, professors, player2NicknameLabel, player2Students, player2CoinLabel, player2TowerLabel, player2Tower);
     }
 
-    public void setPlayer3Board(ReducedPlayer player3) {
-        setPlayerBoard(player3, player3Students, player3CoinLabel, player3TowerLabel, player3Tower);
+    public void setPlayer3Board(ReducedPlayer player3, Map<Student, ReducedPlayer> professors) {
+        setPlayerBoard(player3, professors, player3NicknameLabel, player3Students, player3CoinLabel, player3TowerLabel, player3Tower);
     }
 
-    private void setPlayerBoard(ReducedPlayer player, VBox playerStudents, Label playerCoinLabel, Label playerTowerLabel, TowerView playerTower) {
+    private void setPlayerBoard(ReducedPlayer player, Map<Student, ReducedPlayer> professors, Label nicknameLabel, VBox playerStudents, Label playerCoinLabel, Label playerTowerLabel, TowerView playerTower) {
         playerStudents.getChildren().clear();
+
+        nicknameLabel.setText(player.nickname());
 
         for(Student s : Student.values()) {
             var hbox = new HBox();
             hbox.setSpacing(5);
-            var sv = new StudentView(s);
+            var sv = new StudentView(s, player.equals(professors.get(s)));
             sv.setFitWidth(25);
             sv.setFitHeight(25);
 
@@ -392,6 +305,60 @@ public class GameController implements ScreenController, Client.GameUpdateListen
 
     @Override
     public void onGameUpdate(ReducedGame game) {
-        //...
+        Platform.runLater(() -> gameUpdate(game));
+    }
+
+    private void gameUpdate(ReducedGame game) {
+        lastGame = game;
+        var myPlayer = findMyPlayer(game);
+        var otherPlayers = new ArrayList<>(game.players());
+        otherPlayers.remove(myPlayer);
+        otherPlayers.sort(Comparator.comparing(ReducedPlayer::nickname));
+
+        setVisibilityForNumberOfPlayers(game.numberOfPlayers());
+        setVisibilityForExpertMode(game.expertMode());
+        setIslands(game.islands());
+        setMotherNatureIndex(game.motherNaturePosition());
+        setClouds(game.currentRound().clouds());
+        setMyBoard(myPlayer, game.currentProfessors());
+        setPlayer2Board(otherPlayers.get(0), game.currentProfessors());
+        if(game.numberOfPlayers() > 2)
+            setPlayer3Board(otherPlayers.get(1), game.currentProfessors());
+
+        /*switch(game.currentState()) {
+            case CREATED ->
+            case STARTED ->
+            case PAUSED ->
+            case FINISHED ->
+            case TERMINATED ->
+        }*/
+
+        var currentPlayer = game.currentRound().currentPlayer();
+
+        //my turn
+        if (currentPlayer.equals(myPlayer)){
+            if(game.currentRound().stage() instanceof Stage.Attack) { //attack
+
+            } else { //plan
+                setAssistantDeckVisible(true);
+            }
+        }else{
+            setInfoString(InfoStrings.OTHER_PLAYER_WAIT_FOR_HIS_TURN, currentPlayer.nickname());
+        }
+    }
+
+    private void setMyBoard(ReducedPlayer myPlayer, Map<Student, ReducedPlayer> professors) {
+        setMyStudentsBoard(myPlayer, professors);
+        setMyCoin(myPlayer.coins());
+        setMyTowers(myPlayer.towerColor(), myPlayer.towersCount());
+        setAssistantCardsDeck(myPlayer.deck());
+    }
+
+    private ReducedPlayer findMyPlayer(ReducedGame game) {
+        return game.players()
+                .stream()
+                .filter(p -> p.nickname().equals(Client.getInstance().getNickname()))
+                .findFirst()
+                .orElse(null);
     }
 }

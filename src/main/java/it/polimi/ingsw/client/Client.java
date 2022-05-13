@@ -27,6 +27,8 @@ public class Client implements CommunicatorListener {
     private List<GameUpdateListener> gameUpdateListeners;
     private ReducedGame lastGameUpdate;
 
+    private String nickname;
+
     /**
      * Instantiates a new CLI Client.
      */
@@ -109,9 +111,10 @@ public class Client implements CommunicatorListener {
     public void registerNickname(String nickname, Consumer<Throwable> errorListener) {
         communicator.send(new RegisterNicknameRequest(nickname),
                 r -> {
-                    if (r.isSuccessful())
+                    if (r.isSuccessful()) {
                         navigationManager.navigateTo(Screen.MAIN_MENU);
-                    else
+                        this.nickname = nickname;
+                    } else
                         errorListener.accept(r.getThrowable());
                 },
                 errorListener::accept
@@ -167,7 +170,7 @@ public class Client implements CommunicatorListener {
                     if (r.isSuccessful()) {
                         navigationManager.navigateTo(Screen.MAIN_MENU);
                         lastGameUpdate = null;
-                    }else
+                    } else
                         errorListener.accept(r.getThrowable());
                 },
                 errorListener::accept
@@ -176,7 +179,7 @@ public class Client implements CommunicatorListener {
 
     public void addGameUpdateListener(GameUpdateListener listener) {
         gameUpdateListeners.add(listener);
-        if(lastGameUpdate != null)
+        if (lastGameUpdate != null)
             listener.onGameUpdate(lastGameUpdate);
     }
 
@@ -193,12 +196,27 @@ public class Client implements CommunicatorListener {
                 new ListGamesRequest(),
                 r -> {
                     if (r.isSuccessful())
-                        listener.accept(((GamesListReply)r).getGamesList());
+                        listener.accept(((GamesListReply) r).getGamesList());
                     else
                         errorListener.accept(r.getThrowable());
                 },
                 errorListener::accept
         );
+    }
+
+    public void forwardGameRequest(GameRequest request, Runnable successListener, Consumer<Throwable> errorListener) {
+        communicator.send(request, r -> {
+                    if (r.isSuccessful())
+                        successListener.run();
+                    else
+                        errorListener.accept(r.getThrowable());
+                },
+                errorListener::accept
+        );
+    }
+
+    public String getNickname() {
+        return nickname;
     }
 
     public interface GameUpdateListener {

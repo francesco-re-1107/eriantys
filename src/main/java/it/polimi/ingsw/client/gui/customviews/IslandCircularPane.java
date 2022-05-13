@@ -29,6 +29,8 @@ public class IslandCircularPane extends Pane {
 
     @Override
     protected void layoutChildren() {
+        if(getChildren().size() == 0) return;
+
         var increment = 360 / getChildren().size();
         var degree = -90;
         var islandSize = 200.0;
