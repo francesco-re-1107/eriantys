@@ -17,6 +17,8 @@ import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;
+import javafx.scene.control.ContextMenu;
+import javafx.scene.control.CustomMenuItem;
 import javafx.scene.control.Label;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
@@ -91,7 +93,12 @@ public class GameController implements ScreenController, Client.GameUpdateListen
     private Label myCoinLabel;
     @FXML
     private TowerView player2Tower;
-    private ReducedGame lastGame;
+    private ReducedGame currentGame;
+
+    private StudentsContainer studentsPlacedInSchool;
+
+    private Map<Integer, StudentsContainer> studentsPlacedInIslands;
+
 
     @FXML
     public void initialize() {
@@ -175,9 +182,11 @@ public class GameController implements ScreenController, Client.GameUpdateListen
     }
 
     public void setMotherNaturePossibleSteps(int index, int steps) {
+        Utils.LOGGER.info("Setting mother nature steps for island " + index + " to " + steps);
         //reset previous possible steps
-        for (var iv : islandsPane.getChildren()) {
-            var mn = ((IslandView) iv).getMotherNatureView();
+        for (var n : islandsPane.getChildren()) {
+            var iv = (IslandView) n;
+            var mn = iv.getMotherNatureView();
             iv.setDisable(true);
 
             if (mn.getState() != MotherNatureView.State.ENABLED)
@@ -246,6 +255,8 @@ public class GameController implements ScreenController, Client.GameUpdateListen
             var sv = new StudentView(s, myPlayer.equals(professors.get(s)));
             sv.setFitWidth(40);
             sv.setFitHeight(40);
+            sv.setId("selectable_student_view");
+            sv.setOnMouseClicked(e -> placeStudentInSchool(s));
             myStudentsBoard.add(sv, s.ordinal(), 0);
 
             var entranceLabel = new Label(myPlayer.entrance().getCountForStudent(s) + "");
@@ -256,7 +267,68 @@ public class GameController implements ScreenController, Client.GameUpdateListen
             schoolLabel.setId("my_students_board_label");
             myStudentsBoard.add(schoolLabel, s.ordinal(), 4);
         }
+    }
 
+    private boolean checkIfAllStudentsPlaced(){
+        var count = 0;
+        count += studentsPlacedInSchool.getSize();
+        for(StudentsContainer sc : studentsPlacedInIslands.values())
+            count += sc.getSize();
+
+        var studentsToMove = currentGame.numberOfPlayers() == 2 ?
+                Constants.TwoPlayers.STUDENTS_TO_MOVE : Constants.ThreePlayers.STUDENTS_TO_MOVE;
+
+        if(count == studentsToMove) {
+            Client.getInstance()
+                    .forwardGameRequest(
+                            new PlaceStudentsRequest(
+                                    studentsPlacedInSchool,
+                                    studentsPlacedInIslands
+                            ),
+                            () -> {
+                            },
+                            err -> Utils.LOGGER.info("Error placing students: " + err)
+                    );
+            return true;
+        } else {
+            setInfoString(InfoStrings.MY_TURN_PLACE_STUDENTS, studentsToMove-count);
+            setMyStudentsBoard(currentGame.currentRound().currentPlayer(), currentGame.currentProfessors());
+        }
+        return false;
+    }
+
+    private void placeStudentInSchool(Student s) {
+        var myPlayer = currentGame.currentRound().currentPlayer();
+
+        if(myPlayer.entrance().getCountForStudent(s) <= 0) return;
+
+        myPlayer.entrance().removeStudent(s);
+        myPlayer.school().addStudent(s);
+
+        studentsPlacedInSchool.addStudent(s);
+
+        checkIfAllStudentsPlaced();
+    }
+
+    private void placeStudentInIsland(Student s, IslandView islandView) {
+        var myPlayer = currentGame.currentRound().currentPlayer();
+
+        if(myPlayer.entrance().getCountForStudent(s) <= 0) return;
+
+        myPlayer.entrance().removeStudent(s);
+
+        //store student in island
+        var index = islandView.getIndex();
+        var oldContainer = studentsPlacedInIslands.get(index);
+        if(oldContainer != null)
+            oldContainer.addStudent(s);
+        else
+            studentsPlacedInIslands.put(index, new StudentsContainer().addStudent(s));
+
+        //update island view
+        islandView.addStudent(s);
+
+        checkIfAllStudentsPlaced();
     }
 
     public void setIslands(List<ReducedIsland> islands) {
@@ -321,7 +393,7 @@ public class GameController implements ScreenController, Client.GameUpdateListen
     }
 
     private void gameUpdate(ReducedGame game) {
-        lastGame = game;
+        currentGame = game;
         var myPlayer = findMyPlayer(game);
         var otherPlayers = new ArrayList<>(game.players());
         otherPlayers.remove(myPlayer);
@@ -329,6 +401,10 @@ public class GameController implements ScreenController, Client.GameUpdateListen
 
         characterCards.setDisable(true);
         cloudsPane.setDisable(true);
+        myStudentsBoard.setDisable(true);
+        studentsPlacedInSchool = new StudentsContainer();
+        studentsPlacedInIslands = new HashMap<>();
+
         setVisibilityForNumberOfPlayers(game.numberOfPlayers());
         setVisibilityForExpertMode(game.expertMode());
         setIslands(game.islands());
@@ -388,16 +464,8 @@ public class GameController implements ScreenController, Client.GameUpdateListen
                                         Constants.ThreePlayers.STUDENTS_TO_MOVE;
 
                         setInfoString(InfoStrings.MY_TURN_PLACE_STUDENTS, studentsToMove);
-                        //simulate
-                        Client.getInstance()
-                                .forwardGameRequest(
-                                        new PlaceStudentsRequest(
-                                                new RandomizedStudentsContainer(myPlayer.entrance()).pickManyRandom(studentsToMove),
-                                                new HashMap<>()
-                                        ),
-                                        () -> {},
-                                        err -> Utils.LOGGER.info("Error placing students: " + err)
-                                );
+                        myStudentsBoard.setDisable(false);
+                        setIslandsForPlacingStudents();
                     }
                     case STUDENTS_PLACED -> {
                         //play character card or move mother nature
@@ -426,6 +494,30 @@ public class GameController implements ScreenController, Client.GameUpdateListen
             }
         } else {
             setInfoString(InfoStrings.OTHER_PLAYER_WAIT_FOR_HIS_TURN, currentPlayer.nickname());
+        }
+    }
+
+    private void setIslandsForPlacingStudents() {
+        for (var n : islandsPane.getChildren()) {
+            var iv = (IslandView) n;
+            iv.setDisable(false);
+
+
+            iv.setOnMouseClicked(e -> {
+                final ContextMenu contextMenu = new ContextMenu();
+                for(Student s : Student.values()) {
+                    if(currentGame.currentRound().currentPlayer().entrance().getCountForStudent(s) <= 0)
+                        continue;
+
+                    var sv = new StudentView(s);
+                    sv.setFitWidth(30);
+                    sv.setFitHeight(30);
+                    var mi = new CustomMenuItem(sv, true);
+                    contextMenu.getItems().add(mi);
+                    mi.setOnAction(event -> placeStudentInIsland(s, iv));
+                }
+                contextMenu.show(iv, e.getScreenX(), e.getScreenY());
+            });
         }
     }
 

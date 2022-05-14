@@ -48,7 +48,6 @@ public class GameCreationMenuController implements ScreenController {
     }
 
     public void createGame() {
-        Utils.LOGGER.info("Creating game with " + numberOfPlayers + " players and " + (expertMode ? "expert" : "simple") + " mode");
         Client.getInstance().createGame(numberOfPlayers, expertMode, e -> {
             Utils.LOGGER.info(e.getMessage());
             //show error message

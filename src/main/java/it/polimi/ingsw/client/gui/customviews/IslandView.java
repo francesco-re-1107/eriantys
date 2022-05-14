@@ -18,6 +18,8 @@ public class IslandView extends StackPane {
 
     private ReducedIsland island;
 
+    private final int index;
+
     private final VBox vbox;
 
     private final double size;
@@ -52,6 +54,7 @@ public class IslandView extends StackPane {
     public IslandView(ReducedIsland island, int index) {
         super();
         this.island = island;
+        this.index = index;
 
         vbox = new VBox();
 
@@ -130,7 +133,7 @@ public class IslandView extends StackPane {
 
         var studentsPerRow = 5 + Math.floor(island.size() / 2.5);
         var sv = new StudentView(student);
-        sv.setFitWidth(Math.min(27, size/8));
+        sv.setFitWidth(Math.min(27, size/6));
         studentsViewCurrentHBox.getChildren().add(sv);
 
         if(studentsViewCurrentHBox.getChildren().size() % studentsPerRow == 0) {
@@ -195,5 +198,9 @@ public class IslandView extends StackPane {
 
     public ReducedIsland getIsland() {
         return island;
+    }
+
+    public int getIndex() {
+        return index;
     }
 }

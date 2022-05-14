@@ -1,6 +1,7 @@
 package it.polimi.ingsw.client.gui.customviews;
 
 import it.polimi.ingsw.server.model.Student;
+import javafx.scene.effect.Glow;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 
@@ -64,5 +65,17 @@ public class StudentView extends ImageView {
             return professorsImages.get(student);
         else
             return studentsImages.get(student);
+    }
+
+    public void setSelected(boolean selected) {
+        if(selected) {
+            setEffect(new Glow(0.2));
+            setScaleX(1.3);
+            setScaleY(1.3);
+        } else {
+            setEffect(null);
+            setScaleX(1.0);
+            setScaleY(1.0);
+        }
     }
 }

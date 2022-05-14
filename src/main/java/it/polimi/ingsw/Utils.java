@@ -85,11 +85,8 @@ public class Utils {
         var nick = new StringBuilder();
         nick.append(part1);
         nick.append(part2);
-
-        //fill with random numbers
-        while(nick.length() < Constants.MAX_NICKNAME_LENGTH) {
-            nick.append(String.valueOf(Math.abs(r.nextInt())).charAt(0));
-        }
+        //append a random digit
+        nick.append(r.nextInt(10));
 
         return nick.toString();
     }

@@ -1,7 +1,6 @@
 package it.polimi.ingsw.client.gui.customviews;
 
 import it.polimi.ingsw.common.reducedmodel.ReducedIsland;
-import it.polimi.ingsw.server.model.Student;
 import javafx.geometry.HPos;
 import javafx.geometry.VPos;
 import javafx.scene.Node;
@@ -57,8 +56,6 @@ public class IslandCircularPane extends Pane {
     public void addIsland(ReducedIsland i) {
         islands.add(i);
         var iv = new IslandView(i, getChildren().size());
-
-        iv.setOnMouseClicked(event -> iv.addStudent(Student.RED));
 
         getChildren().add(iv);
     }
