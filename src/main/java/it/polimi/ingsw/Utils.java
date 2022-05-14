@@ -82,6 +82,15 @@ public class Utils {
         var part1 = Constants.NICKNAMES_PART_1.get(r.nextInt(Constants.NICKNAMES_PART_1.size()));
         var part2 = Constants.NICKNAMES_PART_2.get(r.nextInt(Constants.NICKNAMES_PART_2.size()));
 
-        return part1 + part2;
+        var nick = new StringBuilder();
+        nick.append(part1);
+        nick.append(part2);
+
+        //fill with random numbers
+        while(nick.length() < Constants.MAX_NICKNAME_LENGTH) {
+            nick.append(String.valueOf(Math.abs(r.nextInt())).charAt(0));
+        }
+
+        return nick.toString();
     }
 }

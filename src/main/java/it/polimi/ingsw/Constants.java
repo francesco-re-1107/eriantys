@@ -51,7 +51,7 @@ public final class Constants {
     public static final long GAMES_LIST_REFRESH_INTERVAL = 5000;
     public static final int MAX_NICKNAME_LENGTH = 20;
     public static final List<String> NICKNAMES_PART_1 = List.of(
-            "attractive",
+            "Attractive",
             "Bald",
             "Beautiful",
             "Chubby",

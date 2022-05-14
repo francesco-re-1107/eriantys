@@ -416,7 +416,9 @@ public class GameController implements ScreenController, Client.GameUpdateListen
                         setInfoString(InfoStrings.MY_TURN_SELECT_CLOUD);
                         cloudsPane.setDisable(false);
                     }
-                    //case SELECTED_CLOUD ->
+                    case SELECTED_CLOUD -> {
+                        Utils.LOGGER.info("This stage should not be reached");
+                    }
                 }
             } else { //plan
                 setInfoString(InfoStrings.MY_TURN_PLAY_ASSISTANT_CARD);

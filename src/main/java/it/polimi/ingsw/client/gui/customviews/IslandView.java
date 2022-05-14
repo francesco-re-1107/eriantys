@@ -12,7 +12,6 @@ import javafx.scene.layout.*;
 import javafx.util.Duration;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 public class IslandView extends StackPane {
@@ -40,19 +39,17 @@ public class IslandView extends StackPane {
     public IslandView() {
         this(
                 new ReducedIsland(
-                        new StudentsContainer()
-                                .addStudents(Student.GREEN, 1)
-                                .addStudents(Student.RED, 1)
-                                .addStudents(Student.PINK, 1),
+                        new StudentsContainer(),
                         1,
                         0,
                         Tower.GREY,
                         false
-                )
+                ),
+                0
         );
     }
 
-    public IslandView(ReducedIsland island) {
+    public IslandView(ReducedIsland island, int index) {
         super();
         this.island = island;
 
@@ -78,7 +75,7 @@ public class IslandView extends StackPane {
 
         setId("island");
 
-        setupBackground();
+        setupBackground(index);
 
         setupTowersView();
         setupStudents();
@@ -170,10 +167,9 @@ public class IslandView extends StackPane {
         getChildren().add(noEntry);
     }
 
-    private void setupBackground() {
-        //get a random image
-        Collections.shuffle(islandImages);
-        var image = islandImages.get(0);
+    private void setupBackground(int index) {
+        //very strange formula to get get the same image for the same index but having them distributed in a strange way
+        var image = islandImages.get((int)Math.abs(Math.cos(index) * 10) % islandImages.size());
 
         BackgroundSize backgroundSize = new BackgroundSize(size, size, true, true, true, true);
         BackgroundImage backgroundImage = new BackgroundImage(image, BackgroundRepeat.REPEAT, BackgroundRepeat.NO_REPEAT, BackgroundPosition.CENTER, backgroundSize);

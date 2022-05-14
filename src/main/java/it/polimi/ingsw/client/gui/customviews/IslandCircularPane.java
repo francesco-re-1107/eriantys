@@ -56,7 +56,7 @@ public class IslandCircularPane extends Pane {
 
     public void addIsland(ReducedIsland i) {
         islands.add(i);
-        var iv = new IslandView(i);
+        var iv = new IslandView(i, getChildren().size());
 
         iv.setOnMouseClicked(event -> iv.addStudent(Student.RED));
 
