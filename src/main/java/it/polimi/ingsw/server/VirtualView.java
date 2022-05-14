@@ -90,7 +90,7 @@ public class VirtualView implements ServerClientCommunicator.CommunicatorListene
             if (request instanceof RegisterNicknameRequest r) {
                 if(isRegistered)
                     throw new InvalidOperationException("Client already registered");
-                gameController = controller.registerNickname(r.getNickname(), this);
+                setGameController(controller.registerNickname(r.getNickname(), this));
                 isRegistered = true;
                 nickname = r.getNickname();
                 communicator.send(new AckReply(rId));
@@ -102,17 +102,14 @@ public class VirtualView implements ServerClientCommunicator.CommunicatorListene
                 if(isInGame)
                     throw new InvalidOperationException("Client already in game");
                 //game joined -> new game controller
-                isInGame = true;
-                gameController = controller.joinGame(nickname, r.getUUID());
-                gameController.setOnGameUpdateListener(this);
+                setGameController(controller.joinGame(nickname, r.getUUID()));
                 communicator.send(new AckReply(rId));
             } else if (request instanceof CreateGameRequest r) {
                 if(isInGame)
                     throw new InvalidOperationException("Client already in game");
                 //game created -> new game controller
                 isInGame = true;
-                gameController = controller.createGame(nickname, r.getNumberOfPlayers(), r.isExpertMode());
-                gameController.setOnGameUpdateListener(this);
+                setGameController(controller.createGame(nickname, r.getNumberOfPlayers(), r.isExpertMode()));
                 communicator.send(new AckReply(rId));
             } else if (request instanceof GameRequest r) {
                 if(!isInGame)
@@ -121,6 +118,17 @@ public class VirtualView implements ServerClientCommunicator.CommunicatorListene
             }
         } catch (Exception | Error e) {
             communicator.send(new NackReply(rId, e));
+        }
+    }
+
+    private void setGameController(GameController gc) {
+        if(gc == null){
+            gameController = null;
+            isInGame = false;
+        } else {
+            gameController = gc;
+            gameController.setOnGameUpdateListener(this);
+            isInGame = true;
         }
     }
 
@@ -144,7 +152,7 @@ public class VirtualView implements ServerClientCommunicator.CommunicatorListene
             gameController.selectCloud(r.getCloud());
         } else if (request instanceof LeaveGameRequest) {
             gameController.leaveGame();
-            isInGame = false;
+            setGameController(null);
         }
         //if no exception is thrown send an ack
         communicator.send(new AckReply(request.getId()));
@@ -181,8 +189,7 @@ public class VirtualView implements ServerClientCommunicator.CommunicatorListene
 
         //game ended
         if(state == Game.State.TERMINATED || state == Game.State.FINISHED) {
-            this.gameController = null; //this game was finished
-            this.isInGame = false;
+            setGameController(null);
         }
     }
 }
