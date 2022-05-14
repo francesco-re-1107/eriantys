@@ -465,7 +465,11 @@ public class Game implements Serializable {
         inIsland.forEach(player::addStudentsToIsland);
 
         updateProfessors();
-        currentRound.setAttackSubstage(Stage.Attack.STUDENTS_PLACED);
+
+        if(expertMode)
+            currentRound.setAttackSubstage(Stage.Attack.STUDENTS_PLACED);
+        else
+            currentRound.setAttackSubstage(Stage.Attack.CARD_PLAYED);
 
         notifyUpdate();
     }
