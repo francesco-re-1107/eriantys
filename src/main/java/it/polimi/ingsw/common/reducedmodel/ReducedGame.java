@@ -24,7 +24,7 @@ public record ReducedGame(
         int studentsBagSize,
         ReducedRound currentRound,
         Map<String, Integer> characterCards,
-        Map<Student, ReducedPlayer> currentProfessors,
+        Map<Student, String> currentProfessors, //student -> nickname
         Game.State currentState,
         ReducedPlayer winner
 ) implements Serializable {
@@ -65,7 +65,7 @@ public record ReducedGame(
                         .stream()
                         .collect(Collectors.toMap(
                                 Map.Entry::getKey,
-                                e -> ReducedPlayer.fromPlayer(e.getValue())
+                                e -> e.getValue().getNickname()
                         )),
                 g.getGameState(),
                 winner

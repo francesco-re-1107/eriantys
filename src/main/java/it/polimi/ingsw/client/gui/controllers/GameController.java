@@ -98,7 +98,7 @@ public class GameController implements ScreenController, Client.GameUpdateListen
     private StudentsContainer studentsPlacedInSchool;
 
     private Map<Integer, StudentsContainer> studentsPlacedInIslands;
-
+    private String myNickname;
 
     @FXML
     public void initialize() {
@@ -239,7 +239,7 @@ public class GameController implements ScreenController, Client.GameUpdateListen
         player3NicknameLabel.setManaged(numberOfPlayers == 3);
     }
 
-    public void setMyStudentsBoard(ReducedPlayer myPlayer, Map<Student, ReducedPlayer> professors) {
+    public void setMyStudentsBoard(ReducedPlayer myPlayer, Map<Student, String> professors) {
         myStudentsBoard.getChildren().clear();
 
         var l = new Label("Entrata");
@@ -251,7 +251,7 @@ public class GameController implements ScreenController, Client.GameUpdateListen
         myStudentsBoard.add(l, 2, 3);
 
         for (Student s : Student.values()) {
-            var sv = new StudentView(s, myPlayer.equals(professors.get(s)));
+            var sv = new StudentView(s, myNickname.equals(professors.get(s)));
             sv.setFitWidth(40);
             sv.setFitHeight(40);
             sv.setId("selectable_student_view");
@@ -339,15 +339,15 @@ public class GameController implements ScreenController, Client.GameUpdateListen
         myCoinLabel.setText(coin + "");
     }
 
-    public void setPlayer2Board(ReducedPlayer player2, Map<Student, ReducedPlayer> professors) {
+    public void setPlayer2Board(ReducedPlayer player2, Map<Student, String> professors) {
         setPlayerBoard(player2, professors, player2NicknameLabel, player2Students, player2CoinLabel, player2TowerLabel, player2Tower);
     }
 
-    public void setPlayer3Board(ReducedPlayer player3, Map<Student, ReducedPlayer> professors) {
+    public void setPlayer3Board(ReducedPlayer player3, Map<Student, String> professors) {
         setPlayerBoard(player3, professors, player3NicknameLabel, player3Students, player3CoinLabel, player3TowerLabel, player3Tower);
     }
 
-    private void setPlayerBoard(ReducedPlayer player, Map<Student, ReducedPlayer> professors, Label nicknameLabel, VBox playerStudents, Label playerCoinLabel, Label playerTowerLabel, TowerView playerTower) {
+    private void setPlayerBoard(ReducedPlayer player, Map<Student, String> professors, Label nicknameLabel, VBox playerStudents, Label playerCoinLabel, Label playerTowerLabel, TowerView playerTower) {
         playerStudents.getChildren().clear();
 
         nicknameLabel.setText(player.nickname());
@@ -355,7 +355,7 @@ public class GameController implements ScreenController, Client.GameUpdateListen
         for (Student s : Student.values()) {
             var hbox = new HBox();
             hbox.setSpacing(5);
-            var sv = new StudentView(s, player.equals(professors.get(s)));
+            var sv = new StudentView(s, myNickname.equals(professors.get(s)));
             sv.setFitWidth(25);
             sv.setFitHeight(25);
 
@@ -379,6 +379,7 @@ public class GameController implements ScreenController, Client.GameUpdateListen
     @Override
     public void onShow() {
         Client.getInstance().addGameUpdateListener(this);
+        myNickname = Client.getInstance().getNickname();
     }
 
     @Override
@@ -520,7 +521,7 @@ public class GameController implements ScreenController, Client.GameUpdateListen
         }
     }
 
-    private void setMyBoard(ReducedPlayer myPlayer, Map<Student, ReducedPlayer> professors) {
+    private void setMyBoard(ReducedPlayer myPlayer, Map<Student, String> professors) {
         setMyStudentsBoard(myPlayer, professors);
         setMyCoin(myPlayer.coins());
         setMyTowers(myPlayer.towerColor(), myPlayer.towersCount());
@@ -530,7 +531,7 @@ public class GameController implements ScreenController, Client.GameUpdateListen
     private ReducedPlayer findMyPlayer(ReducedGame game) {
         return game.players()
                 .stream()
-                .filter(p -> p.nickname().equals(Client.getInstance().getNickname()))
+                .filter(p -> p.nickname().equals(myNickname))
                 .findFirst()
                 .orElse(null);
     }

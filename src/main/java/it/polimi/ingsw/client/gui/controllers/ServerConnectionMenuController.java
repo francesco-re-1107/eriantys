@@ -67,11 +67,6 @@ public class ServerConnectionMenuController implements ScreenController {
 
     @Override
     public void onShow() {
-        //nothing to do
-        hostTextField.clear();
-        portTextField.clear();
-        nicknameTextField.clear();
-
         connectionBox.requestFocus();
         showConnectionBox();
     }
