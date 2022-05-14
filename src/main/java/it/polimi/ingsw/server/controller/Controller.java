@@ -64,8 +64,9 @@ public class Controller implements Game.GameUpdateListener {
             if (foundGame != null) {
                 var foundPlayer = findPlayerInGame(nickname, foundGame);
 
+                var gc = new GameController(foundGame, foundPlayer);
                 foundGame.setPlayerReconnected(foundPlayer);
-                return new GameController(foundGame, foundPlayer);
+                return gc;
             }
         } else {
             if (!Utils.isValidNickname(nickname))

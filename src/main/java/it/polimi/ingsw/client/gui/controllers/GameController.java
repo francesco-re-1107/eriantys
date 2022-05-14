@@ -182,7 +182,6 @@ public class GameController implements ScreenController, Client.GameUpdateListen
     }
 
     public void setMotherNaturePossibleSteps(int index, int steps) {
-        Utils.LOGGER.info("Setting mother nature steps for island " + index + " to " + steps);
         //reset previous possible steps
         for (var n : islandsPane.getChildren()) {
             var iv = (IslandView) n;

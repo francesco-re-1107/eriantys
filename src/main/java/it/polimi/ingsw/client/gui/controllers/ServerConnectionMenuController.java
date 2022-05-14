@@ -89,6 +89,9 @@ public class ServerConnectionMenuController implements ScreenController {
         registrationBox.setVisible(true);
         registrationBox.setManaged(true);
 
+        connectButton.setDisable(false);
+        registerButton.setDisable(false);
+
         registrationBox.requestFocus();
     }
 

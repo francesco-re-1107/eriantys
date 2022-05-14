@@ -72,6 +72,13 @@ public class Client implements CommunicatorListener {
             lastGameUpdate = gu.getGame();
             new ArrayList<>(gameUpdateListeners)
                     .forEach(l -> l.onGameUpdate(gu.getGame()));
+
+            Utils.LOGGER.info("Received game update, now in " + navigationManager.getCurrentScreen());
+
+            //if there was a game played, go to the game screen
+            if(navigationManager.getCurrentScreen() == Screen.SERVER_CONNECTION_MENU ||
+                navigationManager.getCurrentScreen() == Screen.MAIN_MENU)
+                navigationManager.navigateTo(Screen.GAME);
         }
 
     }

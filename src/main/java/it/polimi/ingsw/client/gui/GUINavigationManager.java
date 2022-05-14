@@ -75,6 +75,13 @@ public class GUINavigationManager implements NavigationManager {
     public void navigateTo(Screen destination, boolean withBackStack) {
         if(currentlyNavigating) return;
 
+        //just reset the screen if we're already on it
+        if(destination == currentScreen) {
+            screenControllers.get(destination).onHide();
+            screenControllers.get(destination).onShow();
+            return;
+        }
+
         Utils.LOGGER.info("Navigate to destination " + destination.name());
 
         var lastScreen = currentScreen;
@@ -151,6 +158,11 @@ public class GUINavigationManager implements NavigationManager {
         stage.close();
         Platform.exit();
         System.exit(0);
+    }
+
+    @Override
+    public Screen getCurrentScreen() {
+        return currentScreen;
     }
 
     private record BackstackEntry(Screen screen, Parent root) { }

@@ -11,4 +11,6 @@ public interface NavigationManager {
     void goBack();
 
     void exitApp();
+
+    Screen getCurrentScreen();
 }
