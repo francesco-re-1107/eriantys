@@ -1,13 +1,14 @@
 package it.polimi.ingsw.client.gui.controllers;
 
 import it.polimi.ingsw.Constants;
-import it.polimi.ingsw.Utils;
 import it.polimi.ingsw.client.Client;
 import it.polimi.ingsw.client.ScreenController;
 import it.polimi.ingsw.common.exceptions.DuplicatedNicknameException;
 import it.polimi.ingsw.common.exceptions.NicknameNotValidException;
+import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
+import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.VBox;
 
@@ -17,6 +18,10 @@ public class ServerConnectionMenuController implements ScreenController {
     public VBox connectionBox;
     @FXML
     public VBox registrationBox;
+    @FXML
+    public Label connectionError;
+    @FXML
+    public Label registrationError;
     @FXML
     private TextField hostTextField;
     @FXML
@@ -56,10 +61,6 @@ public class ServerConnectionMenuController implements ScreenController {
                 );
     }
 
-    private void showConnectionError(String message) {
-        Utils.LOGGER.info(message);
-    }
-
     @Override
     public void onCreate() {
         //nothing to do
@@ -68,6 +69,8 @@ public class ServerConnectionMenuController implements ScreenController {
     @Override
     public void onShow() {
         connectionBox.requestFocus();
+        connectionError.setVisible(false);
+        registrationError.setVisible(false);
         showConnectionBox();
     }
 
@@ -110,7 +113,17 @@ public class ServerConnectionMenuController implements ScreenController {
     }
 
     private void showRegistrationError(String message) {
-        Utils.LOGGER.info(message);
+        Platform.runLater(() -> {
+            registrationError.setVisible(true);
+            registrationError.setText(message);
+        });
+    }
+
+    private void showConnectionError(String message) {
+        Platform.runLater(() -> {
+            connectionError.setVisible(true);
+            connectionError.setText(message);
+        });
     }
 
     public void onLeavePressed() {

@@ -82,3 +82,9 @@
     -fx-font-family: 'Recursive Casual';
     -fx-font-size: 24px;
 }
+
+#error_label {
+    -fx-text-fill: #f00;
+    -fx-font-size: 24px;
+    -fx-font-family: 'Recursive Casual';
+}

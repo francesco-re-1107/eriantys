@@ -19,6 +19,8 @@
           AnchorPane.rightAnchor="100.0" spacing="30">
 
         <VBox fx:id="connectionBox" spacing="30" alignment="CENTER">
+            <Label fx:id="connectionError" id="error_label" text=""/>
+
             <TextField fx:id="hostTextField" prefHeight="70.0" maxWidth="450.0" alignment="CENTER" promptText="Hostname [localhost]"/>
 
             <TextField fx:id="portTextField" prefHeight="70.0" maxWidth="450.0" alignment="CENTER" promptText="Porta [6001]"/>
@@ -28,6 +30,7 @@
         </VBox>
 
         <VBox fx:id="registrationBox" spacing="30" alignment="CENTER">
+            <Label fx:id="registrationError" id="error_label" text=""/>
             <TextField fx:id="nicknameTextField" prefHeight="70.0" maxWidth="450.0" alignment="CENTER" promptText="Nickname [casuale]"/>
 
             <Button fx:id="registerButton" onMouseClicked="#register" prefHeight="70.0" prefWidth="450.0"
