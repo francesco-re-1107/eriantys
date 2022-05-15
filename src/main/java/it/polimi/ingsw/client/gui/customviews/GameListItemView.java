@@ -10,7 +10,6 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.HBox;
-import javafx.scene.paint.Paint;
 
 import java.util.UUID;
 
@@ -42,9 +41,13 @@ public class GameListItemView extends HBox {
         playerIcon.setPreserveRatio(true);
 
         playersLabel = new Label(item.currentNumberOfPlayers() + "/" + item.numberOfPlayers());
+
         expertLabel = new Label(item.expertMode() ? "ESPERTI" : "SEMPLICE");
-        expertLabel.setTextFill(Paint.valueOf(item.expertMode() ? "#F00" : "#FFF"));
+        expertLabel.setId(item.expertMode() ? "expert_label_expert" : "expert_label_simple");
+
         joinButton = new Button("UNISCITI");
+
+        getStylesheets().add(getClass().getResource("/css/game_list_item.css").toExternalForm());
 
         getChildren().addAll(playerIcon, playersLabel, expertLabel, joinButton);
     }

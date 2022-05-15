@@ -1,0 +1,22 @@
+@font-face {
+    src: url('../fonts/Recursive_Casual-Bold.ttf');
+}
+
+@font-face {
+    src: url('../fonts/MysteryQuest-Regular.ttf');
+}
+
+#game_title_popup {
+    -fx-background-color: rgba(0, 0, 0, 0.9);
+}
+
+#title {
+    -fx-font-family: 'Mystery Quest';
+    -fx-font-size: 170px;
+}
+
+#description {
+    -fx-font-family: 'Recursive Casual';
+    -fx-font-size: 22px;
+    -fx-text-fill: #fff;
+}

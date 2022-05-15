@@ -1,0 +1,15 @@
+#game_list_item {
+    -fx-text-fill: #fff;
+}
+
+#expert_label_simple {
+    -fx-text-fill: #fff;
+    -fx-min-width: 120px;
+    -fx-alignment: center;
+}
+
+#expert_label_expert {
+    -fx-text-fill: #f2440f;
+    -fx-min-width: 120px;
+    -fx-alignment: center;
+}

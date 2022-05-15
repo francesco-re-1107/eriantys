@@ -25,6 +25,7 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class GameController implements ScreenController, Client.GameUpdateListener {
     @FXML
@@ -57,6 +58,8 @@ public class GameController implements ScreenController, Client.GameUpdateListen
     public VBox assistantCardsLayer;
     @FXML
     public Button hideAssistantCardsDeck;
+    @FXML
+    public GameTitlePopupView gameTitlePopup;
     @FXML
     Button leaveButton;
     @FXML
@@ -355,7 +358,7 @@ public class GameController implements ScreenController, Client.GameUpdateListen
         for (Student s : Student.values()) {
             var hbox = new HBox();
             hbox.setSpacing(5);
-            var sv = new StudentView(s, myNickname.equals(professors.get(s)));
+            var sv = new StudentView(s, player.nickname().equals(professors.get(s)));
             sv.setFitWidth(25);
             sv.setFitHeight(25);
 
@@ -438,13 +441,45 @@ public class GameController implements ScreenController, Client.GameUpdateListen
             player3Card.setCard(cardPlayedByPlayer3);
         }
 
-        /*switch(game.currentState()) {
-            case CREATED ->
-            case STARTED ->
-            case PAUSED ->
-            case FINISHED ->
-            case TERMINATED ->
-        }*/
+        switch(game.currentState()) {
+            case CREATED, STARTED -> gameTitlePopup.hide();
+            case PAUSED -> {
+                var offlinePlayers = "Players offline: " +
+                        game.players()
+                                .stream()
+                                .filter(p -> !p.isConnected())
+                                .map(ReducedPlayer::nickname)
+                                .collect(Collectors.joining(", "));
+
+                gameTitlePopup.setState(GameTitlePopupView.State.PAUSE, offlinePlayers);
+                gameTitlePopup.show();
+            }
+            case FINISHED -> {
+                if(game.winner() == null) { //tie
+                    gameTitlePopup.setState(GameTitlePopupView.State.TIE, "");
+                } else {
+                    if(game.winner().nickname().equals(myNickname)) {
+                        gameTitlePopup.setState(GameTitlePopupView.State.WIN, "");
+                    } else {
+                        gameTitlePopup.setState(GameTitlePopupView.State.LOSE, game.winner().nickname()+ " ha vinto");
+                    }
+                }
+                gameTitlePopup.show();
+            }
+            case TERMINATED -> {
+                //TODO: implement
+                /*var offlinePlayers = "Players offline: " +
+                        game.players()
+                                .stream()
+                                .filter(p -> !p.isConnected())
+                                .map(ReducedPlayer::nickname)
+                                .collect(Collectors.joining(","));
+
+                gameTitlePopup.setState(GameTitlePopupView.State., offlinePlayers);
+                */
+                gameTitlePopup.show();
+            }
+        }
 
         var currentPlayer = game.currentRound().currentPlayer();
 
@@ -501,7 +536,6 @@ public class GameController implements ScreenController, Client.GameUpdateListen
         for (var n : islandsPane.getChildren()) {
             var iv = (IslandView) n;
             iv.setDisable(false);
-
 
             iv.setOnMouseClicked(e -> {
                 final ContextMenu contextMenu = new ContextMenu();
