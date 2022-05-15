@@ -108,7 +108,6 @@ public class VirtualView implements ServerClientCommunicator.CommunicatorListene
                 if(isInGame)
                     throw new InvalidOperationException("Client already in game");
                 //game created -> new game controller
-                isInGame = true;
                 setGameController(controller.createGame(nickname, r.getNumberOfPlayers(), r.isExpertMode()));
                 communicator.send(new AckReply(rId));
             } else if (request instanceof GameRequest r) {
