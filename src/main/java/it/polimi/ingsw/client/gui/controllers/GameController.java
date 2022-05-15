@@ -15,7 +15,6 @@ import it.polimi.ingsw.common.requests.PlayAssistantCardRequest;
 import it.polimi.ingsw.server.model.*;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
-import javafx.geometry.Pos;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.layout.GridPane;
@@ -51,7 +50,7 @@ public class GameController implements ScreenController, Client.GameUpdateListen
     @FXML
     public CharacterCardView characterCard3;
     @FXML
-    public VBox assistantCardsDeck;
+    public AssistantCardDeckView assistantCardsDeck;
     @FXML
     public VBox assistantCardsLayer;
     @FXML
@@ -114,40 +113,12 @@ public class GameController implements ScreenController, Client.GameUpdateListen
     }
 
     private void setAssistantCardsDeck(Map<AssistantCard, Boolean> deck) {
-        assistantCardsDeck.getChildren().clear();
-        assistantCardsDeck.getChildren().add(new Label("Seleziona una carta"));
-
-        var hbox = new HBox();
-        hbox.setSpacing(30);
-        hbox.setAlignment(Pos.CENTER);
-
-        assistantCardsDeck.getChildren().add(hbox);
-
-        for (var c : AssistantCard.getDefaultDeck()) {
-            var acv = new AssistantCardView();
-            acv.setCard(c);
-            acv.setGrayedOut(deck.get(c));
-            acv.setOnMouseClicked(e -> {
-                Client.getInstance().forwardGameRequest(
-                        new PlayAssistantCardRequest(c),
-                        () -> setAssistantDeckVisible(false),
-                        err -> Utils.LOGGER.info("Error playing assistant card " + err.getMessage())
-                );
-            });
-            acv.setDisable(deck.get(c));
-            acv.setMaxWidth(120);
-
-            hbox.getChildren().add(acv);
-
-            if (AssistantCard.getDefaultDeck().indexOf(c) == 4) {
-                hbox = new HBox();
-                hbox.setSpacing(30);
-                hbox.setAlignment(Pos.CENTER);
-
-                assistantCardsDeck.getChildren().add(hbox);
-            }
-        }
-
+        assistantCardsDeck.setDeck(deck);
+        assistantCardsDeck.setOnCardSelected(card -> Client.getInstance().forwardGameRequest(
+                new PlayAssistantCardRequest(card),
+                () -> setAssistantDeckVisible(false),
+                err -> assistantCardsDeck.showError("Non puoi giocare questa carta")
+        ));
     }
 
     private void setInfoString(String info, Object... optionalArgs) {

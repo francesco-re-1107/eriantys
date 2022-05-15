@@ -210,7 +210,7 @@
     <VBox fx:id="assistantCardsLayer" visible="false" managed="false" id="card_selection_layer" alignment="CENTER" AnchorPane.leftAnchor="0" AnchorPane.rightAnchor="0"
           AnchorPane.topAnchor="0" AnchorPane.bottomAnchor="0">
         <Button fx:id="hideAssistantCardsDeck" onMouseEntered="#startPeekGame" onMouseExited="#endPeekGame">NASCONDI</Button>
-        <VBox fx:id="assistantCardsDeck" id="card_selection" maxWidth="700" maxHeight="400" spacing="30" alignment="CENTER" />
+        <AssistantCardDeckView fx:id="assistantCardsDeck"/>
     </VBox>
     <GameTitlePopupView fx:id="gameTitlePopup" AnchorPane.rightAnchor="0" AnchorPane.bottomAnchor="0" AnchorPane.topAnchor="0" AnchorPane.leftAnchor="0"/>
     <Button id="leave_button" fx:id="leaveButton" mnemonicParsing="false" onAction="#onLeavePressed" text="ABBANDONA"

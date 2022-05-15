@@ -1,0 +1,18 @@
+#card_selection {
+    -fx-background-color: #313858;
+    -fx-border-color: #fff;
+    -fx-border-width: 15;
+    -fx-border-radius: 20;
+    -fx-background-radius: 20;
+    -fx-padding: 40px;
+    -fx-border-insets: 10px;
+    -fx-background-insets: 15px;
+    -fx-font-family: 'Recursive Casual';
+    -fx-effect: dropshadow(three-pass-box, rgba(0, 0, 0, 0.5), 10, 0, 0, 0);
+}
+
+#error_label {
+    -fx-text-fill: #f00;
+    -fx-font-size: 24px;
+    -fx-font-family: 'Recursive Casual';
+}

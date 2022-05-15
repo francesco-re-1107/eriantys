@@ -20,15 +20,13 @@ public class IslandView extends StackPane {
 
     private final int index;
 
-    private final VBox vbox;
+    private VBox elementsVbox;
 
     private final double size;
 
     private MotherNatureView motherNatureView;
 
-    private VBox studentsViewVBox;
-
-    private HBox studentsViewCurrentHBox;
+    private FlowPane studentsFlowPane;
 
     private static final List<Image> islandImages = new ArrayList<>();
 
@@ -39,8 +37,7 @@ public class IslandView extends StackPane {
     }
 
     public IslandView() {
-        this(
-                new ReducedIsland(
+        this(new ReducedIsland(
                         new StudentsContainer(),
                         1,
                         0,
@@ -56,38 +53,33 @@ public class IslandView extends StackPane {
         this.island = island;
         this.index = index;
 
-        vbox = new VBox();
-
-        vbox.setSpacing(5);
-        vbox.setAlignment(Pos.CENTER);
-
         size = Math.min(350, Math.max(150 + island.size() * 25, 175));
 
-        setWidth(size);
-        setHeight(size);
-        setPrefWidth(size);
-        setPrefHeight(size);
-        setMinWidth(size);
-        setMinHeight(size);
         setMaxWidth(size);
         setMaxHeight(size);
 
+        setupElements();
+
         setDisable(true);
-
         setAlignment(Pos.CENTER);
-
         setId("island");
-
         setupBackground(index);
+
+        getStylesheets().add(getClass().getResource("/css/island_view.css").toExternalForm());
+    }
+
+    private void setupElements() {
+        elementsVbox = new VBox();
+        elementsVbox.setSpacing(5);
+        elementsVbox.setAlignment(Pos.CENTER);
 
         setupTowersView();
         setupStudents();
         setupMotherNatureView();
 
-        getChildren().add(vbox);
-
         setupNoEntry();
 
+        getChildren().add(elementsVbox);
     }
 
     private void setupTowersView() {
@@ -103,48 +95,36 @@ public class IslandView extends StackPane {
             towersView.getChildren().add(tv);
         }
 
-        vbox.getChildren().add(towersView);
+        elementsVbox.getChildren().add(towersView);
     }
 
     private void setupStudents() {
-        studentsViewVBox = new VBox();
+        studentsFlowPane = new FlowPane();
 
-        studentsViewVBox.setMaxWidth(size);
-        studentsViewVBox.setMaxHeight(size);
-        studentsViewVBox.setSpacing(3);
-        studentsViewVBox.setAlignment(Pos.TOP_CENTER);
+        studentsFlowPane.setMaxWidth(size);
+        studentsFlowPane.setMaxHeight(size);
+        studentsFlowPane.setHgap(3);
+        studentsFlowPane.setVgap(3);
+        studentsFlowPane.setAlignment(Pos.TOP_CENTER);
 
-        studentsViewCurrentHBox = new HBox();
-        studentsViewCurrentHBox.setSpacing(3);
-        studentsViewCurrentHBox.setAlignment(Pos.CENTER);
-        studentsViewCurrentHBox.prefWidth(size);
-        studentsViewCurrentHBox.prefHeight(100);
-
-        studentsViewVBox.getChildren().add(studentsViewCurrentHBox);
+        elementsVbox.getChildren().add(studentsFlowPane);
 
         for (Student s : island.students().toList()) {
             addStudent(s);
         }
+    }
 
-        vbox.getChildren().add(studentsViewVBox);
+    private void setupMotherNatureView() {
+        motherNatureView = new MotherNatureView();
+        motherNatureView.setFitWidth(Math.min(50, size/5));
+
+        elementsVbox.getChildren().add(motherNatureView);
     }
 
     public void addStudent(Student student) {
-
-        var studentsPerRow = 5 + Math.floor(island.size() / 2.5);
         var sv = new StudentView(student);
         sv.setFitWidth(Math.min(27, size/6));
-        studentsViewCurrentHBox.getChildren().add(sv);
-
-        if(studentsViewCurrentHBox.getChildren().size() % studentsPerRow == 0) {
-            studentsViewCurrentHBox = new HBox();
-            studentsViewCurrentHBox.setSpacing(3);
-            studentsViewCurrentHBox.setAlignment(Pos.CENTER);
-            studentsViewCurrentHBox.prefWidth(100);
-            studentsViewCurrentHBox.prefHeight(size);
-
-            studentsViewVBox.getChildren().add(studentsViewCurrentHBox);
-        }
+        studentsFlowPane.getChildren().add(sv);
     }
 
     private void setupNoEntry() {
@@ -171,33 +151,16 @@ public class IslandView extends StackPane {
     }
 
     private void setupBackground(int index) {
-        //very strange formula to get get the same image for the same index but having them distributed in a strange way
+        //very strange formula to get the same image for the same index but having them distributed in a strange way
         var image = islandImages.get((int)Math.abs(Math.cos(index) * 10) % islandImages.size());
 
         BackgroundSize backgroundSize = new BackgroundSize(size, size, true, true, true, true);
         BackgroundImage backgroundImage = new BackgroundImage(image, BackgroundRepeat.REPEAT, BackgroundRepeat.NO_REPEAT, BackgroundPosition.CENTER, backgroundSize);
         setBackground(new Background(backgroundImage));
-
-        //setBackground(new Background(new BackgroundFill(Paint.valueOf("#f5f5f5"), CornerRadii.EMPTY, Insets.EMPTY)));
-    }
-
-    private void setupMotherNatureView() {
-        motherNatureView = new MotherNatureView();
-        motherNatureView.setFitWidth(Math.min(50, size/5));
-
-        vbox.getChildren().add(motherNatureView);
     }
 
     public MotherNatureView getMotherNatureView() {
         return motherNatureView;
-    }
-
-    public void updateIsland(ReducedIsland island) {
-        this.island = island;
-    }
-
-    public ReducedIsland getIsland() {
-        return island;
     }
 
     public int getIndex() {
