@@ -1,12 +1,16 @@
 package it.polimi.ingsw.client.cli;
 
+import it.polimi.ingsw.common.reducedmodel.ReducedGame;
 import it.polimi.ingsw.common.reducedmodel.ReducedIsland;
+import it.polimi.ingsw.common.reducedmodel.ReducedRound;
+import it.polimi.ingsw.common.reducedmodel.ReducedPlayer;
 import it.polimi.ingsw.server.model.Student;
 import it.polimi.ingsw.server.model.Tower;
 import org.fusesource.jansi.Ansi;
 import org.fusesource.jansi.AnsiConsole;
 
 import java.util.Collection;
+import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
 
@@ -17,6 +21,8 @@ public class Cursor {
 
     public static final int ISLAND_WIDTH = 11;
     public static final int ISLAND_HEIGHT = 6;
+    public static final int BOARD_DELIMITER = 22;
+    public static final int LEFT_MARGIN = 4;
     private static final Map<Student, Integer> STUDENT_COLOR_MAP = Map.ofEntries(
             Map.entry(Student.YELLOW, Palette.STUDENT_YELLOW),
             Map.entry(Student.PINK, Palette.STUDENT_PINK),
@@ -37,8 +43,9 @@ public class Cursor {
         AnsiConsole.systemInstall();
         System.setProperty("jansi.passthrough", "true");
         System.out.print(ansi().eraseScreen());
-        for (int i = 0; i < HEIGHT; i++) {
-            System.out.println(ansi().bg(Palette.ISLAND_BACKGROUND).a(" ".repeat(WIDTH)));
+        for (int i = 0; i < HEIGHT-2; i++) {
+            moveToXY(BOARD_DELIMITER-1, i+1);
+            System.out.println(ansi().bg(Palette.ISLAND_BACKGROUND).a(" ".repeat(WIDTH-BOARD_DELIMITER+1)));
         }
     }
 
@@ -64,39 +71,36 @@ public class Cursor {
 
     // draws a list of islands
     public void drawIslands(Collection<ReducedIsland> islandList) {
-        int x_delimiter = 22;
         int incremental_y = 2;
         int count = islandList.size(); // TODO: rearrange island based on count
         var iterator = islandList.iterator();
 
         ReducedIsland island = iterator.next();
         for (int i = 0; i < 5; i++) {
-            drawIsland(x_delimiter + ((ISLAND_WIDTH + 1) * i), incremental_y, island, String.valueOf(i));
+            drawIsland(BOARD_DELIMITER + ((ISLAND_WIDTH + 1) * i), incremental_y, island, String.valueOf(i));
             island = iterator.next();
         }
         incremental_y += ISLAND_HEIGHT + 1;
 
-        drawIsland(x_delimiter + 4 * (ISLAND_WIDTH + 1), incremental_y, island, String.valueOf(5));
+        drawIsland(BOARD_DELIMITER + 4 * (ISLAND_WIDTH + 1), incremental_y, island, String.valueOf(5));
         island = iterator.next();
 
         // TODO: fix
         incremental_y += ISLAND_HEIGHT + 1;
         for (int i = 6; i < count - 1; i++) {
-            drawIsland(x_delimiter + ((ISLAND_WIDTH + 1) * (count - 2 - i)), incremental_y, island, String.valueOf(i));
+            drawIsland(BOARD_DELIMITER + ((ISLAND_WIDTH + 1) * (count - 2 - i)), incremental_y, island, String.valueOf(i));
             island = iterator.next();
         }
         incremental_y -= ISLAND_HEIGHT + 1;
-        drawIsland(x_delimiter, incremental_y, island, String.valueOf(11));
-
-        moveToXY(1, HEIGHT-1);
-        System.out.print("Riga 1");
-        moveToXY(1, HEIGHT);
-        System.out.print("Riga 2");
-        new Scanner(System.in).next();
+        drawIsland(BOARD_DELIMITER, incremental_y, island, String.valueOf(11));
     }
 
     private void drawWithBg(String content) {
         System.out.print(ansi().bg(Palette.ISLAND_BACKGROUND).a(content).reset());
+    }
+
+    private void drawWithBgAndContrast(String content) {
+        System.out.print(ansi().fgBlack().bg(Palette.ISLAND_BACKGROUND).a(content).reset());
     }
 
     // draws and island starting at
@@ -104,15 +108,15 @@ public class Cursor {
         moveToXY(x0, y0);
 
         String border = "╭" + "─".repeat(ISLAND_WIDTH - 2) + "╮";
-        drawWithBg(border);
+        drawWithBgAndContrast(border);
 
         moveToXY(x0, y0 + 1);
-        drawWithBg("│ " + id);
+        drawWithBgAndContrast("│ " + id);
         moveToXY(x0 + ISLAND_WIDTH - 1, y0 + 1);
-        drawWithBg("│");
+        drawWithBgAndContrast("│");
 
         moveToXY(x0, y0 + 2);
-        drawWithBg("│");
+        drawWithBgAndContrast("│");
         String s = "";
         for (var x : island.students().getStudents().entrySet()) {
             s += ansi().bg(Palette.ISLAND_BACKGROUND).fg(STUDENT_COLOR_MAP.get(x.getKey())).a("●".repeat(x.getValue()))
@@ -120,25 +124,72 @@ public class Cursor {
         }
         System.out.print(s);
         moveToXY(x0 + ISLAND_WIDTH - 1, y0 + 2);
-        drawWithBg("│");
+        drawWithBgAndContrast("│");
 
         for (int i = 0; i < ISLAND_HEIGHT - 3; i++) {
             moveToXY(x0, y0 + 3 + i);
-            drawWithBg("│" + " ".repeat(ISLAND_WIDTH - 2) + "│");
+            drawWithBgAndContrast("│" + " ".repeat(ISLAND_WIDTH - 2) + "│");
         }
 
         moveToXY(x0, y0 + ISLAND_HEIGHT - 1);
-        drawWithBg("│ ");
+        drawWithBgAndContrast("│ ");
 
         System.out.println(
                 ansi().fg(getTowerAnsiColor(island.towerColor())).bg(117).a("♜".repeat(island.towersCount())).reset());
         moveToXY(x0 + ISLAND_WIDTH - 1, y0 + ISLAND_HEIGHT - 1);
-        drawWithBg("│");
+        drawWithBgAndContrast("│");
 
         moveToXY(x0, y0 + ISLAND_HEIGHT);
 
         border = "╰" + "─".repeat(ISLAND_WIDTH - 2) + "╯";
-        drawWithBg(border);
+        drawWithBgAndContrast(border);
+    }
+
+    public void drawBoard(List<ReducedPlayer> players, ReducedRound round, ReducedGame game){
+        //ReducedRound round = game.currentRound();
+        int incremental_y = 2;
+        for (var p : players) {  
+            //name
+            moveToXY(LEFT_MARGIN, incremental_y);
+            printBold(p.nickname());
+            if (round.currentPlayer().nickname() == p.nickname()) {
+                moveToXY(LEFT_MARGIN - 2, incremental_y);
+                printBold("➤");
+            }
+            //board
+            incremental_y++;
+            for (Student color : Student.values()) {
+                if (game.currentProfessors().containsKey(color)){
+                    if (game.currentProfessors().get(color).nickname() == p.nickname()) {
+                        moveToXY(LEFT_MARGIN - 1, incremental_y);
+                        System.out.print(ansi().fg(STUDENT_COLOR_MAP.get(color)).a("⬣").reset());  
+                    }
+                }
+                moveToXY(LEFT_MARGIN, incremental_y);
+                System.out.print(ansi().fg(STUDENT_COLOR_MAP.get(color)).a("●").reset());
+                System.out.print("%d(%d)".formatted(
+                    p.school().getCountForStudent(color),
+                    p.entrance().getCountForStudent(color)));
+                incremental_y++;
+            }
+            //current card
+            moveToXY(LEFT_MARGIN + 8, incremental_y - 5);
+            System.out.print("<%d|%d>".formatted(5,3)); //TODO
+            //towers
+            moveToXY(LEFT_MARGIN + 8, incremental_y - 3);
+            System.out.print(ansi()
+                .bg(getTowerAnsiColor(p.towerColor()))
+                .fg(Palette.TOWER_CONTRAST_BACKGROUND)
+                .a("♜").reset().a("%d/%d".formatted(5,3))); //TODO
+            //coins
+            if (game.expertMode()) {  
+                moveToXY(LEFT_MARGIN + 8, incremental_y - 1);
+                System.out.print("$%d".formatted(2)); //TODO
+            }
+
+            incremental_y++;
+        }
+
     }
 
     private int getTowerAnsiColor(Tower color) {
@@ -162,12 +213,14 @@ public class Cursor {
     }
 
     public void printPrompt(String prompt, String default_resp) {
+        moveToXY(1, HEIGHT - 1);
         Ansi s = ansi().bold().a("%s".formatted(prompt)).boldOff();
         if (!default_resp.isEmpty()) {
             s = s.a(" (default %s)".formatted(default_resp));
         }
         s = s.a(": ").reset();
         System.out.println(s);
+        System.out.print("> ");
     }
 
     public void printBold(String s) {
