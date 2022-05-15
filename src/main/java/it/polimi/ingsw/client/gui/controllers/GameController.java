@@ -17,8 +17,6 @@ import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;
-import javafx.scene.control.ContextMenu;
-import javafx.scene.control.CustomMenuItem;
 import javafx.scene.control.Label;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
@@ -102,6 +100,8 @@ public class GameController implements ScreenController, Client.GameUpdateListen
 
     private Map<Integer, StudentsContainer> studentsPlacedInIslands;
     private String myNickname;
+
+    private StudentSelectContextMenu studentSelectContextMenu;
 
     @FXML
     public void initialize() {
@@ -381,6 +381,7 @@ public class GameController implements ScreenController, Client.GameUpdateListen
         Client.getInstance().addGameUpdateListener(this);
         myNickname = Client.getInstance().getNickname();
         leaveButton.setText("ABBANDONA");
+        gameTitlePopup.hide();
     }
 
     @Override
@@ -536,19 +537,15 @@ public class GameController implements ScreenController, Client.GameUpdateListen
             iv.setDisable(false);
 
             iv.setOnMouseClicked(e -> {
-                final ContextMenu contextMenu = new ContextMenu();
-                for(Student s : Student.values()) {
-                    if(currentGame.currentRound().currentPlayer().entrance().getCountForStudent(s) <= 0)
-                        continue;
+                if(studentSelectContextMenu != null)
+                    studentSelectContextMenu.hide();
 
-                    var sv = new StudentView(s);
-                    sv.setFitWidth(30);
-                    sv.setFitHeight(30);
-                    var mi = new CustomMenuItem(sv, true);
-                    contextMenu.getItems().add(mi);
-                    mi.setOnAction(event -> placeStudentInIsland(s, iv));
-                }
-                contextMenu.show(iv, e.getScreenX(), e.getScreenY());
+                studentSelectContextMenu = new StudentSelectContextMenu(
+                        currentGame.currentRound().currentPlayer().entrance(),
+                        s -> placeStudentInIsland(s, iv)
+                );
+
+                studentSelectContextMenu.show(iv, e.getScreenX(), e.getScreenY());
             });
         }
     }
