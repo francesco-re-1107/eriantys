@@ -48,7 +48,7 @@ public final class Constants {
      * If a ping request (or ping reply) doesn't arrive in this time, the client is considered disconnected
      */
     public static final int DISCONNECTION_TIMEOUT = 8000;
-    public static final long GAMES_LIST_REFRESH_INTERVAL = 5000;
+    public static final long GAMES_LIST_REFRESH_INTERVAL = 3000;
     public static final int MAX_NICKNAME_LENGTH = 20;
     public static final List<String> NICKNAMES_PART_1 = List.of(
             "Attractive",

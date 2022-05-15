@@ -50,9 +50,13 @@ public class GameTitlePopupView extends VBox {
                 stateLabel.setText("Pareggio!");
                 stateLabel.setTextFill(Color.STEELBLUE);
             }
-            case PAUSE -> {
+            case PAUSED -> {
                 stateLabel.setText("In pausa!");
                 stateLabel.setTextFill(Color.GOLD);
+            }
+            case TERMINATED -> {
+                stateLabel.setText("Partita terminata!");
+                stateLabel.setTextFill(Color.STEELBLUE);
             }
         }
         descriptionLabel.setText(description);
@@ -73,6 +77,7 @@ public class GameTitlePopupView extends VBox {
         WIN,
         LOSE,
         TIE,
-        PAUSE
+        PAUSED,
+        TERMINATED
     }
 }

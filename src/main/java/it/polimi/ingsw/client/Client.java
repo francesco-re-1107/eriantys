@@ -10,6 +10,7 @@ import it.polimi.ingsw.common.requests.*;
 import it.polimi.ingsw.common.responses.Update;
 import it.polimi.ingsw.common.responses.replies.GamesListReply;
 import it.polimi.ingsw.common.responses.updates.GameUpdate;
+import it.polimi.ingsw.server.model.Game;
 import javafx.stage.Stage;
 
 import java.io.IOException;
@@ -74,9 +75,14 @@ public class Client implements CommunicatorListener {
                     .forEach(l -> l.onGameUpdate(gu.getGame()));
 
             //if there was a game played, go to the game screen
-            if(navigationManager.getCurrentScreen() == Screen.SERVER_CONNECTION_MENU ||
-                navigationManager.getCurrentScreen() == Screen.MAIN_MENU)
-                navigationManager.navigateTo(Screen.GAME);
+            var currScreen = navigationManager.getCurrentScreen();
+            if (currScreen == Screen.SERVER_CONNECTION_MENU || currScreen == Screen.MAIN_MENU) {
+                var currState = lastGameUpdate.currentState();
+                if (currState == Game.State.STARTED || currState == Game.State.PAUSED) {
+                    navigationManager.clearBackStack();
+                    navigationManager.navigateTo(Screen.GAME, false);
+                }
+            }
         }
 
     }
@@ -90,10 +96,6 @@ public class Client implements CommunicatorListener {
         navigationManager.navigateTo(Screen.SERVER_CONNECTION_MENU, false);
     }
 
-    private void tryReconnection() {
-        //...
-    }
-
     /**
      * Connect to the server at the given host and port, and call the successListener if the connection is successful, or
      * the errorListener if the connection fails
@@ -105,16 +107,16 @@ public class Client implements CommunicatorListener {
      */
     public void connect(String host, String port, Runnable successListener, Consumer<Throwable> errorListener) {
         var newHost = host;
-        if(host.isBlank())
+        if (host.isBlank())
             newHost = Constants.DEFAULT_HOSTNAME;
 
         var newPort = Constants.DEFAULT_SERVER_PORT;
 
         //if a port is defined try to parse it
-        if(!port.isBlank())
-            try{
+        if (!port.isBlank())
+            try {
                 newPort = Integer.parseInt(port);
-            }catch (NumberFormatException e){
+            } catch (NumberFormatException e) {
                 errorListener.accept(new IllegalArgumentException("Inserisci una porta valida"));
                 return;
             }
@@ -187,18 +189,18 @@ public class Client implements CommunicatorListener {
         );
     }
 
-    public void leaveGame(Consumer<Throwable> errorListener) {
+    public void leaveGame() {
         communicator.send(
                 new LeaveGameRequest(),
                 r -> {
-                    if (r.isSuccessful()) {
-                        navigationManager.navigateTo(Screen.MAIN_MENU);
-                        lastGameUpdate = null;
-                    } else
-                        errorListener.accept(r.getThrowable());
                 },
-                errorListener::accept
+                e -> {
+                }
         );
+        //don't care about the result of the request
+        navigationManager.clearBackStack();
+        navigationManager.navigateTo(Screen.MAIN_MENU, false);
+        lastGameUpdate = null;
     }
 
     public void addGameUpdateListener(GameUpdateListener listener) {
@@ -212,7 +214,8 @@ public class Client implements CommunicatorListener {
     }
 
     public void goToGame() {
-        navigationManager.navigateTo(Screen.GAME);
+        navigationManager.clearBackStack();
+        navigationManager.navigateTo(Screen.GAME, false);
     }
 
     public void getGameList(Consumer<List<GameListItem>> listener, Consumer<Throwable> errorListener) {

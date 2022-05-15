@@ -1,6 +1,5 @@
 package it.polimi.ingsw.client.gui.controllers;
 
-import it.polimi.ingsw.Utils;
 import it.polimi.ingsw.client.Client;
 import it.polimi.ingsw.client.ScreenController;
 import it.polimi.ingsw.common.reducedmodel.ReducedGame;
@@ -26,10 +25,7 @@ public class WaitingRoomController implements ScreenController, Client.GameUpdat
     }
 
     public void leaveGame() {
-        Client.getInstance().leaveGame(e -> {
-            Utils.LOGGER.info("Error leaving game");
-            //show error...
-        });
+        Client.getInstance().leaveGame();
     }
 
     @Override

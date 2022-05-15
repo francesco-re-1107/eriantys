@@ -169,10 +169,7 @@ public class GameController implements ScreenController, Client.GameUpdateListen
 
     @FXML
     private void onLeavePressed() {
-        Client.getInstance().leaveGame(e -> {
-            //show error...
-            Utils.LOGGER.info("Error leaving game: " + e.getMessage());
-        });
+        Client.getInstance().leaveGame();
     }
 
     public void setMotherNatureIndex(int index) {
@@ -383,6 +380,7 @@ public class GameController implements ScreenController, Client.GameUpdateListen
     public void onShow() {
         Client.getInstance().addGameUpdateListener(this);
         myNickname = Client.getInstance().getNickname();
+        leaveButton.setText("ABBANDONA");
     }
 
     @Override
@@ -444,14 +442,14 @@ public class GameController implements ScreenController, Client.GameUpdateListen
         switch(game.currentState()) {
             case CREATED, STARTED -> gameTitlePopup.hide();
             case PAUSED -> {
-                var offlinePlayers = "Players offline: " +
+                var offlinePlayers = "Giocatori offline: " +
                         game.players()
                                 .stream()
                                 .filter(p -> !p.isConnected())
                                 .map(ReducedPlayer::nickname)
                                 .collect(Collectors.joining(", "));
 
-                gameTitlePopup.setState(GameTitlePopupView.State.PAUSE, offlinePlayers);
+                gameTitlePopup.setState(GameTitlePopupView.State.PAUSED, offlinePlayers);
                 gameTitlePopup.show();
             }
             case FINISHED -> {
@@ -464,19 +462,19 @@ public class GameController implements ScreenController, Client.GameUpdateListen
                         gameTitlePopup.setState(GameTitlePopupView.State.LOSE, game.winner().nickname()+ " ha vinto");
                     }
                 }
+                leaveButton.setText("VAI AL MENU PRINCIPALE");
                 gameTitlePopup.show();
             }
             case TERMINATED -> {
-                //TODO: implement
-                /*var offlinePlayers = "Players offline: " +
+                var leftPlayers = "Giocatori che hanno abbandonato: " +
                         game.players()
                                 .stream()
                                 .filter(p -> !p.isConnected())
                                 .map(ReducedPlayer::nickname)
-                                .collect(Collectors.joining(","));
+                                .collect(Collectors.joining(", "));
 
-                gameTitlePopup.setState(GameTitlePopupView.State., offlinePlayers);
-                */
+                gameTitlePopup.setState(GameTitlePopupView.State.TERMINATED, leftPlayers);
+                leaveButton.setText("VAI AL MENU PRINCIPALE");
                 gameTitlePopup.show();
             }
         }
