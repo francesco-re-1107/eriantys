@@ -65,6 +65,7 @@ public class Player implements StudentsContainer.StudentNumberReachedListener, S
         this.towersCount = towersCount;
         this.entrance = entrance;
         this.school = new StudentsContainer();
+        this.isConnected = true;
         setUpListenersForCoins();
 
         this.deck = new HashMap<>();
