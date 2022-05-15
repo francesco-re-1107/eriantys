@@ -25,7 +25,9 @@
     </VBox>
 
     <VBox alignment="BOTTOM_CENTER" AnchorPane.bottomAnchor="100.0" AnchorPane.leftAnchor="100.0"
-          AnchorPane.rightAnchor="100.0">
+          AnchorPane.rightAnchor="100.0" spacing="30">
+
+        <Label fx:id="joiningError" id="error_label" text=""/>
 
         <Button onMouseClicked="#goBack" alignment="CENTER" mnemonicParsing="false" minHeight="70.0" prefWidth="450.0"
                 text="INDIETRO" textAlignment="CENTER">

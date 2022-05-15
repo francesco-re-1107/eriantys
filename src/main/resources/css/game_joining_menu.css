@@ -97,3 +97,9 @@
     -fx-text-style: bold;
     -fx-text-fill: #fff;
 }
+
+#error_label {
+    -fx-text-fill: #f00;
+    -fx-font-size: 24px;
+    -fx-font-family: 'Recursive Casual';
+}

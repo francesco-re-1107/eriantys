@@ -21,7 +21,8 @@ public class GameJoiningMenuController implements ScreenController {
     public VBox gamesList;
     @FXML
     public Label nicknameLabel;
-
+    @FXML
+    public Label joiningError;
     private Timer refreshTimer;
 
     private List<GameListItem> currentGamesList = new ArrayList<>();
@@ -47,8 +48,14 @@ public class GameJoiningMenuController implements ScreenController {
         Utils.LOGGER.info("Joining game " + item.uuid());
 
         Client.getInstance().joinGame(item.uuid(), e -> {
-            Utils.LOGGER.info(e.getMessage());
-            //show error
+            showError(e.getMessage());
+        });
+    }
+
+    private void showError(String message) {
+        Platform.runLater(() -> {
+            joiningError.setVisible(true);
+            joiningError.setText("Impossibile unirsi a questa partita: " + message);
         });
     }
 
@@ -69,6 +76,7 @@ public class GameJoiningMenuController implements ScreenController {
     public void onShow() {
         startRefreshTimer();
         nicknameLabel.setText("Connesso come " + Client.getInstance().getNickname());
+        joiningError.setVisible(false);
     }
 
     /**

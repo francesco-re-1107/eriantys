@@ -1,8 +1,8 @@
 package it.polimi.ingsw.client.gui.controllers;
 
-import it.polimi.ingsw.Utils;
 import it.polimi.ingsw.client.Client;
 import it.polimi.ingsw.client.ScreenController;
+import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
@@ -14,7 +14,8 @@ public class GameCreationMenuController implements ScreenController {
     public ToggleGroup expertGroup;
     @FXML
     public Label nicknameLabel;
-
+    @FXML
+    public Label creationError;
     @FXML
     Button leaveButton;
 
@@ -49,8 +50,14 @@ public class GameCreationMenuController implements ScreenController {
 
     public void createGame() {
         Client.getInstance().createGame(numberOfPlayers, expertMode, e -> {
-            Utils.LOGGER.info(e.getMessage());
-            //show error message
+            showCreationError(e.getMessage());
+        });
+    }
+
+    private void showCreationError(String message) {
+        Platform.runLater(() -> {
+            creationError.setVisible(true);
+            creationError.setText(message);
         });
     }
 
@@ -62,6 +69,7 @@ public class GameCreationMenuController implements ScreenController {
     @Override
     public void onShow() {
         nicknameLabel.setText("Connesso come " + Client.getInstance().getNickname());
+        creationError.setVisible(false);
     }
 
     @Override
