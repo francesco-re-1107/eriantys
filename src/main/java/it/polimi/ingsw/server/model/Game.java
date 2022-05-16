@@ -177,13 +177,19 @@ public class Game implements Serializable {
     private void newRound() {
         logger.info("round started");
         //if the bag is empty the game is finished
-        if (studentsBag.getSize() == 0)
+        if (studentsBag.getSize() <= 0) {
+            logger.info("StudentsBag is empty, game finished");
             setGameFinished(calculateCurrentWinner());
+            return;
+        }
 
         //check if players have any card left
         boolean playersWithZeroCardsLeft = players.stream().anyMatch(p -> p.getAssistantCardsLeftCount() == 0);
-        if (playersWithZeroCardsLeft)
+        if (playersWithZeroCardsLeft) {
+            logger.info("There's a player with zero cards left, game finished");
             setGameFinished(calculateCurrentWinner());
+            return;
+        }
 
         //generate clouds
         List<StudentsContainer> clouds = new ArrayList<>();
@@ -515,10 +521,9 @@ public class Game implements Serializable {
                 .sorted(Comparator.comparingInt(Player::getTowersCount))
                 .toList();
 
-        Player firstPlayer =
+        var firstPlayer =
                 orderedPlayers.get(0);
-
-        Player secondPlayer =
+        var secondPlayer =
                 orderedPlayers.get(1);
 
         if (firstPlayer.getTowersCount() < secondPlayer.getTowersCount()) //there's a winner
@@ -526,12 +531,22 @@ public class Game implements Serializable {
 
         //otherwise, look at the professors
         //players with same towers count are ordered by the number of professors
+        var maxTowers = firstPlayer.getTowersCount();
         orderedPlayers = players.stream()
-                .filter(p -> p.getTowersCount() == firstPlayer.getTowersCount())
+                .filter(p -> p.getTowersCount() == maxTowers)
                 .sorted(Comparator.comparingInt(p -> getProfessorsForPlayer((Player)p).size()).reversed())
                 .toList();
 
-        return orderedPlayers.get(0);
+        firstPlayer =
+                orderedPlayers.get(0);
+        secondPlayer =
+                orderedPlayers.get(1);
+
+        if (getProfessorsCountForPlayer(firstPlayer) < getProfessorsCountForPlayer(secondPlayer)) //there's a winner
+            return firstPlayer;
+
+        //otherwise, there's a draw
+        return null;
     }
 
     /**
@@ -605,6 +620,16 @@ public class Game implements Serializable {
     }
 
     /**
+     * Utility method to retrieve the number of professors held by a given player
+     *
+     * @param player
+     * @return the number of professors held by the player
+     */
+    public int getProfessorsCountForPlayer(Player player) {
+        return getProfessorsForPlayer(player).size();
+    }
+
+    /**
      * Utility method to retrieve the professors of a given player
      *
      * @param player
@@ -624,7 +649,11 @@ public class Game implements Serializable {
      * @param winner the winner of the game
      */
     private void setGameFinished(Player winner) {
-        logger.log(Level.INFO, "game finished! {0} won", winner.getNickname());
+        if(winner != null)
+            logger.log(Level.INFO, "Game finished! {} won", winner.getNickname());
+        else
+            logger.log(Level.INFO, "Game finished! No winner");
+
         gameState = State.FINISHED;
 
         this.winner = winner;

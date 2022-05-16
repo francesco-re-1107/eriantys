@@ -26,7 +26,7 @@ public record ReducedGame(
         Map<String, Integer> characterCards,
         Map<Student, String> currentProfessors, //student -> nickname
         Game.State currentState,
-        ReducedPlayer winner
+        String winner //nickname
 ) implements Serializable {
 
     /**
@@ -35,9 +35,9 @@ public record ReducedGame(
      * @return the ReducedGame just created
      */
     public static ReducedGame fromGame(Game g){
-        ReducedPlayer winner = null;
+        String winner = null;
         if(g.getWinner() != null)
-            winner = ReducedPlayer.fromPlayer(g.getWinner());
+            winner = g.getWinner().getNickname();
 
         ReducedRound reducedRound = null;
         if(g.getCurrentRound() != null)

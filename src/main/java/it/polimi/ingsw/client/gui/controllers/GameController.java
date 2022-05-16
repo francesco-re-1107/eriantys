@@ -428,10 +428,10 @@ public class GameController implements ScreenController, Client.GameUpdateListen
                 if(game.winner() == null) { //tie
                     gameTitlePopup.setState(GameTitlePopupView.State.TIE, "");
                 } else {
-                    if(game.winner().nickname().equals(myNickname)) {
+                    if(game.winner().equals(myNickname)) {
                         gameTitlePopup.setState(GameTitlePopupView.State.WIN, "");
                     } else {
-                        gameTitlePopup.setState(GameTitlePopupView.State.LOSE, game.winner().nickname()+ " ha vinto");
+                        gameTitlePopup.setState(GameTitlePopupView.State.LOSE, game.winner()+ " ha vinto");
                     }
                 }
                 leaveButton.setText("VAI AL MENU PRINCIPALE");
@@ -489,9 +489,7 @@ public class GameController implements ScreenController, Client.GameUpdateListen
                         setInfoString(InfoStrings.MY_TURN_SELECT_CLOUD);
                         cloudsPane.setDisable(false);
                     }
-                    case SELECTED_CLOUD -> {
-                        Utils.LOGGER.info("This stage should not be reached");
-                    }
+                    case SELECTED_CLOUD -> {}//do nothing
                 }
             } else { //plan
                 setInfoString(InfoStrings.MY_TURN_PLAY_ASSISTANT_CARD);
@@ -536,10 +534,16 @@ public class GameController implements ScreenController, Client.GameUpdateListen
                 .orElse(null);
     }
 
+    /**
+     * This method hide temporarily the assistant card deck to show the game
+     */
     public void startPeekGame() {
         assistantCardsLayer.setOpacity(0.1);
     }
 
+    /**
+     * This method is called after the startPeekGame to show again the assistant card deck
+     */
     public void endPeekGame() {
         assistantCardsLayer.setOpacity(1.0);
     }

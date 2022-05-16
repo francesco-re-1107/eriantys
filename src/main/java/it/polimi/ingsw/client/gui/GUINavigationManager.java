@@ -68,10 +68,12 @@ public class GUINavigationManager implements NavigationManager {
         }
     }
 
+    @Override
     public void navigateTo(Screen destination) {
         navigateTo(destination, true);
     }
 
+    @Override
     public void navigateTo(Screen destination, boolean withBackStack) {
         if(currentlyNavigating) return;
 
@@ -123,10 +125,12 @@ public class GUINavigationManager implements NavigationManager {
         }
     }
 
+    @Override
     public void clearBackStack() {
         backstack.clear();
     }
 
+    @Override
     public void goBack() {
         if(currentlyNavigating) return;
 
