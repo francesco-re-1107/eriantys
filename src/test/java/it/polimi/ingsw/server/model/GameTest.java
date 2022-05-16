@@ -331,6 +331,16 @@ class GameTest {
             }
         }
 
-        assertNotNull(g.getWinner());
+        //students bag finished
+        var end1 = g.getStudentsBag().getSize() <= 0;
+        //less than 4 islands
+        var end2 = g.getIslands().size() <= 3;
+        //cards finished
+        var end3 = g.getPlayers().stream().anyMatch(p -> p.getAssistantCardsLeftCount() == 0);
+        //placed all towers
+        var end4 = g.getPlayers().stream().anyMatch(p -> p.getTowersCount() <= 0);
+
+        //correct ending reached
+        assertTrue(end1 || end2 || end3 || end4);
     }
 }

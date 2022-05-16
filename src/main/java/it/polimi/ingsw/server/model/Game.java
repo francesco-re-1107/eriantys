@@ -221,6 +221,8 @@ public class Game implements Serializable {
      * @param player the player
      */
     public void selectCloud(Player player, StudentsContainer cloud) {
+        if (gameState != State.STARTED) return;
+
         checkIfCurrentPlayer(player);
 
         if (!currentRound.getClouds().contains(cloud))
@@ -288,6 +290,7 @@ public class Game implements Serializable {
      * @param steps number of steps that mother nature needs to be moved
      */
     public void moveMotherNature(Player player, int steps) {
+        if (gameState != State.STARTED) return;
         checkIfCurrentPlayer(player);
 
         if(steps < 1)
@@ -354,25 +357,28 @@ public class Game implements Serializable {
         }
 
         //only if there's a max without duplicate
-        maxP.ifPresent(player -> {
-                //only if island is not yet conquered by this player
-                if (player.getTowerColor() != island.getTowerColor()) {
-                    if(island.isConquered()) { //island already conquered, remove towers from the previous owner
-                        players.stream()
-                                .filter(p -> p.getTowerColor() == island.getTowerColor())
-                                .findFirst()
-                                .ifPresent(p -> p.incrementTowersCount(island.getTowersCount()));
-                    }
+        if(maxP.isPresent()){
+            var player = maxP.get();
 
-                    island.setConquered(player.getTowerColor());
-                    //in both cases remove towers from player
-                    player.decrementTowersCount(island.getTowersCount());
+            //only if island is not yet conquered by this player
+            if (player.getTowerColor() != island.getTowerColor()) {
+                if(island.isConquered()) { //island already conquered, remove towers from the previous owner
+                    players.stream()
+                            .filter(p -> p.getTowerColor() == island.getTowerColor())
+                            .findFirst()
+                            .ifPresent(p -> p.incrementTowersCount(island.getTowersCount()));
+                }
 
-                    if (player.getTowersCount() <= 0)
-                        setGameFinished(player);
+                island.setConquered(player.getTowerColor());
+                //in both cases remove towers from player
+                player.decrementTowersCount(island.getTowersCount());
+
+                if (player.getTowersCount() <= 0) {
+                    logger.info(player.getNickname() + " with 0 towers left, game finished");
+                    setGameFinished(player);
                 }
             }
-        );
+        }
 
         //remove temporary after use
         temporaryInfluenceCalculator = null;
@@ -383,6 +389,7 @@ public class Game implements Serializable {
      * @param card
      */
     public void playAssistantCard(Player player, AssistantCard card) {
+        if (gameState != State.STARTED) return;
         checkIfCurrentPlayer(player);
 
         if (!player.canPlayAssistantCard(card))
@@ -404,6 +411,7 @@ public class Game implements Serializable {
         if (!expertMode)
             throw new InvalidOperationException("Cannot play character cards in simple mode");
 
+        if (gameState != State.STARTED) return;
         checkIfCurrentPlayer(player);
 
         if ((!(currentRound.getStage() instanceof Stage.Attack)) ||
@@ -426,6 +434,9 @@ public class Game implements Serializable {
             temporaryInfluenceCalculator = influenceCard.getInfluenceCalculator(player);
         } else if (card instanceof HeraldCharacterCard heraldCard) {
             calculateInfluenceOnIsland(heraldCard.getIsland());
+            //After influence calculation a player may have conquered a new island.
+            //It's necessary to check if islands could be merged
+            checkMergeableIslands();
         } else if (card instanceof PostmanCharacterCard postmanCard) {
             currentRound.setAdditionalMotherNatureMoves(postmanCard.getAdditionalMotherNatureMoves());
         } else if (card instanceof GrandmaCharacterCard grandmaCard) {
@@ -453,6 +464,7 @@ public class Game implements Serializable {
      * @param inIsland students to add to the relative island
      */
     public void placeStudents(Player player, StudentsContainer inSchool, Map<Island, StudentsContainer> inIsland) {
+        if (gameState != State.STARTED) return;
         checkIfCurrentPlayer(player);
 
         if (currentRound.getStage() != Stage.Attack.STARTED)
@@ -501,8 +513,10 @@ public class Game implements Serializable {
             islands.remove(next);
         }
 
-        if (islands.size() <= 3)
+        if (islands.size() <= 3) {
+            logger.info("Less than 4 islands left, game finished");
             setGameFinished(calculateCurrentWinner());
+        }
 
         //adjust motherNatureIndex
         this.motherNaturePosition = islands.indexOf(curr);
