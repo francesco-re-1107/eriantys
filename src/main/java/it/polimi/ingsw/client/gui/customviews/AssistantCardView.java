@@ -58,6 +58,8 @@ public class AssistantCardView extends StackPane implements EventHandler<MouseEv
         image.setFitHeight(150);
         setAlignment(Pos.TOP_CENTER);
 
+
+
         description = new VBox();
         description.setMaxHeight(150);
         description.setOpacity(0);
@@ -72,6 +74,8 @@ public class AssistantCardView extends StackPane implements EventHandler<MouseEv
 
         getChildren().add(image);
         getChildren().add(description);
+
+        getStylesheets().add(getClass().getResource("/css/assistant_card.css").toExternalForm());
 
         setOnMouseEntered(this);
         setOnMouseExited(this);

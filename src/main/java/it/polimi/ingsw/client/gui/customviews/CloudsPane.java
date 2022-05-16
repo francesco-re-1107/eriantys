@@ -5,15 +5,12 @@ import it.polimi.ingsw.client.Client;
 import it.polimi.ingsw.common.requests.SelectCloudRequest;
 import it.polimi.ingsw.server.model.StudentsContainer;
 import javafx.geometry.Pos;
-import javafx.scene.layout.HBox;
-import javafx.scene.layout.VBox;
+import javafx.scene.layout.FlowPane;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class CloudsPane extends VBox {
-
-    private List<StudentsContainer> clouds;
+public class CloudsPane extends FlowPane {
 
     public CloudsPane() {
         this(new ArrayList<>());
@@ -21,23 +18,16 @@ public class CloudsPane extends VBox {
 
     public CloudsPane(List<StudentsContainer> clouds) {
         super();
-        this.clouds = clouds;
 
         setAlignment(Pos.CENTER);
-        setSpacing(20);
+        setHgap(20);
+        setVgap(20);
 
         setClouds(clouds);
     }
 
     public void setClouds(List<StudentsContainer> clouds) {
-        this.clouds = clouds;
         getChildren().clear();
-
-        var currentHBox = new HBox();
-        currentHBox.setAlignment(Pos.CENTER);
-        currentHBox.setSpacing(20);
-
-        getChildren().add(currentHBox);
 
         for (StudentsContainer cloud : clouds) {
             var cv = new CloudView(cloud);
@@ -45,6 +35,7 @@ public class CloudsPane extends VBox {
             cv.setMaxHeight(155.0);
             cv.setMinWidth(155.0);
             cv.setMinHeight(155.0);
+            //TODO: move to GameController
             cv.setOnMouseClicked(e -> Client.getInstance()
                     .forwardGameRequest(
                             new SelectCloudRequest(cloud),
@@ -52,16 +43,7 @@ public class CloudsPane extends VBox {
                             err -> Utils.LOGGER.info("Error selecting cloud " + err.getMessage())
                     ));
 
-            currentHBox.getChildren().add(cv);
-
-            //new line
-            if(currentHBox.getChildren().size() % 2 == 0) {
-                currentHBox = new HBox();
-                currentHBox.setAlignment(Pos.CENTER);
-                currentHBox.setSpacing(20);
-
-                getChildren().add(currentHBox);
-            }
+            getChildren().add(cv);
         }
     }
 }

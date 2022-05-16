@@ -2,11 +2,12 @@ package it.polimi.ingsw.client.gui.customviews;
 
 import it.polimi.ingsw.server.model.Student;
 import it.polimi.ingsw.server.model.StudentsContainer;
+import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.image.Image;
 import javafx.scene.layout.*;
 
-public class CloudView extends VBox {
+public class CloudView extends FlowPane {
 
     public CloudView() {
         this(new StudentsContainer());
@@ -24,24 +25,16 @@ public class CloudView extends VBox {
         setId("cloud");
         setAlignment(Pos.CENTER);
         setupBackground();
-        setSpacing(10);
+        setHgap(10);
+        setVgap(7);
+        setPadding(new Insets(20, 20, 20, 20));
 
-        var currentHBox = new HBox();
-        currentHBox.setAlignment(Pos.CENTER);
-        currentHBox.setSpacing(10);
-        getChildren().add(currentHBox);
+        getStylesheets().add(getClass().getResource("/css/cloud_view.css").toExternalForm());
 
         for(Student s : cloud.toList()) {
             var sv = new StudentView(s);
-
-            currentHBox.getChildren().add(sv);
-
-            if (currentHBox.getChildren().size() % 2 == 0) {
-                currentHBox = new HBox();
-                currentHBox.setAlignment(Pos.CENTER);
-                currentHBox.setSpacing(10);
-                getChildren().add(currentHBox);
-            }
+            sv.setFitWidth(40);
+            getChildren().add(sv);
         }
     }
 

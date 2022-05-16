@@ -65,6 +65,10 @@ public class GameCreationMenuController implements ScreenController {
     public void onShow() {
         nicknameLabel.setText("Connesso come " + Client.getInstance().getNickname());
         creationError.setVisible(false);
+        playersGroup.selectToggle(playersGroup.getToggles().get(0));
+        expertGroup.selectToggle(expertGroup.getToggles().get(0));
+        numberOfPlayers = 2;
+        expertMode = false;
     }
 
     @Override

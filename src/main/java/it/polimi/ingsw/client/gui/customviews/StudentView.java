@@ -38,7 +38,6 @@ public class StudentView extends ImageView {
 
         setImage(getCurrentImage());
         setFitWidth(35);
-        setFitHeight(35);
         setPreserveRatio(true);
     }
 

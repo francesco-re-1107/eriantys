@@ -26,73 +26,47 @@ import java.util.stream.Collectors;
 
 public class GameController implements ScreenController, Client.GameUpdateListener {
     @FXML
-    public IslandCircularPane islandsPane;
+    private IslandCircularPane islandsPane;
     @FXML
-    public CloudsPane cloudsPane;
+    private CloudsPane cloudsPane;
     @FXML
-    public HBox player3Board;
+    private VBox characterCardsView;
     @FXML
-    public Label player2NicknameLabel;
+    private HBox characterCards;
     @FXML
-    public Label player3NicknameLabel;
+    private CharacterCardView characterCard1;
     @FXML
-    public VBox player2Students;
+    private CharacterCardView characterCard2;
     @FXML
-    public VBox player3Students;
+    private CharacterCardView characterCard3;
     @FXML
-    public VBox characterCardsView;
+    private AssistantCardDeckView assistantCardsDeck;
     @FXML
-    public HBox characterCards;
+    private VBox assistantCardsLayer;
     @FXML
-    public CharacterCardView characterCard1;
+    private Button hideAssistantCardsDeck;
     @FXML
-    public CharacterCardView characterCard2;
+    private GameTitlePopupView gameTitlePopup;
     @FXML
-    public CharacterCardView characterCard3;
+    public PlayerBoardView myPlayerBoardView;
     @FXML
-    public AssistantCardDeckView assistantCardsDeck;
+    private PlayerBoardView player2BoardView;
     @FXML
-    public VBox assistantCardsLayer;
+    private PlayerBoardView player3BoardView;
     @FXML
-    public Button hideAssistantCardsDeck;
-    @FXML
-    public GameTitlePopupView gameTitlePopup;
-    @FXML
-    Button leaveButton;
-    @FXML
-    private AssistantCardView player2Card;
-    @FXML
-    private HBox player2Coin;
-    @FXML
-    private Label player2TowerLabel;
-    @FXML
-    private AssistantCardView player3Card;
+    private Button leaveButton;
     @FXML
     private Label myTowerLabel;
     @FXML
-    private HBox player3Coin;
-    @FXML
     private HBox myCoin;
     @FXML
-    private AssistantCardView myCard;
-    @FXML
-    private Label player2CoinLabel;
-    @FXML
-    private Label player3CoinLabel;
-    @FXML
-    private Label player3TowerLabel;
-    @FXML
     private TowerView myTower;
-    @FXML
-    private TowerView player3Tower;
     @FXML
     private Label infoLabel;
     @FXML
     private GridPane myStudentsBoard;
     @FXML
     private Label myCoinLabel;
-    @FXML
-    private TowerView player2Tower;
     private ReducedGame currentGame;
 
     private StudentsContainer studentsPlacedInSchool;
@@ -102,12 +76,7 @@ public class GameController implements ScreenController, Client.GameUpdateListen
 
     private StudentSelectContextMenu studentSelectContextMenu;
 
-    @FXML
-    public void initialize() {
-        //...
-    }
-
-    private void setAssistantDeckVisible(boolean visible) {
+    private void setAssistantDeckVisibility(boolean visible) {
         assistantCardsLayer.setVisible(visible);
         assistantCardsLayer.setManaged(visible);
     }
@@ -116,7 +85,7 @@ public class GameController implements ScreenController, Client.GameUpdateListen
         assistantCardsDeck.setDeck(deck);
         assistantCardsDeck.setOnCardSelected(card -> Client.getInstance().forwardGameRequest(
                 new PlayAssistantCardRequest(card),
-                () -> setAssistantDeckVisible(false),
+                () -> setAssistantDeckVisibility(false),
                 err -> assistantCardsDeck.showError("Non puoi giocare questa carta")
         ));
     }
@@ -125,7 +94,6 @@ public class GameController implements ScreenController, Client.GameUpdateListen
         if (InfoStrings.EMPTY.equals(info)) {
             infoLabel.setVisible(false);
             infoLabel.setManaged(false);
-
         } else {
             infoLabel.setVisible(true);
             infoLabel.setManaged(true);
@@ -143,7 +111,7 @@ public class GameController implements ScreenController, Client.GameUpdateListen
         Client.getInstance().leaveGame();
     }
 
-    public void setMotherNatureIndex(int index) {
+    public void setMotherNaturePosition(int index) {
         //reset
         for (var iv : islandsPane.getChildren())
             ((IslandView) iv).getMotherNatureView().setState(MotherNatureView.State.INVISIBLE);
@@ -189,11 +157,8 @@ public class GameController implements ScreenController, Client.GameUpdateListen
     }
 
     public void setVisibilityForExpertMode(boolean expertMode) {
-        player2Coin.setVisible(expertMode);
-        player2Coin.setManaged(expertMode);
-
-        player3Coin.setVisible(expertMode);
-        player3Coin.setManaged(expertMode);
+        player2BoardView.setVisibilityForExpertMode(expertMode);
+        player3BoardView.setVisibilityForExpertMode(expertMode);
 
         myCoin.setVisible(expertMode);
         myCoin.setManaged(expertMode);
@@ -203,11 +168,8 @@ public class GameController implements ScreenController, Client.GameUpdateListen
     }
 
     public void setVisibilityForNumberOfPlayers(int numberOfPlayers) {
-        player3Board.setVisible(numberOfPlayers == 3);
-        player3Board.setManaged(numberOfPlayers == 3);
-
-        player3NicknameLabel.setVisible(numberOfPlayers == 3);
-        player3NicknameLabel.setManaged(numberOfPlayers == 3);
+        player3BoardView.setVisible(numberOfPlayers == 3);
+        player3BoardView.setManaged(numberOfPlayers == 3);
     }
 
     public void setMyStudentsBoard(ReducedPlayer myPlayer, Map<Student, String> professors) {
@@ -310,38 +272,6 @@ public class GameController implements ScreenController, Client.GameUpdateListen
         myCoinLabel.setText(coin + "");
     }
 
-    public void setPlayer2Board(ReducedPlayer player2, Map<Student, String> professors) {
-        setPlayerBoard(player2, professors, player2NicknameLabel, player2Students, player2CoinLabel, player2TowerLabel, player2Tower);
-    }
-
-    public void setPlayer3Board(ReducedPlayer player3, Map<Student, String> professors) {
-        setPlayerBoard(player3, professors, player3NicknameLabel, player3Students, player3CoinLabel, player3TowerLabel, player3Tower);
-    }
-
-    private void setPlayerBoard(ReducedPlayer player, Map<Student, String> professors, Label nicknameLabel, VBox playerStudents, Label playerCoinLabel, Label playerTowerLabel, TowerView playerTower) {
-        playerStudents.getChildren().clear();
-
-        nicknameLabel.setText(player.nickname());
-
-        for (Student s : Student.values()) {
-            var hbox = new HBox();
-            hbox.setSpacing(5);
-            var sv = new StudentView(s, player.nickname().equals(professors.get(s)));
-            sv.setFitWidth(25);
-            sv.setFitHeight(25);
-
-            var label = new Label(player.school().getCountForStudent(s) + "(" + player.entrance().getCountForStudent(s) + ")");
-
-            hbox.getChildren().addAll(sv, label);
-
-            playerStudents.getChildren().add(hbox);
-        }
-
-        playerCoinLabel.setText(player.coins() + "");
-        playerTowerLabel.setText(player.towersCount() + "");
-        playerTower.setTowerColor(player.towerColor());
-    }
-
     @Override
     public void onShow() {
         Client.getInstance().addGameUpdateListener(this);
@@ -376,34 +306,38 @@ public class GameController implements ScreenController, Client.GameUpdateListen
         setVisibilityForNumberOfPlayers(game.numberOfPlayers());
         setVisibilityForExpertMode(game.expertMode());
         setIslands(game.islands());
-        setMotherNatureIndex(game.motherNaturePosition());
+        setMotherNaturePosition(game.motherNaturePosition());
         cloudsPane.setClouds(game.currentRound().clouds());
         setMyBoard(myPlayer, game.currentProfessors());
 
-        setPlayer2Board(otherPlayers.get(0), game.currentProfessors());
+        myPlayerBoardView.setPlayer(myPlayer);
+
+        player2BoardView.setPlayer(otherPlayers.get(0));
+        player2BoardView.setProfessors(game.currentProfessors());
 
         //TODO: improve
         //set card played by me
         var cardPlayedByMe = game.currentRound()
                 .playedAssistantCards()
                 .get(myPlayer.nickname());
-        myCard.setCard(cardPlayedByMe);
+        myPlayerBoardView.setPlayedCard(cardPlayedByMe);
 
         //set card played by player 2
         var cardPlayedByPlayer2 = game.currentRound()
                 .playedAssistantCards()
                 .get(otherPlayers.get(0).nickname());
-        player2Card.setCard(cardPlayedByPlayer2);
+        player2BoardView.setPlayedCard(cardPlayedByPlayer2);
 
         //set player if present
         if (game.numberOfPlayers() > 2) {
-            setPlayer3Board(otherPlayers.get(1), game.currentProfessors());
+            player3BoardView.setPlayer(otherPlayers.get(1));
+            player3BoardView.setProfessors(game.currentProfessors());
 
             //set card played by player 3
             var cardPlayedByPlayer3 = game.currentRound()
                     .playedAssistantCards()
                     .get(otherPlayers.get(1).nickname());
-            player3Card.setCard(cardPlayedByPlayer3);
+            player3BoardView.setPlayedCard(cardPlayedByPlayer3);
         }
 
         switch(game.currentState()) {
@@ -488,7 +422,7 @@ public class GameController implements ScreenController, Client.GameUpdateListen
                 }
             } else { //plan
                 setInfoString(InfoStrings.MY_TURN_PLAY_ASSISTANT_CARD);
-                setAssistantDeckVisible(true);
+                setAssistantDeckVisibility(true);
             }
         } else {
             setInfoString(InfoStrings.OTHER_PLAYER_WAIT_FOR_HIS_TURN, currentPlayer.nickname());
