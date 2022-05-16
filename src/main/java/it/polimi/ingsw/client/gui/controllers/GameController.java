@@ -11,12 +11,14 @@ import it.polimi.ingsw.common.reducedmodel.ReducedPlayer;
 import it.polimi.ingsw.common.requests.MoveMotherNatureRequest;
 import it.polimi.ingsw.common.requests.PlaceStudentsRequest;
 import it.polimi.ingsw.common.requests.PlayAssistantCardRequest;
-import it.polimi.ingsw.server.model.*;
+import it.polimi.ingsw.server.model.AssistantCard;
+import it.polimi.ingsw.server.model.Stage;
+import it.polimi.ingsw.server.model.Student;
+import it.polimi.ingsw.server.model.StudentsContainer;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
-import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 
@@ -64,86 +66,29 @@ public class GameController implements ScreenController, Client.GameUpdateListen
     @FXML
     private InfoLabel infoLabel;
     @FXML
-    private GridPane myStudentsBoard;
+    private StudentsBoardView myStudentsBoard;
     @FXML
     private Label myCoinLabel;
     private ReducedGame currentGame;
 
     private StudentsContainer studentsPlacedInSchool;
-
     private Map<Integer, StudentsContainer> studentsPlacedInIslands;
     private String myNickname;
-
-    private StudentSelectContextMenu studentSelectContextMenu;
-
     private ReducedPlayer myPlayer;
     private List<ReducedPlayer> otherPlayers;
-
-    private void setAssistantDeckVisibility(boolean visible) {
-        assistantCardsLayer.setVisible(visible);
-        assistantCardsLayer.setManaged(visible);
-    }
 
     private void setAssistantCardsDeck(Map<AssistantCard, Boolean> deck) {
         assistantCardsDeck.setDeck(deck);
         assistantCardsDeck.setOnCardSelected(card -> Client.getInstance().forwardGameRequest(
                 new PlayAssistantCardRequest(card),
-                () -> setAssistantDeckVisibility(false),
+                () -> assistantCardsLayer.setVisible(false),
                 err -> assistantCardsDeck.showError("Non puoi giocare questa carta")
         ));
-    }
-
-    private void setMyTowers(Tower towerColor, int numberOfTowers) {
-        myTower.setTowerColor(towerColor);
-        myTowerLabel.setText(numberOfTowers + "");
     }
 
     @FXML
     private void onLeavePressed() {
         Client.getInstance().leaveGame();
-    }
-
-    public void setMotherNaturePosition(int index) {
-        //reset
-        for (var iv : islandsPane.getChildren())
-            ((IslandView) iv).getMotherNatureView().setState(MotherNatureView.State.INVISIBLE);
-
-        var iv = (IslandView) islandsPane.getChildren().get(index);
-        iv.getMotherNatureView().setState(MotherNatureView.State.ENABLED);
-    }
-
-    public void setMotherNaturePossibleSteps(int index, int steps) {
-        //reset previous possible steps
-        for (var n : islandsPane.getChildren()) {
-            var iv = (IslandView) n;
-            var mn = iv.getMotherNatureView();
-            iv.setDisable(true);
-
-            if (mn.getState() != MotherNatureView.State.ENABLED)
-                mn.setState(MotherNatureView.State.INVISIBLE);
-        }
-
-        var currIndex = (index + 1) % islandsPane.getChildren().size();
-
-        var currStep = 1;
-
-        while (currStep <= steps) {
-            //TODO: improve
-            final var currStepFinal = currStep;
-
-            var iv = (IslandView) islandsPane.getChildren().get(currIndex);
-            if (currIndex != index) {
-                iv.getMotherNatureView().setState(MotherNatureView.State.DISABLED);
-                iv.setOnMouseClicked(e -> Client.getInstance().forwardGameRequest(
-                        new MoveMotherNatureRequest(currStepFinal),
-                        () -> {},
-                        err -> Utils.LOGGER.info("Error moving mother nature: " + err.getMessage())
-                ));
-            }
-            iv.setDisable(false);
-            currIndex = (currIndex + 1) % islandsPane.getChildren().size();
-            currStep++;
-        }
     }
 
     public void setVisibilityForExpertMode(boolean expertMode) {
@@ -160,35 +105,6 @@ public class GameController implements ScreenController, Client.GameUpdateListen
     public void setVisibilityForNumberOfPlayers(int numberOfPlayers) {
         player3BoardView.setVisible(numberOfPlayers == 3);
         player3BoardView.setManaged(numberOfPlayers == 3);
-    }
-
-    public void setMyStudentsBoard(ReducedPlayer myPlayer, Map<Student, String> professors) {
-        myStudentsBoard.getChildren().clear();
-
-        var l = new Label("Entrata");
-        l.setId("my_students_board_small_label");
-        myStudentsBoard.add(l, 2, 1);
-
-        l = new Label("Sala");
-        l.setId("my_students_board_small_label");
-        myStudentsBoard.add(l, 2, 3);
-
-        for (Student s : Student.values()) {
-            var sv = new StudentView(s, myNickname.equals(professors.get(s)));
-            sv.setFitWidth(40);
-            sv.setFitHeight(40);
-            sv.setId("selectable_student_view");
-            sv.setOnMouseClicked(e -> placeStudentInSchool(s));
-            myStudentsBoard.add(sv, s.ordinal(), 0);
-
-            var entranceLabel = new Label(myPlayer.entrance().getCountForStudent(s) + "");
-            entranceLabel.setId("my_students_board_label");
-            myStudentsBoard.add(entranceLabel, s.ordinal(), 2);
-
-            var schoolLabel = new Label(myPlayer.school().getCountForStudent(s) + "");
-            schoolLabel.setId("my_students_board_label");
-            myStudentsBoard.add(schoolLabel, s.ordinal(), 4);
-        }
     }
 
     private void checkIfAllStudentsPlaced(){
@@ -213,7 +129,8 @@ public class GameController implements ScreenController, Client.GameUpdateListen
                     );
         } else {
             infoLabel.setInfoString(InfoString.MY_TURN_PLACE_STUDENTS, studentsToMove-count);
-            setMyStudentsBoard(findMyPlayer(currentGame), currentGame.currentProfessors());
+            myStudentsBoard.setPlayer(myPlayer);
+            myStudentsBoard.setProfessors(currentGame.currentProfessors());
         }
     }
 
@@ -247,16 +164,16 @@ public class GameController implements ScreenController, Client.GameUpdateListen
         checkIfAllStudentsPlaced();
     }
 
-    public void setMyCoin(int coin) {
-        myCoinLabel.setText(coin + "");
-    }
-
     @Override
     public void onShow() {
         Client.getInstance().addGameUpdateListener(this);
+
+        //reset view
         myNickname = Client.getInstance().getNickname();
         leaveButton.setText("ABBANDONA");
         gameTitlePopup.hide();
+        assistantCardsLayer.setVisible(false);
+        myStudentsBoard.setStudentsClickDisable(true);
     }
 
     @Override
@@ -280,15 +197,15 @@ public class GameController implements ScreenController, Client.GameUpdateListen
 
         characterCards.setDisable(true);
         cloudsPane.setDisable(true);
-        myStudentsBoard.setDisable(true);
+        myStudentsBoard.setStudentsClickDisable(true);
         studentsPlacedInSchool = new StudentsContainer();
         studentsPlacedInIslands = new HashMap<>();
-        setAssistantDeckVisibility(false);
+        assistantCardsLayer.setVisible(false);
 
         setVisibilityForNumberOfPlayers(game.numberOfPlayers());
         setVisibilityForExpertMode(game.expertMode());
         islandsPane.setIslands(game.islands());
-        setMotherNaturePosition(game.motherNaturePosition());
+        islandsPane.setMotherNaturePosition(game.motherNaturePosition());
         cloudsPane.setClouds(game.currentRound().clouds());
         setMyBoard(myPlayer, game.currentProfessors());
 
@@ -380,20 +297,20 @@ public class GameController implements ScreenController, Client.GameUpdateListen
                                         Constants.ThreePlayers.STUDENTS_TO_MOVE;
 
                         infoLabel.setInfoString(InfoString.MY_TURN_PLACE_STUDENTS, studentsToMove);
-                        myStudentsBoard.setDisable(false);
-                        setIslandsForPlacingStudents();
+                        myStudentsBoard.setStudentsClickDisable(false);
+                        islandsPane.arrangeIslandsForPlacingStudents(myPlayer, this::placeStudentInIsland);
                     }
                     case STUDENTS_PLACED -> {
                         //play character card or move mother nature
                         infoLabel.setInfoString(InfoString.MY_TURN_PLAY_CHARACTER_CARD, maxMotherNatureSteps);
                         characterCards.setDisable(false);
 
-                        setMotherNaturePossibleSteps(game.motherNaturePosition(), maxMotherNatureSteps);
+                        arrangeIslandsForMotherNatureMovement(game.motherNaturePosition(), maxMotherNatureSteps);
                     }
                     case CARD_PLAYED -> {
                         //move mother nature
                         infoLabel.setInfoString(InfoString.MY_TURN_MOVE_MOTHER_NATURE, maxMotherNatureSteps);
-                        setMotherNaturePossibleSteps(game.motherNaturePosition(), maxMotherNatureSteps);
+                        arrangeIslandsForMotherNatureMovement(game.motherNaturePosition(), maxMotherNatureSteps);
                     }
                     case MOTHER_NATURE_MOVED -> {
                         //select cloud
@@ -404,39 +321,37 @@ public class GameController implements ScreenController, Client.GameUpdateListen
                 }
             } else { //plan
                 infoLabel.setInfoString(InfoString.MY_TURN_PLAY_ASSISTANT_CARD);
-                setAssistantDeckVisibility(true);
+                assistantCardsLayer.setVisible(true);
             }
         } else {
             infoLabel.setInfoString(InfoString.OTHER_PLAYER_WAIT_FOR_HIS_TURN, currentPlayer);
         }
     }
 
-    private void setIslandsForPlacingStudents() {
-        for (var n : islandsPane.getChildren()) {
-            var iv = (IslandView) n;
-            iv.setDisable(false);
-
-            iv.setOnMouseClicked(e -> {
-                if(studentSelectContextMenu != null)
-                    studentSelectContextMenu.hide();
-
-                studentSelectContextMenu = new StudentSelectContextMenu(
-                        findMyPlayer(currentGame).entrance(),
-                        s -> placeStudentInIsland(s, iv)
-                );
-
-                studentSelectContextMenu.show(iv, e.getScreenX(), e.getScreenY());
-            });
-        }
+    private void arrangeIslandsForMotherNatureMovement(int motherNaturePosition, int maxMotherNatureSteps) {
+        islandsPane.arrangeIslandsForMotherNatureMovement(motherNaturePosition, maxMotherNatureSteps,
+                s -> Client.getInstance().forwardGameRequest(
+                        new MoveMotherNatureRequest(s),
+                        () -> {},
+                        err -> Utils.LOGGER.info("Error moving mother nature: " + err.getMessage())
+                ));
     }
 
     private void setMyBoard(ReducedPlayer myPlayer, Map<Student, String> professors) {
-        setMyStudentsBoard(myPlayer, professors);
-        setMyCoin(myPlayer.coins());
-        setMyTowers(myPlayer.towerColor(), myPlayer.towersCount());
+        myStudentsBoard.setPlayer(myPlayer);
+        myStudentsBoard.setProfessors(professors);
+        myStudentsBoard.setOnStudentClickListener(this::placeStudentInSchool);
+        myCoinLabel.setText(String.valueOf(myPlayer.coins()));
+        myTower.setTowerColor(myPlayer.towerColor());
+        myTowerLabel.setText(String.valueOf(myPlayer.towersCount()));
         setAssistantCardsDeck(myPlayer.deck());
     }
 
+    /**
+     * Find my player in the given game
+     * @param game
+     * @return my player
+     */
     private ReducedPlayer findMyPlayer(ReducedGame game) {
         return game.players()
                 .stream()

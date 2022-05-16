@@ -79,23 +79,12 @@
     -fx-text-fill: #fff;
 }
 
-#my_students_board {
-    -fx-border-color: #fff;
-    -fx-border-width: 4;
-    -fx-border-radius: 20;
-    -fx-background-radius: 20;
-}
-
 #info_label {
     -fx-border-color: #fff;
     -fx-border-width: 3;
     -fx-border-radius: 5;
     -fx-padding: 5px;
     -fx-font-size: 22px;
-}
-
-#my_students_board_small_label {
-    -fx-font-size: 15px;
 }
 
 #character_card:hover {
@@ -112,18 +101,6 @@
 
 #card_selection_layer {
     -fx-background-color: rgba(0, 0, 0, 0.75);
-}
-
-#selectable_student_view:hover {
-    -fx-scale-x: 1.05;
-    -fx-scale-y: 1.05;
-    -fx-cursor: hand;
-}
-
-#selectable_student_view:pressed {
-    -fx-scale-x: 0.95;
-    -fx-scale-y: 0.95;
-    -fx-cursor: hand;
 }
 
 .context-menu {

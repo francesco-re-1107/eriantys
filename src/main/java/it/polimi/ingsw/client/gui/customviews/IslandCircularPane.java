@@ -1,6 +1,8 @@
 package it.polimi.ingsw.client.gui.customviews;
 
 import it.polimi.ingsw.common.reducedmodel.ReducedIsland;
+import it.polimi.ingsw.common.reducedmodel.ReducedPlayer;
+import it.polimi.ingsw.server.model.Student;
 import javafx.geometry.HPos;
 import javafx.geometry.VPos;
 import javafx.scene.Node;
@@ -8,11 +10,15 @@ import javafx.scene.layout.Pane;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.BiConsumer;
+import java.util.function.IntConsumer;
 
 public class IslandCircularPane extends Pane {
 
     private List<ReducedIsland> islands;
 
+    private StudentSelectContextMenu studentSelectContextMenu;
+    
     public IslandCircularPane(){
         this(new ArrayList<>());
     }
@@ -53,8 +59,7 @@ public class IslandCircularPane extends Pane {
 
     }
 
-    public void addIsland(ReducedIsland i) {
-        islands.add(i);
+    private void addIsland(ReducedIsland i) {
         var iv = new IslandView(i, getChildren().size());
 
         getChildren().add(iv);
@@ -66,5 +71,59 @@ public class IslandCircularPane extends Pane {
 
         for (var i : islands)
             addIsland(i);
+    }
+
+    public void setMotherNaturePosition(int index) {
+        //reset
+        for (var iv : getChildren())
+            ((IslandView) iv).getMotherNatureView().setState(MotherNatureView.State.INVISIBLE);
+
+        var iv = (IslandView) getChildren().get(index);
+        iv.getMotherNatureView().setState(MotherNatureView.State.ENABLED);
+    }
+
+    public void arrangeIslandsForMotherNatureMovement(int mnIndex, int steps, IntConsumer listener){
+        //disable all islands
+        for (int i = 0; i < getChildren().size(); i++) {
+            var iv = (IslandView) getChildren().get(i);
+            iv.setDisable(true);
+
+            //var isPossibleStep = (i > mnIndex && i <= mnIndex + steps) ||
+            //                        (i < ((mnIndex + steps) % islands.size()) && (i + steps) >= islands.size());
+
+            var isPossibleStep = (i <= mnIndex + steps && i > mnIndex) || (i <= (mnIndex + steps) % islands.size() && i <= mnIndex && mnIndex + steps >= islands.size());
+
+            if (mnIndex == i)
+                iv.getMotherNatureView().setState(MotherNatureView.State.ENABLED);
+            else if (isPossibleStep)
+                iv.getMotherNatureView().setState(MotherNatureView.State.DISABLED);
+            else
+                iv.getMotherNatureView().setState(MotherNatureView.State.INVISIBLE);
+
+            var stepsMade = mnIndex < i ? i - mnIndex : islands.size() - Math.abs(i - mnIndex);
+            if(isPossibleStep) {
+                iv.setDisable(false);
+                iv.setOnMouseClicked(e -> listener.accept(stepsMade));
+            }
+        }
+    }
+
+    public void arrangeIslandsForPlacingStudents(ReducedPlayer myPlayer, BiConsumer<Student, IslandView> listener) {
+        for (var n : getChildren()) {
+            var iv = (IslandView) n;
+            iv.setDisable(false);
+
+            iv.setOnMouseClicked(e -> {
+                if(studentSelectContextMenu != null)
+                    studentSelectContextMenu.hide();
+
+                studentSelectContextMenu = new StudentSelectContextMenu(
+                        myPlayer.entrance(),
+                        s -> listener.accept(s, iv)
+                );
+
+                studentSelectContextMenu.show(iv, e.getScreenX(), e.getScreenY());
+            });
+        }
     }
 }
