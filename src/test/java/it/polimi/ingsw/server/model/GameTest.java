@@ -228,6 +228,20 @@ class GameTest {
                 InvalidOperationException.class,
                 () -> g.playAssistantCard(players.get(1), AssistantCard.getDefaultDeck().get(0))
         );
+
+        //set player disconnected
+        g.setPlayerDisconnected(players.get(0));
+        assertFalse(players.get(0).isConnected());
+        assertEquals(Game.State.PAUSED, g.getGameState());
+
+        //set player reconnected
+        g.setPlayerReconnected(players.get(0));
+        assertTrue(players.get(0).isConnected());
+        assertEquals(Game.State.STARTED, g.getGameState());
+
+        //leave game
+        g.leaveGame(players.get(0));
+        assertEquals(Game.State.TERMINATED, g.getGameState());
     }
 
 

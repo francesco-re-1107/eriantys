@@ -5,6 +5,7 @@ import it.polimi.ingsw.common.exceptions.StudentsMaxReachedException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import java.util.Collections;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -198,6 +199,23 @@ class StudentsContainerTest {
     @Test
     void getStudents() {
         assertNotNull(container.getStudents());
+    }
+
+    @Test
+    void toList() {
+        container.addStudents(Student.RED, 3)
+                .addStudents(Student.GREEN, 5)
+                .addStudents(Student.BLUE, 2)
+                .addStudents(Student.YELLOW, 1);
+
+        var students = container.toList();
+
+        assertEquals(11, students.size());
+        assertEquals(3, Collections.frequency(students, Student.RED));
+        assertEquals(5, Collections.frequency(students, Student.GREEN));
+        assertEquals(2, Collections.frequency(students, Student.BLUE));
+        assertEquals(1, Collections.frequency(students, Student.YELLOW));
+        assertEquals(0, Collections.frequency(students, Student.PINK));
     }
 
 }
