@@ -16,7 +16,7 @@ import java.util.Map;
  */
 public record ReducedRound(
         Stage stage,
-        ReducedPlayer currentPlayer,
+        String currentPlayer, //nickname
         List<StudentsContainer> clouds,
         int additionalMotherNatureMoves,
         Map<String, AssistantCard> playedAssistantCards //nickname -> card
@@ -35,7 +35,7 @@ public record ReducedRound(
 
         return new ReducedRound(
                 r.getStage(),
-                ReducedPlayer.fromPlayer(r.getCurrentPlayer()),
+                r.getCurrentPlayer().getNickname(),
                 r.getClouds(),
                 r.getAdditionalMotherNatureMoves(),
                 playedAssistantCards

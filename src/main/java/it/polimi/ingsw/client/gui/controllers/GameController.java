@@ -224,13 +224,13 @@ public class GameController implements ScreenController, Client.GameUpdateListen
             return true;
         } else {
             setInfoString(InfoStrings.MY_TURN_PLACE_STUDENTS, studentsToMove-count);
-            setMyStudentsBoard(currentGame.currentRound().currentPlayer(), currentGame.currentProfessors());
+            setMyStudentsBoard(findMyPlayer(currentGame), currentGame.currentProfessors());
         }
         return false;
     }
 
     private void placeStudentInSchool(Student s) {
-        var myPlayer = currentGame.currentRound().currentPlayer();
+        var myPlayer = findMyPlayer(currentGame);
 
         if(myPlayer.entrance().getCountForStudent(s) <= 0) return;
 
@@ -243,7 +243,7 @@ public class GameController implements ScreenController, Client.GameUpdateListen
     }
 
     private void placeStudentInIsland(Student s, IslandView islandView) {
-        var myPlayer = currentGame.currentRound().currentPlayer();
+        var myPlayer = findMyPlayer(currentGame);
 
         if(myPlayer.entrance().getCountForStudent(s) <= 0) return;
 
@@ -383,7 +383,7 @@ public class GameController implements ScreenController, Client.GameUpdateListen
         var currentPlayer = game.currentRound().currentPlayer();
 
         //my turn
-        if (currentPlayer.equals(myPlayer)) {
+        if (currentPlayer.equals(myPlayer.nickname())) {
             if (game.currentRound().stage() instanceof Stage.Attack s) { //attack
                 var maxMotherNatureSteps =
                         cardPlayedByMe.motherNatureMaxMoves() +
@@ -425,7 +425,7 @@ public class GameController implements ScreenController, Client.GameUpdateListen
                 setAssistantDeckVisibility(true);
             }
         } else {
-            setInfoString(InfoStrings.OTHER_PLAYER_WAIT_FOR_HIS_TURN, currentPlayer.nickname());
+            setInfoString(InfoStrings.OTHER_PLAYER_WAIT_FOR_HIS_TURN, currentPlayer);
         }
     }
 
@@ -439,7 +439,7 @@ public class GameController implements ScreenController, Client.GameUpdateListen
                     studentSelectContextMenu.hide();
 
                 studentSelectContextMenu = new StudentSelectContextMenu(
-                        currentGame.currentRound().currentPlayer().entrance(),
+                        findMyPlayer(currentGame).entrance(),
                         s -> placeStudentInIsland(s, iv)
                 );
 
