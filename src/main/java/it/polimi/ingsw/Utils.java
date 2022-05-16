@@ -1,10 +1,10 @@
 package it.polimi.ingsw;
 
 import java.io.InputStream;
+import java.security.SecureRandom;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Properties;
-import java.util.Random;
 import java.util.logging.ConsoleHandler;
 import java.util.logging.Level;
 import java.util.logging.LogManager;
@@ -47,7 +47,7 @@ public class Utils {
 
     private Utils() {}
 
-    public static AppConfig GetAppConfig(){
+    public static AppConfig getAppConfig(){
         Properties prop = new Properties();
         try {
             InputStream is = Utils.class.getClassLoader().getResourceAsStream("app.config");
@@ -77,17 +77,20 @@ public class Utils {
         return new HashSet<>(list).equals(new HashSet<>(anotherList));
     }
 
+    /**
+     * Check if the running OS is Windows
+     * @return true if the OS is Windows, false otherwise
+     */
+    public static boolean isWindows(){
+        return System.getProperty("os.name").toLowerCase().contains("win");
+    }
+
     public static String generateRandomNickname() {
-        var r = new Random();
+        var r = new SecureRandom();
         var part1 = Constants.NICKNAMES_PART_1.get(r.nextInt(Constants.NICKNAMES_PART_1.size()));
         var part2 = Constants.NICKNAMES_PART_2.get(r.nextInt(Constants.NICKNAMES_PART_2.size()));
 
-        var nick = new StringBuilder();
-        nick.append(part1);
-        nick.append(part2);
         //append a random digit
-        nick.append(r.nextInt(10));
-
-        return nick.toString();
+        return part1 + part2 + r.nextInt(10);
     }
 }

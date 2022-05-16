@@ -22,11 +22,11 @@ public class AssistantCardView extends StackPane implements EventHandler<MouseEv
 
     private Optional<AssistantCard> card = Optional.empty();
 
-    private final ImageView image;
+    private ImageView image;
 
-    private final VBox description;
-    private final Label turnPriorityLabel;
-    private final Label motherNatureLabel;
+    private VBox description;
+    private Label turnPriorityLabel;
+    private Label motherNatureLabel;
 
     private static final Image emptyImage;
     private static final Map<String, Image> assistantCardImages = new HashMap<>();
@@ -36,29 +36,34 @@ public class AssistantCardView extends StackPane implements EventHandler<MouseEv
         emptyImage = new Image(AssistantCardView.class.getResourceAsStream("/assets/assistant_cards/empty.png"));
 
         for(AssistantCard c : AssistantCard.getDefaultDeck()) {
-            var name = getCardName(c);
+            var name = c.getName();
             var path = "/assets/assistant_cards/" + name + ".png";
             assistantCardImages.put(name, new Image(AssistantCardView.class.getResourceAsStream(path)));
         }
     }
 
-    private static String getCardName(AssistantCard card) {
-        return card.turnPriority() + "_" +  card.motherNatureMaxMoves();
+    public AssistantCardView() {
+        this(null);
     }
 
-    public AssistantCardView() {
+    public AssistantCardView(AssistantCard card) {
         super();
 
         setId("assistant_card");
-        image = new ImageView();
-
-        image.setImage(getCurrentImage());
-        image.setPreserveRatio(true);
-
-        image.setFitHeight(150);
         setAlignment(Pos.TOP_CENTER);
+        getStylesheets().add(getClass().getResource("/css/assistant_card.css").toExternalForm());
+        setupElements();
 
+        setOnMouseEntered(this);
+        setOnMouseExited(this);
 
+        setCard(card);
+    }
+
+    private void setupElements() {
+        image = new ImageView();
+        image.setPreserveRatio(true);
+        image.setFitHeight(150);
 
         description = new VBox();
         description.setMaxHeight(150);
@@ -66,26 +71,15 @@ public class AssistantCardView extends StackPane implements EventHandler<MouseEv
         description.setSpacing(15);
         description.setId("assistant_card_description");
         description.setAlignment(Pos.CENTER);
+
         turnPriorityLabel = new Label("");
         motherNatureLabel = new Label("");
 
-        description.getChildren().add(turnPriorityLabel);
-        description.getChildren().add(motherNatureLabel);
+        description.getChildren().addAll(turnPriorityLabel, motherNatureLabel);
 
-        getChildren().add(image);
-        getChildren().add(description);
-
-        getStylesheets().add(getClass().getResource("/css/assistant_card.css").toExternalForm());
-
-        setOnMouseEntered(this);
-        setOnMouseExited(this);
+        getChildren().addAll(image, description);
     }
 
-    //TODO: fix
-    public AssistantCardView(AssistantCard card) {
-        this();
-        this.card = Optional.of(card);
-    }
 
     public void setGrayedOut(boolean grayedOut) {
         var desaturate = new ColorAdjust();
@@ -101,38 +95,20 @@ public class AssistantCardView extends StackPane implements EventHandler<MouseEv
         }
     }
 
-    public AssistantCardView(int index) {
-        this(AssistantCard.getDefaultDeck().get(index));
+    public void setCard(AssistantCard card) {
+        this.card = Optional.ofNullable(card);
+
+        if(card != null) {
+            image.setImage(assistantCardImages.get(card.getName()));
+            turnPriorityLabel.setText(String.valueOf(card.turnPriority()));
+            motherNatureLabel.setText(String.valueOf(card.motherNatureMaxMoves()));
+        } else {
+            image.setImage(emptyImage);
+        }
     }
 
     public Optional<AssistantCard> getCard() {
         return card;
-    }
-
-    public void setEmpty() {
-        setCard(null);
-    }
-
-    public void setCard(AssistantCard card) {
-        this.card = Optional.ofNullable(card);
-        updateView();
-    }
-
-    private void updateView() {
-        image.setImage(getCurrentImage());
-
-        if(card.isPresent()) {
-            turnPriorityLabel.setText(String.valueOf(card.get().turnPriority()));
-            motherNatureLabel.setText(String.valueOf(card.get().motherNatureMaxMoves()));
-        }
-    }
-
-    private Image getCurrentImage() {
-        if(card.isPresent()){
-            return assistantCardImages.get(getCardName(card.get()));
-        }else{
-            return emptyImage;
-        }
     }
 
     @Override
@@ -140,13 +116,13 @@ public class AssistantCardView extends StackPane implements EventHandler<MouseEv
         if(card.isEmpty()) return;
 
         if(mouseEvent.getEventType() == MouseEvent.MOUSE_ENTERED){
-            FadeTransition ft = new FadeTransition(Duration.millis(150), description);
+            var ft = new FadeTransition(Duration.millis(150), description);
             ft.setFromValue(0);
             ft.setToValue(1);
             ft.play();
         }else if(mouseEvent.getEventType() == MouseEvent.MOUSE_EXITED){
             setCursor(Cursor.DEFAULT);
-            FadeTransition ft = new FadeTransition(Duration.millis(150), description);
+            var ft = new FadeTransition(Duration.millis(150), description);
             ft.setFromValue(1);
             ft.setToValue(0);
             ft.play();

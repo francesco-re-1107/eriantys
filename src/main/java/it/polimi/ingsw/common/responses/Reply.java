@@ -28,7 +28,7 @@ public abstract class Reply extends Response {
      * @param requestId
      * @param isSuccessful
      */
-    public Reply(UUID requestId, boolean isSuccessful) {
+    protected Reply(UUID requestId, boolean isSuccessful) {
         this.requestId = requestId;
         this.isSuccessful = isSuccessful;
     }
@@ -36,7 +36,7 @@ public abstract class Reply extends Response {
     /**
      * Create a reply to the specified request which failed because of the specified error.
      */
-    public Reply(UUID requestId, Throwable throwable) {
+    protected Reply(UUID requestId, Throwable throwable) {
         this(requestId, false);
         this.throwable = throwable;
     }

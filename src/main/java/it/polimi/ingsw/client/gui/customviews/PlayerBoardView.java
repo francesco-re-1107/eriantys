@@ -11,7 +11,7 @@ import javafx.scene.image.ImageView;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 
-import java.util.HashMap;
+import java.util.EnumMap;
 import java.util.Map;
 import java.util.Objects;
 
@@ -25,8 +25,8 @@ public class PlayerBoardView extends VBox {
     private Label coinLabel;
     private TowerView towerView;
     private Label towerLabel;
-    private final Map<Student, StudentView> studentViews = new HashMap<>();
-    private final Map<Student, Label> studentLabels = new HashMap<>();
+    private final Map<Student, StudentView> studentViews = new EnumMap<>(Student.class);
+    private final Map<Student, Label> studentLabels = new EnumMap<>(Student.class);
 
     public PlayerBoardView() {
         this(false);

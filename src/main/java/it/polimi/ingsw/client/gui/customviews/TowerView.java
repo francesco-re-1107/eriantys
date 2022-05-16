@@ -4,7 +4,7 @@ import it.polimi.ingsw.server.model.Tower;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 
-import java.util.HashMap;
+import java.util.EnumMap;
 import java.util.Map;
 
 public class TowerView extends ImageView {
@@ -15,7 +15,7 @@ public class TowerView extends ImageView {
         this(Tower.WHITE);
     }
 
-    private static final Map<Tower, Image> towersImages = new HashMap<>();
+    private static final Map<Tower, Image> towersImages = new EnumMap<>(Tower.class);
 
     static {
         for(Tower tower : Tower.values())

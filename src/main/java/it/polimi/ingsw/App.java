@@ -4,13 +4,6 @@ import it.polimi.ingsw.client.gui.GUI;
 import it.polimi.ingsw.server.Server;
 import javafx.application.Application;
 
-import java.io.FileInputStream;
-import java.util.Properties;
-
-/**
- * Hello world!
- *
- */
 public class App {
     public static void main(String[] args) {
         var client = false;
@@ -39,7 +32,7 @@ public class App {
      * Start the server
      */
     public static void startServer() {
-        new Server(Utils.GetAppConfig().port())
+        new Server(Utils.getAppConfig().port())
                 .startListening();
     }
 

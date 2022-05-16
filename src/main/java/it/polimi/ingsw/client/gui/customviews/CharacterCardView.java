@@ -4,6 +4,8 @@ import it.polimi.ingsw.common.reducedmodel.ReducedCharacterCard;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Optional;
 
 public class CharacterCardView extends ImageView {
@@ -11,21 +13,24 @@ public class CharacterCardView extends ImageView {
 
     private static final Image emptyImage;
 
+    private static final Map<String, Image> charactersImages = new HashMap<>();
+
     static {
         emptyImage = new Image(CharacterCardView.class.getResourceAsStream("/assets/character_cards/empty.png"));
+
     }
 
     public CharacterCardView() {
-        super();
-
-        setImage(getCurrentImage());
-        setPreserveRatio(true);
-        setId("card");
+        this(null);
     }
 
     public CharacterCardView(ReducedCharacterCard card) {
-        this();
-        this.card = Optional.of(card);
+        super();
+        this.card = Optional.ofNullable(card);
+
+        setImage(getCurrentImage());
+        setPreserveRatio(true);
+        setId("character_card");
     }
 
     private Image getCurrentImage() {

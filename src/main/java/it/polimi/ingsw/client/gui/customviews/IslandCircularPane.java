@@ -28,7 +28,7 @@ public class IslandCircularPane extends Pane {
 
     @Override
     protected void layoutChildren() {
-        if(getChildren().size() == 0) return;
+        if(getChildren().isEmpty()) return;
 
         var increment = 360 / getChildren().size();
         var degree = -90;
@@ -58,5 +58,13 @@ public class IslandCircularPane extends Pane {
         var iv = new IslandView(i, getChildren().size());
 
         getChildren().add(iv);
+    }
+
+    public void setIslands(List<ReducedIsland> islands) {
+        this.islands = islands;
+        getChildren().clear();
+
+        for (var i : islands)
+            addIsland(i);
     }
 }

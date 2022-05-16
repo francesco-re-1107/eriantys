@@ -16,7 +16,7 @@ import java.util.List;
 
 public class IslandView extends StackPane {
 
-    private ReducedIsland island;
+    private final ReducedIsland island;
 
     private final int index;
 

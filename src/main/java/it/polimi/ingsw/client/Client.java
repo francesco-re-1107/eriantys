@@ -89,8 +89,6 @@ public class Client implements CommunicatorListener {
 
     @Override
     public void onDisconnect() {
-        //tryReconnection();
-
         communicator = null;
         navigationManager.clearBackStack();
         navigationManager.navigateTo(Screen.SERVER_CONNECTION_MENU, false);

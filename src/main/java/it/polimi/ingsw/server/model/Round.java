@@ -84,7 +84,7 @@ public class Round implements Serializable {
     }
 
     public void setAttackSubstage(Stage.Attack newStage){
-        if(Stage.IsEqOrPost(stage, newStage))
+        if(Stage.isEqualOrPost(stage, newStage))
             throw new InvalidOperationException("newStage must be post to current stage");
         stage = newStage;
     }

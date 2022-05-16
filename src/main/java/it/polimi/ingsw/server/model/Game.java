@@ -294,7 +294,7 @@ public class Game implements Serializable {
             throw new InvalidOperationException("Cannot move mother nature for less than 1 step");
 
         if ((!(currentRound.getStage() instanceof Stage.Attack)) ||
-                Stage.IsEqOrPost(currentRound.getStage(), Stage.Attack.MOTHER_NATURE_MOVED))
+                Stage.isEqualOrPost(currentRound.getStage(), Stage.Attack.MOTHER_NATURE_MOVED))
             throw new InvalidOperationException("Not currently in ATTACK mode");
 
         //use get directly cause in attack stage every player has played its card
@@ -407,7 +407,7 @@ public class Game implements Serializable {
         checkIfCurrentPlayer(player);
 
         if ((!(currentRound.getStage() instanceof Stage.Attack)) ||
-                Stage.IsEqOrPost(currentRound.getStage(), Stage.Attack.CARD_PLAYED))
+                Stage.isEqualOrPost(currentRound.getStage(), Stage.Attack.CARD_PLAYED))
             throw new InvalidOperationException();
 
         if (!characterCards.containsKey(card.getName()))

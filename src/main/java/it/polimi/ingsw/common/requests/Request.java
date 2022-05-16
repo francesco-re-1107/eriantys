@@ -12,7 +12,7 @@ public abstract class Request implements Serializable {
      */
     private final UUID requestId;
 
-    public Request() {
+    protected Request() {
         this.requestId = UUID.randomUUID();
     }
 

@@ -15,7 +15,6 @@ import java.util.UUID;
 
 public class GameListItemView extends HBox {
 
-    private final GameListItem item;
     private final ImageView playerIcon;
     private final Label playersLabel;
     private final Label expertLabel;
@@ -23,13 +22,12 @@ public class GameListItemView extends HBox {
 
     public GameListItemView() {
         this(
-                new GameListItem(UUID.randomUUID(), 3, 1, true)
+                new GameListItem(UUID.randomUUID(), 0, 0, false)
         );
     }
 
     public GameListItemView(GameListItem item) {
         super();
-        this.item = item;
 
         setId("game_list_item");
         setPadding(new Insets(20));

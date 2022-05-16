@@ -15,14 +15,13 @@
         <AnchorPane id="dashboard" minWidth="650.0" maxWidth="650.0" SplitPane.resizableWithParent="false">
             <VBox prefHeight="800.0" prefWidth="500.0" AnchorPane.leftAnchor="0.0"
                   AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
-                <Label fx:id="infoLabel" wrapText="true" text="È il tuo turno: lorem ipsum" id="info_label"
-                       prefWidth="Infinity">
+                <InfoLabel fx:id="infoLabel" prefWidth="Infinity">
                     <VBox.margin>
-                        <Insets top="20.0" bottom="20.0" left="20.0" right="20.0"/>
+                        <Insets top="20" left="20" right="20" bottom="20"/>
                     </VBox.margin>
-                </Label>
+                </InfoLabel>
 
-                <HBox alignment="TOP_CENTER" spacing="20">
+                <HBox alignment="TOP_CENTER" spacing="30">
                     <PlayerBoardView fx:id="myPlayerBoardView" myBoard="true"/>
                     <PlayerBoardView fx:id="player2BoardView"/>
                     <PlayerBoardView fx:id="player3BoardView"/>

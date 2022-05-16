@@ -8,7 +8,8 @@ import it.polimi.ingsw.server.model.charactercards.MinstrelCharacterCard;
 
 public class ReducedMinstrelCharacterCard extends ReducedCharacterCard {
 
-    private final StudentsContainer studentsToAdd, studentsToRemove;
+    private final StudentsContainer studentsToAdd;
+    private final StudentsContainer studentsToRemove;
 
     public ReducedMinstrelCharacterCard(StudentsContainer studentsToAdd, StudentsContainer studentsToRemove) {
         this.studentsToAdd = studentsToAdd;

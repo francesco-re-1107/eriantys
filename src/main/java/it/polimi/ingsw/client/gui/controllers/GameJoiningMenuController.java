@@ -47,9 +47,7 @@ public class GameJoiningMenuController implements ScreenController {
     private void joinGame(GameListItem item) {
         Utils.LOGGER.info("Joining game " + item.uuid());
 
-        Client.getInstance().joinGame(item.uuid(), e -> {
-            showError(e.getMessage());
-        });
+        Client.getInstance().joinGame(item.uuid(), e -> showError(e.getMessage()));
     }
 
     private void showError(String message) {
@@ -85,10 +83,8 @@ public class GameJoiningMenuController implements ScreenController {
             public void run() {
                 Client.getInstance().getGameList(
                         list -> Platform.runLater(() -> setGamesList(list)),
-                        e -> {
-                            Utils.LOGGER.info(e.getMessage());
-                            //show error...
-                        });
+                        e -> Utils.LOGGER.info(e.getMessage())
+                );
             }
         }, 0, Constants.GAMES_LIST_REFRESH_INTERVAL);
     }

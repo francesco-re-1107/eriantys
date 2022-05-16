@@ -10,7 +10,9 @@ import javafx.scene.control.RadioButton;
 import javafx.scene.control.ToggleGroup;
 
 public class GameCreationMenuController implements ScreenController {
+    @FXML
     public ToggleGroup playersGroup;
+    @FXML
     public ToggleGroup expertGroup;
     @FXML
     public Label nicknameLabel;
@@ -49,9 +51,7 @@ public class GameCreationMenuController implements ScreenController {
     }
 
     public void createGame() {
-        Client.getInstance().createGame(numberOfPlayers, expertMode, e -> {
-            showCreationError(e.getMessage());
-        });
+        Client.getInstance().createGame(numberOfPlayers, expertMode, e -> showCreationError(e.getMessage()));
     }
 
     private void showCreationError(String message) {

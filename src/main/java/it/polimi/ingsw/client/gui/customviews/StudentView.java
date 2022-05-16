@@ -5,16 +5,16 @@ import javafx.scene.effect.Glow;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 
-import java.util.HashMap;
+import java.util.EnumMap;
 import java.util.Map;
 
 public class StudentView extends ImageView {
 
     private Student student;
     private boolean isProfessor;
-    private static final Map<Student, Image> studentsImages = new HashMap<>();
+    private static final Map<Student, Image> studentsImages = new EnumMap<>(Student.class);
 
-    private static final Map<Student, Image> professorsImages = new HashMap<>();
+    private static final Map<Student, Image> professorsImages = new EnumMap<>(Student.class);
 
     static {
         for(Student s : Student.values()) {

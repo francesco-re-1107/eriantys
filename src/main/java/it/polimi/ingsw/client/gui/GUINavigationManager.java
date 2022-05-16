@@ -14,9 +14,10 @@ import javafx.scene.paint.Paint;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 
+import java.util.ArrayDeque;
 import java.util.Arrays;
+import java.util.Deque;
 import java.util.Map;
-import java.util.Stack;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class GUINavigationManager implements NavigationManager {
@@ -25,7 +26,7 @@ public class GUINavigationManager implements NavigationManager {
 
     private Scene scene;
 
-    private final Stack<BackstackEntry> backstack;
+    private final Deque<BackstackEntry> backstack;
 
     private final Map<Screen, Parent> screens;
 
@@ -37,7 +38,7 @@ public class GUINavigationManager implements NavigationManager {
 
     public GUINavigationManager(Stage stage) {
         this.stage = stage;
-        this.backstack = new Stack<>();
+        this.backstack = new ArrayDeque<>();
         this.screens = new ConcurrentHashMap<>();
         this.screenControllers = new ConcurrentHashMap<>();
 

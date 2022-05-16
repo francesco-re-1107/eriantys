@@ -3,14 +3,14 @@ package it.polimi.ingsw.client.gui.customviews;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 
-import java.util.HashMap;
+import java.util.EnumMap;
 import java.util.Map;
 
 public class MotherNatureView extends ImageView {
 
     private State state;
 
-    private static final Map<State, Image> motherNatureImages = new HashMap<>();
+    private static final Map<State, Image> motherNatureImages = new EnumMap<>(State.class);
 
     static {
         motherNatureImages.put(

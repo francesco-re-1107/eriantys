@@ -30,5 +30,6 @@ public class MainMenuController implements ScreenController {
 
     @Override
     public void onHide() {
+        //nothing to do
     }
 }

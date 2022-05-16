@@ -13,7 +13,7 @@ public abstract class AStudentsContainer implements Serializable {
     /**
      * Used internally to store the students
      */
-    protected final Map<Student, Integer> students;
+    protected final EnumMap<Student, Integer> students;
 
     /**
      * Used internally to store the maximum number of values that this container can hold
