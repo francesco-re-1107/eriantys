@@ -2,7 +2,8 @@ package it.polimi.ingsw.client;
 
 public interface ScreenController {
 
-    void onCreate();
+    //TODO: not useful at the moment
+    //void onCreate();
 
     void onShow();
 

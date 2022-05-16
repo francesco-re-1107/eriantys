@@ -59,7 +59,6 @@ public class GUINavigationManager implements NavigationManager {
             var root = (Parent) loader.load();
             var controller = (ScreenController) loader.getController();
             screenControllers.put(screen, controller);
-            controller.onCreate();
 
             return root;
         } catch (Exception e) {

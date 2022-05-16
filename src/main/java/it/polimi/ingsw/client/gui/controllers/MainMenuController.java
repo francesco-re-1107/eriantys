@@ -24,11 +24,6 @@ public class MainMenuController implements ScreenController {
     }
 
     @Override
-    public void onCreate() {
-        //nothing to do
-    }
-
-    @Override
     public void onShow() {
         nicknameLabel.setText("Connesso come " + Client.getInstance().getNickname());
     }

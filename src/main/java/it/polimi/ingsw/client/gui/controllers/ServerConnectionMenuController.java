@@ -62,11 +62,6 @@ public class ServerConnectionMenuController implements ScreenController {
     }
 
     @Override
-    public void onCreate() {
-        //nothing to do
-    }
-
-    @Override
     public void onShow() {
         connectionBox.requestFocus();
         connectionError.setVisible(false);
