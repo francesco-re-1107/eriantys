@@ -20,10 +20,9 @@ public class RegisterNicknameRequest extends Request{
 
     @Override
     public Reply handleRequest(VirtualView vw, Controller c, GameController gc) throws Exception {
-        if(vw.isRegistered())
+        if(c.isRegistered(vw))
             throw new InvalidOperationException("Client already registered");
 
-        vw.setNickname(nickname);
         vw.setGameController(c.registerNickname(nickname, vw));
 
         return new AckReply(getRequestId());

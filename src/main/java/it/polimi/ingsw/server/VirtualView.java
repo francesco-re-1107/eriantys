@@ -29,24 +29,9 @@ public class VirtualView implements ServerClientCommunicator.CommunicatorListene
 
     /**
      * Reference to the controller for the current game
-     * If null then there's no game currently played (TODO: Maybe use an optional)
+     * If null then there's no game currently played
      */
     private GameController gameController;
-
-    /**
-     * Whether the nickname is already registered
-     */
-    private boolean isRegistered = false;
-
-    /**
-     * Stores the nickname the player registered with
-     */
-    private String nickname = "";
-
-    /**
-     * Whether the player is currently in a game
-     */
-    private boolean isInGame = false;
 
     /**
      * Create a VirtualView
@@ -77,8 +62,7 @@ public class VirtualView implements ServerClientCommunicator.CommunicatorListene
     }
 
     /**
-     * This method handles every request (used internally).
-     * GameRequest(s) are forwarded to the processGameRequest method.
+     * This method handles every request.
      * @param request the request to handle
      */
     private void processRequest(Request request) {
@@ -90,14 +74,16 @@ public class VirtualView implements ServerClientCommunicator.CommunicatorListene
         }
     }
 
+    /**
+     * Update the current game controller to the given one
+     * @param gc
+     */
     public void setGameController(GameController gc) {
         if(gc == null){
             gameController = null;
-            isInGame = false;
         } else {
             gameController = gc;
             gameController.setOnGameUpdateListener(this);
-            isInGame = true;
         }
     }
 
@@ -119,14 +105,6 @@ public class VirtualView implements ServerClientCommunicator.CommunicatorListene
         return communicator.isConnected();
     }
 
-    public boolean isRegistered() {
-        return isRegistered;
-    }
-
-    public void setRegistered(boolean registered) {
-        isRegistered = registered;
-    }
-
     /**
      * Callback from the controller.
      * For every game update, the game is wrapped in a GameUpdateResponse and sent to the client
@@ -144,16 +122,4 @@ public class VirtualView implements ServerClientCommunicator.CommunicatorListene
         }
     }
 
-    public void setNickname(String nickname) {
-        this.nickname = nickname;
-        isRegistered = true;
-    }
-
-    public boolean isInGame() {
-        return isInGame;
-    }
-
-    public String getNickname() {
-        return nickname;
-    }
 }

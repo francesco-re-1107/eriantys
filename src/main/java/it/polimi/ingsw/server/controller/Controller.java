@@ -216,4 +216,27 @@ public class Controller implements Game.GameUpdateListener {
             }
         }
     }
+
+    /**
+     * Find nickname associated with a given virtual view
+     * @param vw the virtual view
+     * @return the nickname associated with the given virtual view
+     */
+    public String findNicknameByVirtualView(VirtualView vw) {
+        return nicknameVirtualViewMap.entrySet()
+                .stream()
+                .filter(e -> e.getValue() == vw)
+                .map(Map.Entry::getKey)
+                .findFirst()
+                .orElse(null);
+    }
+
+    /**
+     * Check if a virtual view is registered, in other words if it is associated with a nickname
+     * @param vw the virtual view
+     * @return true if the virtual view is registered, false otherwise
+     */
+    public boolean isRegistered(VirtualView vw) {
+        return findNicknameByVirtualView(vw) != null;
+    }
 }

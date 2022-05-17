@@ -15,7 +15,7 @@ public abstract class GameRequest extends Request{
 
     @Override
     public Reply handleRequest(VirtualView vw, Controller c, GameController gc) throws Exception {
-        if(!vw.isInGame())
+        if(gc == null)
             throw new InvalidOperationException("Client not in game");
 
         return handleGameRequest(vw, gc);

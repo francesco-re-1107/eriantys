@@ -25,5 +25,13 @@ public abstract class Request implements Serializable {
         return requestId;
     }
 
+    /**
+     * This method is called by the server to execute the request
+     *
+     * @param vw the virtual view of the client
+     * @param c the controller of the game
+     * @param gc the game controller
+     * @return the reply of the request
+     */
     public abstract Reply handleRequest(VirtualView vw, Controller c, GameController gc) throws Exception;
 }

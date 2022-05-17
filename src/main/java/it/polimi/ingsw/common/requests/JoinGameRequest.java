@@ -22,11 +22,11 @@ public class JoinGameRequest extends Request{
 
     @Override
     public Reply handleRequest(VirtualView vw, Controller c, GameController gc) {
-        if(vw.isInGame())
+        if(gc != null)
             throw new InvalidOperationException("Client already in game");
 
         //game joined -> new game controller
-        vw.setGameController(c.joinGame(vw.getNickname(), gameId));
+        vw.setGameController(c.joinGame(c.findNicknameByVirtualView(vw), gameId));
         return new AckReply(getRequestId());
     }
 }
