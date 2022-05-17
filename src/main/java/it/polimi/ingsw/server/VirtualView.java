@@ -122,4 +122,10 @@ public class VirtualView implements ServerClientCommunicator.CommunicatorListene
         }
     }
 
+    /**
+     * @return the communicator used by this virtual view
+     */
+    public ServerClientCommunicator getCommunicator() {
+        return communicator;
+    }
 }

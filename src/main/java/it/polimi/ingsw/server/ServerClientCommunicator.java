@@ -127,6 +127,13 @@ public class ServerClientCommunicator {
     }
 
     /**
+     * TESTING PURPOSES ONLY
+     */
+    public void setConnected(boolean connected) {
+        isConnected = connected;
+    }
+
+    /**
      * Listener interface
      */
     public interface CommunicatorListener {

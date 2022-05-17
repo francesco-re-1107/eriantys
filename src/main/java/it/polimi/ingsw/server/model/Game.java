@@ -3,7 +3,6 @@ package it.polimi.ingsw.server.model;
 import it.polimi.ingsw.Constants;
 import it.polimi.ingsw.Utils;
 import it.polimi.ingsw.common.exceptions.InvalidOperationException;
-import it.polimi.ingsw.server.model.charactercards.*;
 import it.polimi.ingsw.server.model.influencecalculators.DefaultInfluenceCalculator;
 
 import java.io.Serializable;
@@ -338,7 +337,7 @@ public class Game implements Serializable {
      * Calculate which player has the most influence on the given island
      * and change the towers on that island respectively
      */
-    private void calculateInfluenceOnIsland(Island island) {
+    public void calculateInfluenceOnIsland(Island island) {
         int max = -1;
         Optional<Player> maxP = Optional.empty();
 
@@ -419,7 +418,7 @@ public class Game implements Serializable {
             throw new InvalidOperationException();
 
         if (!characterCards.containsKey(card.getName()))
-            throw new InvalidOperationException();
+            throw new InvalidOperationException("This card is not available in this game");
 
         int cost = card.getCost(characterCards.get(card.getName()));
 
@@ -428,28 +427,10 @@ public class Game implements Serializable {
 
         logger.log(Level.INFO,  MessageFormat.format("playing character card {0} at {1}c", card.getName(), cost));
 
+        //play card
+        card.play(this);
+
         player.useCoins(cost);
-
-        if (card instanceof InfluenceCharacterCard influenceCard) {
-            temporaryInfluenceCalculator = influenceCard.getInfluenceCalculator(player);
-        } else if (card instanceof HeraldCharacterCard heraldCard) {
-            calculateInfluenceOnIsland(heraldCard.getIsland());
-            //After influence calculation a player may have conquered a new island.
-            //It's necessary to check if islands could be merged
-            checkMergeableIslands();
-        } else if (card instanceof PostmanCharacterCard postmanCard) {
-            currentRound.setAdditionalMotherNatureMoves(postmanCard.getAdditionalMotherNatureMoves());
-        } else if (card instanceof GrandmaCharacterCard grandmaCard) {
-            if (!islands.contains(grandmaCard.getIsland()))
-                throw new InvalidOperationException("Island not present in this game");
-            grandmaCard.getIsland().setNoEntry(true);
-        } else if (card instanceof MinstrelCharacterCard minstrelCard) {
-            if (minstrelCard.getStudentsToRemove().getSize() > 2 ||
-                    minstrelCard.getStudentsToAdd().getSize() > 2)
-                throw new InvalidOperationException("Too much students to swap");
-
-            player.swapStudents(minstrelCard.getStudentsToRemove(), minstrelCard.getStudentsToAdd());
-        }
 
         currentRound.setAttackSubstage(Stage.Attack.CARD_PLAYED);
 
@@ -496,7 +477,7 @@ public class Game implements Serializable {
      * Check if island could be merged.
      * It is called every time mother nature is moved so only the current island is checked
      */
-    private void checkMergeableIslands() {
+    public void checkMergeableIslands() {
         Island curr = getCurrentIsland();
         Island prev = islands.get(calculateMotherNatureIndex(-1));
         Island next = islands.get(calculateMotherNatureIndex(1));
@@ -655,6 +636,10 @@ public class Game implements Serializable {
                 .filter(e -> e.getValue().equals(player))
                 .map(Map.Entry::getKey)
                 .toList();
+    }
+
+    public void setTemporaryInfluenceCalculator(InfluenceCalculator influenceCalculator) {
+        temporaryInfluenceCalculator = influenceCalculator;
     }
 
     /**
