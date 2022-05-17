@@ -1,5 +1,12 @@
 package it.polimi.ingsw.common.requests;
 
+import it.polimi.ingsw.common.exceptions.InvalidOperationException;
+import it.polimi.ingsw.common.responses.Reply;
+import it.polimi.ingsw.common.responses.replies.AckReply;
+import it.polimi.ingsw.server.VirtualView;
+import it.polimi.ingsw.server.controller.Controller;
+import it.polimi.ingsw.server.controller.GameController;
+
 /**
  * This class represents the request to register a nickname on the connected server, this should be the first request sent to the server
  */
@@ -11,7 +18,14 @@ public class RegisterNicknameRequest extends Request{
         this.nickname = nickname;
     }
 
-    public String getNickname() {
-        return nickname;
+    @Override
+    public Reply handleRequest(VirtualView vw, Controller c, GameController gc) throws Exception {
+        if(vw.isRegistered())
+            throw new InvalidOperationException("Client already registered");
+
+        vw.setNickname(nickname);
+        vw.setGameController(c.registerNickname(nickname, vw));
+
+        return new AckReply(getRequestId());
     }
 }

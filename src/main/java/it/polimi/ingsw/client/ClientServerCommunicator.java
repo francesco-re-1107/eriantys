@@ -167,7 +167,7 @@ public class ClientServerCommunicator {
                 outputStream = new ObjectOutputStream(socket.getOutputStream());
 
             outputStream.writeObject(request);
-            pendingRequests.put(request.getId(), new ListenersPair(successListener, errorListener));
+            pendingRequests.put(request.getRequestId(), new ListenersPair(successListener, errorListener));
         }catch (IOException e){
             errorListener.onError(e);
             disconnect();

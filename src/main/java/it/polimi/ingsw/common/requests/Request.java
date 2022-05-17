@@ -1,5 +1,10 @@
 package it.polimi.ingsw.common.requests;
 
+import it.polimi.ingsw.common.responses.Reply;
+import it.polimi.ingsw.server.VirtualView;
+import it.polimi.ingsw.server.controller.Controller;
+import it.polimi.ingsw.server.controller.GameController;
+
 import java.io.Serializable;
 import java.util.UUID;
 
@@ -16,7 +21,9 @@ public abstract class Request implements Serializable {
         this.requestId = UUID.randomUUID();
     }
 
-    public UUID getId() {
+    public UUID getRequestId() {
         return requestId;
     }
+
+    public abstract Reply handleRequest(VirtualView vw, Controller c, GameController gc) throws Exception;
 }

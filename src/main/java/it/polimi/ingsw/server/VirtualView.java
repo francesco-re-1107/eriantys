@@ -1,10 +1,7 @@
 package it.polimi.ingsw.server;
 
-import it.polimi.ingsw.common.exceptions.InvalidOperationException;
 import it.polimi.ingsw.common.reducedmodel.ReducedGame;
-import it.polimi.ingsw.common.requests.*;
-import it.polimi.ingsw.common.responses.replies.AckReply;
-import it.polimi.ingsw.common.responses.replies.GamesListReply;
+import it.polimi.ingsw.common.requests.Request;
 import it.polimi.ingsw.common.responses.replies.NackReply;
 import it.polimi.ingsw.common.responses.updates.GameUpdate;
 import it.polimi.ingsw.server.controller.Controller;
@@ -85,42 +82,15 @@ public class VirtualView implements ServerClientCommunicator.CommunicatorListene
      * @param request the request to handle
      */
     private void processRequest(Request request) {
-        var rId = request.getId();
+        var rId = request.getRequestId();
         try {
-            if (request instanceof RegisterNicknameRequest r) {
-                if(isRegistered)
-                    throw new InvalidOperationException("Client already registered");
-                setGameController(controller.registerNickname(r.getNickname(), this));
-                isRegistered = true;
-                nickname = r.getNickname();
-                communicator.send(new AckReply(rId));
-            } else if (request instanceof ListGamesRequest) {
-                if(!isRegistered)
-                    throw new InvalidOperationException("Client not registered");
-                communicator.send(new GamesListReply(rId, controller.listGames()));
-            } else if (request instanceof JoinGameRequest r) {
-                if(isInGame)
-                    throw new InvalidOperationException("Client already in game");
-                //game joined -> new game controller
-                setGameController(controller.joinGame(nickname, r.getUUID()));
-                communicator.send(new AckReply(rId));
-            } else if (request instanceof CreateGameRequest r) {
-                if(isInGame)
-                    throw new InvalidOperationException("Client already in game");
-                //game created -> new game controller
-                setGameController(controller.createGame(nickname, r.getNumberOfPlayers(), r.isExpertMode()));
-                communicator.send(new AckReply(rId));
-            } else if (request instanceof GameRequest r) {
-                if(!isInGame)
-                    throw new InvalidOperationException("Client not in game");
-                processGameRequest(r);
-            }
+            communicator.send(request.handleRequest(this, controller, gameController));
         } catch (Exception | Error e) {
             communicator.send(new NackReply(rId, e));
         }
     }
 
-    private void setGameController(GameController gc) {
+    public void setGameController(GameController gc) {
         if(gc == null){
             gameController = null;
             isInGame = false;
@@ -129,32 +99,6 @@ public class VirtualView implements ServerClientCommunicator.CommunicatorListene
             gameController.setOnGameUpdateListener(this);
             isInGame = true;
         }
-    }
-
-    /**
-     * This method handles all the game requests (used internally)
-     * @param request the game request to handle
-     */
-    private void processGameRequest(GameRequest request) {
-        if (gameController == null)
-            throw new InvalidOperationException("Cannot process game requests before a game is joined");
-
-        if (request instanceof PlayAssistantCardRequest r) {
-            gameController.playAssistantCard(r.getCard());
-        } else if (request instanceof PlaceStudentsRequest r) {
-            gameController.placeStudents(r.getInSchool(), r.getInIslands());
-        } else if (request instanceof PlayCharacterCardRequest r) {
-            gameController.playCharacterCard(r.getCharacterCard());
-        } else if (request instanceof MoveMotherNatureRequest r) {
-            gameController.moveMotherNature(r.getSteps());
-        } else if (request instanceof SelectCloudRequest r) {
-            gameController.selectCloud(r.getCloud());
-        } else if (request instanceof LeaveGameRequest) {
-            gameController.leaveGame();
-            setGameController(null);
-        }
-        //if no exception is thrown send an ack
-        communicator.send(new AckReply(request.getId()));
     }
 
     /**
@@ -175,6 +119,14 @@ public class VirtualView implements ServerClientCommunicator.CommunicatorListene
         return communicator.isConnected();
     }
 
+    public boolean isRegistered() {
+        return isRegistered;
+    }
+
+    public void setRegistered(boolean registered) {
+        isRegistered = registered;
+    }
+
     /**
      * Callback from the controller.
      * For every game update, the game is wrapped in a GameUpdateResponse and sent to the client
@@ -190,5 +142,18 @@ public class VirtualView implements ServerClientCommunicator.CommunicatorListene
         if(state == Game.State.TERMINATED || state == Game.State.FINISHED) {
             setGameController(null);
         }
+    }
+
+    public void setNickname(String nickname) {
+        this.nickname = nickname;
+        isRegistered = true;
+    }
+
+    public boolean isInGame() {
+        return isInGame;
+    }
+
+    public String getNickname() {
+        return nickname;
     }
 }

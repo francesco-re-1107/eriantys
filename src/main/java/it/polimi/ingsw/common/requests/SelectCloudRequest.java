@@ -1,5 +1,9 @@
 package it.polimi.ingsw.common.requests;
 
+import it.polimi.ingsw.common.responses.Reply;
+import it.polimi.ingsw.common.responses.replies.AckReply;
+import it.polimi.ingsw.server.VirtualView;
+import it.polimi.ingsw.server.controller.GameController;
 import it.polimi.ingsw.server.model.StudentsContainer;
 
 /**
@@ -13,7 +17,9 @@ public class SelectCloudRequest extends GameRequest{
         this.cloud = cloud;
     }
 
-    public StudentsContainer getCloud() {
-        return cloud;
+    @Override
+    public Reply handleGameRequest(VirtualView vw, GameController gc) {
+        gc.selectCloud(cloud);
+        return new AckReply(getRequestId());
     }
 }
