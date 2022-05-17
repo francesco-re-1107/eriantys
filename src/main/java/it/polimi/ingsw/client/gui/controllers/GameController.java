@@ -169,11 +169,7 @@ public class GameController implements ScreenController, Client.GameUpdateListen
         Client.getInstance().addGameUpdateListener(this);
 
         //reset view
-        myNickname = Client.getInstance().getNickname();
-        leaveButton.setText("ABBANDONA");
-        gameTitlePopup.hide();
-        assistantCardsLayer.setVisible(false);
-        myStudentsBoard.setStudentsClickDisable(true);
+        resetView();
     }
 
     @Override
@@ -188,144 +184,147 @@ public class GameController implements ScreenController, Client.GameUpdateListen
 
     private void gameUpdate(ReducedGame game) {
         currentGame = game;
-
         myPlayer = findMyPlayer(game);
         otherPlayers = game.players().stream()
                 .filter(p -> !p.nickname().equals(myNickname))
                 .sorted(Comparator.comparing(ReducedPlayer::nickname))
                 .toList();
 
-        characterCards.setDisable(true);
-        cloudsPane.setDisable(true);
-        myStudentsBoard.setStudentsClickDisable(true);
-        studentsPlacedInSchool = new StudentsContainer();
-        studentsPlacedInIslands = new HashMap<>();
-        assistantCardsLayer.setVisible(false);
+        resetView();
 
         setVisibilityForNumberOfPlayers(game.numberOfPlayers());
         setVisibilityForExpertMode(game.expertMode());
         islandsPane.setIslands(game.islands());
         islandsPane.setMotherNaturePosition(game.motherNaturePosition());
         cloudsPane.setClouds(game.currentRound().clouds());
-        setMyBoard(myPlayer, game.currentProfessors());
 
-        myPlayerBoardView.setPlayer(myPlayer);
+        //set players boards
+        setMyBoard();
+        setPlayer2Board();
+        if (game.numberOfPlayers() > 2)
+            setPlayer3Board();
 
-        player2BoardView.setPlayer(otherPlayers.get(0));
-        player2BoardView.setProfessors(game.currentProfessors());
 
-        //TODO: improve
-        //set card played by me
-        var cardPlayedByMe = game.currentRound()
-                .playedAssistantCards()
-                .get(myPlayer.nickname());
-        myPlayerBoardView.setPlayedCard(cardPlayedByMe);
+        processGameState();
 
-        //set card played by player 2
-        var cardPlayedByPlayer2 = game.currentRound()
-                .playedAssistantCards()
-                .get(otherPlayers.get(0).nickname());
-        player2BoardView.setPlayedCard(cardPlayedByPlayer2);
-
-        //set player if present
-        if (game.numberOfPlayers() > 2) {
-            player3BoardView.setPlayer(otherPlayers.get(1));
-            player3BoardView.setProfessors(game.currentProfessors());
-
-            //set card played by player 3
-            var cardPlayedByPlayer3 = game.currentRound()
-                    .playedAssistantCards()
-                    .get(otherPlayers.get(1).nickname());
-            player3BoardView.setPlayedCard(cardPlayedByPlayer3);
+        //my turn
+        if (game.currentRound().currentPlayer().equals(myPlayer.nickname())) {
+            processMyTurn();
+        } else {
+            infoLabel.setInfoString(InfoString.OTHER_PLAYER_WAIT_FOR_HIS_TURN, game.currentRound().currentPlayer());
         }
+    }
 
-        switch(game.currentState()) {
+    private void processMyTurn() {
+        if (currentGame.currentRound().stage() instanceof Stage.Attack s) { //attack
+            var cardPlayed = currentGame.currentRound()
+                    .playedAssistantCards()
+                    .get(myPlayer.nickname());
+            var maxMotherNatureSteps =
+                    cardPlayed.motherNatureMaxMoves() +
+                            currentGame.currentRound().additionalMotherNatureMoves();
+
+            switch (s) {
+                case STARTED -> {
+                    //place students...
+                    var studentsToMove =
+                            currentGame.numberOfPlayers() == 2 ?
+                                    Constants.TwoPlayers.STUDENTS_TO_MOVE :
+                                    Constants.ThreePlayers.STUDENTS_TO_MOVE;
+
+                    infoLabel.setInfoString(InfoString.MY_TURN_PLACE_STUDENTS, studentsToMove);
+                    myStudentsBoard.setStudentsClickDisable(false);
+                    islandsPane.arrangeIslandsForPlacingStudents(myPlayer, this::placeStudentInIsland);
+                }
+                case STUDENTS_PLACED -> {
+                    //play character card or move mother nature
+                    infoLabel.setInfoString(InfoString.MY_TURN_PLAY_CHARACTER_CARD, maxMotherNatureSteps);
+                    characterCards.setDisable(false);
+
+                    arrangeIslandsForMotherNatureMovement(currentGame.motherNaturePosition(), maxMotherNatureSteps);
+                }
+                case CARD_PLAYED -> {
+                    //move mother nature
+                    infoLabel.setInfoString(InfoString.MY_TURN_MOVE_MOTHER_NATURE, maxMotherNatureSteps);
+                    arrangeIslandsForMotherNatureMovement(currentGame.motherNaturePosition(), maxMotherNatureSteps);
+                }
+                case MOTHER_NATURE_MOVED -> {
+                    //select cloud
+                    infoLabel.setInfoString(InfoString.MY_TURN_SELECT_CLOUD);
+                    cloudsPane.setDisable(false);
+                }
+                case SELECTED_CLOUD -> {}//do nothing
+            }
+        } else { //plan
+            infoLabel.setInfoString(InfoString.MY_TURN_PLAY_ASSISTANT_CARD);
+            assistantCardsLayer.setVisible(true);
+        }
+    }
+
+    private void processGameState() {
+        var offlinePlayers = currentGame.players()
+                        .stream()
+                        .filter(p -> !p.isConnected())
+                        .map(ReducedPlayer::nickname)
+                        .collect(Collectors.joining(", "));
+
+        switch(currentGame.currentState()) {
             case CREATED, STARTED -> gameTitlePopup.hide();
             case PAUSED -> {
-                var offlinePlayers = "Giocatori offline: " +
-                        game.players()
-                                .stream()
-                                .filter(p -> !p.isConnected())
-                                .map(ReducedPlayer::nickname)
-                                .collect(Collectors.joining(", "));
-
-                gameTitlePopup.setState(GameTitlePopupView.State.PAUSED, offlinePlayers);
+                gameTitlePopup.setState(GameTitlePopupView.State.PAUSED, "Giocatori offline: " + offlinePlayers);
                 gameTitlePopup.show();
             }
             case FINISHED -> {
-                if(game.winner() == null) { //tie
+                if(currentGame.winner() == null) { //tie
                     gameTitlePopup.setState(GameTitlePopupView.State.TIE, "");
                 } else {
-                    if(game.winner().equals(myNickname)) {
+                    if(currentGame.winner().equals(myNickname)) {
                         gameTitlePopup.setState(GameTitlePopupView.State.WIN, "");
                     } else {
-                        gameTitlePopup.setState(GameTitlePopupView.State.LOSE, game.winner()+ " ha vinto");
+                        gameTitlePopup.setState(GameTitlePopupView.State.LOSE, currentGame.winner()+ " ha vinto");
                     }
                 }
                 leaveButton.setText("VAI AL MENU PRINCIPALE");
                 gameTitlePopup.show();
             }
             case TERMINATED -> {
-                var leftPlayers = "Giocatori che hanno abbandonato: " +
-                        game.players()
-                                .stream()
-                                .filter(p -> !p.isConnected())
-                                .map(ReducedPlayer::nickname)
-                                .collect(Collectors.joining(", "));
-
-                gameTitlePopup.setState(GameTitlePopupView.State.TERMINATED, leftPlayers);
+                gameTitlePopup.setState(GameTitlePopupView.State.TERMINATED, "Giocatori che hanno abbandonato: " + offlinePlayers);
                 leaveButton.setText("VAI AL MENU PRINCIPALE");
                 gameTitlePopup.show();
             }
         }
+    }
 
-        var currentPlayer = game.currentRound().currentPlayer();
+    private void setPlayer2Board() {
+        player2BoardView.setPlayer(otherPlayers.get(0));
+        player2BoardView.setProfessors(currentGame.currentProfessors());
 
-        //my turn
-        if (currentPlayer.equals(myPlayer.nickname())) {
-            if (game.currentRound().stage() instanceof Stage.Attack s) { //attack
-                var maxMotherNatureSteps =
-                        cardPlayedByMe.motherNatureMaxMoves() +
-                                game.currentRound().additionalMotherNatureMoves();
+        var cardPlayedByPlayer2 = currentGame.currentRound()
+                .playedAssistantCards()
+                .get(otherPlayers.get(0).nickname());
+        player2BoardView.setPlayedCard(cardPlayedByPlayer2);
+    }
 
-                switch (s) {
-                    case STARTED -> {
-                        //place students...
-                        var studentsToMove =
-                                game.numberOfPlayers() == 2 ?
-                                        Constants.TwoPlayers.STUDENTS_TO_MOVE :
-                                        Constants.ThreePlayers.STUDENTS_TO_MOVE;
+    private void setPlayer3Board() {
+        player3BoardView.setPlayer(otherPlayers.get(1));
+        player3BoardView.setProfessors(currentGame.currentProfessors());
 
-                        infoLabel.setInfoString(InfoString.MY_TURN_PLACE_STUDENTS, studentsToMove);
-                        myStudentsBoard.setStudentsClickDisable(false);
-                        islandsPane.arrangeIslandsForPlacingStudents(myPlayer, this::placeStudentInIsland);
-                    }
-                    case STUDENTS_PLACED -> {
-                        //play character card or move mother nature
-                        infoLabel.setInfoString(InfoString.MY_TURN_PLAY_CHARACTER_CARD, maxMotherNatureSteps);
-                        characterCards.setDisable(false);
+        var cardPlayedByPlayer3 = currentGame.currentRound()
+                .playedAssistantCards()
+                .get(otherPlayers.get(1).nickname());
+        player3BoardView.setPlayedCard(cardPlayedByPlayer3);
+    }
 
-                        arrangeIslandsForMotherNatureMovement(game.motherNaturePosition(), maxMotherNatureSteps);
-                    }
-                    case CARD_PLAYED -> {
-                        //move mother nature
-                        infoLabel.setInfoString(InfoString.MY_TURN_MOVE_MOTHER_NATURE, maxMotherNatureSteps);
-                        arrangeIslandsForMotherNatureMovement(game.motherNaturePosition(), maxMotherNatureSteps);
-                    }
-                    case MOTHER_NATURE_MOVED -> {
-                        //select cloud
-                        infoLabel.setInfoString(InfoString.MY_TURN_SELECT_CLOUD);
-                        cloudsPane.setDisable(false);
-                    }
-                    case SELECTED_CLOUD -> {}//do nothing
-                }
-            } else { //plan
-                infoLabel.setInfoString(InfoString.MY_TURN_PLAY_ASSISTANT_CARD);
-                assistantCardsLayer.setVisible(true);
-            }
-        } else {
-            infoLabel.setInfoString(InfoString.OTHER_PLAYER_WAIT_FOR_HIS_TURN, currentPlayer);
-        }
+    private void resetView() {
+        myNickname = Client.getInstance().getNickname();
+        leaveButton.setText("ABBANDONA");
+        gameTitlePopup.hide();
+        characterCards.setDisable(true);
+        cloudsPane.setDisable(true);
+        myStudentsBoard.setStudentsClickDisable(true);
+        studentsPlacedInSchool = new StudentsContainer();
+        studentsPlacedInIslands = new HashMap<>();
+        assistantCardsLayer.setVisible(false);
     }
 
     private void arrangeIslandsForMotherNatureMovement(int motherNaturePosition, int maxMotherNatureSteps) {
@@ -337,14 +336,20 @@ public class GameController implements ScreenController, Client.GameUpdateListen
                 ));
     }
 
-    private void setMyBoard(ReducedPlayer myPlayer, Map<Student, String> professors) {
+    private void setMyBoard() {
+        myPlayerBoardView.setPlayer(myPlayer);
         myStudentsBoard.setPlayer(myPlayer);
-        myStudentsBoard.setProfessors(professors);
+        myStudentsBoard.setProfessors(currentGame.currentProfessors());
         myStudentsBoard.setOnStudentClickListener(this::placeStudentInSchool);
         myCoinLabel.setText(String.valueOf(myPlayer.coins()));
         myTower.setTowerColor(myPlayer.towerColor());
         myTowerLabel.setText(String.valueOf(myPlayer.towersCount()));
         setAssistantCardsDeck(myPlayer.deck());
+
+        var cardPlayedByMe = currentGame.currentRound()
+                .playedAssistantCards()
+                .get(myPlayer.nickname());
+        myPlayerBoardView.setPlayedCard(cardPlayedByMe);
     }
 
     /**
