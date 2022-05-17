@@ -1,5 +1,8 @@
 package it.polimi.ingsw.client;
 
+/**
+ * This class represents all the possible screens of the game.
+ */
 public enum Screen {
     SERVER_CONNECTION_MENU,
     MAIN_MENU,

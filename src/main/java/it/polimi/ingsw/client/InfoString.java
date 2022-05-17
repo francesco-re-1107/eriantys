@@ -1,5 +1,8 @@
 package it.polimi.ingsw.client;
 
+/**
+ * This class contains all the information strings used by the client.
+ */
 public enum InfoString {
 
     EMPTY(""),
