@@ -20,20 +20,44 @@ import java.util.Deque;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+/**
+ * This class manages the navigation for the GUI
+ */
 public class GUINavigationManager implements NavigationManager {
 
+    /**
+     * Main stage
+     */
     private final Stage stage;
 
+    /**
+     * Main scene
+     */
     private Scene scene;
 
+    /**
+     * Backstack used for the inverse navigation
+     */
     private final Deque<BackstackEntry> backstack;
 
+    /**
+     * Screens with their corresponding parent node
+     */
     private final Map<Screen, Parent> screens;
 
+    /**
+     * Screens with their corresponding controller
+     */
     private final Map<Screen, ScreenController> screenControllers;
 
+    /**
+     * Used for the animation between one screen and another
+     */
     private boolean currentlyNavigating = false;
 
+    /**
+     * Stores the currently active screen
+     */
     private Screen currentScreen;
 
     public GUINavigationManager(Stage stage) {
@@ -54,6 +78,11 @@ public class GUINavigationManager implements NavigationManager {
         }).start();
     }
 
+    /**
+     * Load the given screen from fxml file
+     * @param screen the screen to load
+     * @return the loaded screen
+     */
     private Parent loadScreen(Screen screen) {
         try {
             var loader = new FXMLLoader(getClass().getResource("/fxml/" + screen.name().toLowerCase() + ".fxml"));
@@ -91,6 +120,7 @@ public class GUINavigationManager implements NavigationManager {
         var newRoot = screens.get(destination);
         newRoot.setOpacity(1.0);
 
+        //initialize scene if it's not already initialized
         if (scene == null) {
             scene = new Scene(newRoot);
             scene.setFill(Paint.valueOf("#000000"));
@@ -99,12 +129,15 @@ public class GUINavigationManager implements NavigationManager {
             currentScreen = destination;
             currentlyNavigating = false;
 
+            //call onHide on the current screen
             if(lastScreen != null)
                 screenControllers.get(lastScreen).onHide();
+            //call onShow on the new screen
             screenControllers.get(destination).onShow();
         } else {
             currentlyNavigating = true;
 
+            //fade out the current screen
             var ft = new FadeTransition(new Duration(200), scene.getRoot());
             ft.setFromValue(1.0);
             ft.setToValue(0.0);
@@ -116,8 +149,10 @@ public class GUINavigationManager implements NavigationManager {
                 currentScreen = destination;
                 currentlyNavigating = false;
 
+                //call onHide on the current screen
                 if(lastScreen != null)
                     screenControllers.get(lastScreen).onHide();
+                //call onShow on the new screen
                 screenControllers.get(destination).onShow();
             });
 
@@ -137,12 +172,16 @@ public class GUINavigationManager implements NavigationManager {
         if (!backstack.isEmpty()) {
             currentlyNavigating = true;
 
+            //call onHide on the current screen
             if(currentScreen != null)
                 screenControllers.get(currentScreen).onHide();
+            //call onShow on the new screen
             screenControllers.get(backstack.peek().screen()).onShow();
 
+            //set
             scene.setRoot(backstack.peek().root());
 
+            //fade in new screen
             var ft = new FadeTransition(new Duration(200), scene.getRoot());
             ft.setFromValue(0.0);
             ft.setToValue(1.0);

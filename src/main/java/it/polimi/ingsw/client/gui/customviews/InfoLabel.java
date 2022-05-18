@@ -4,6 +4,9 @@ import it.polimi.ingsw.client.InfoString;
 import javafx.geometry.Insets;
 import javafx.scene.control.Label;
 
+/**
+ * This label is used to show the current information of the game
+ */
 public class InfoLabel extends Label {
 
     public InfoLabel() {

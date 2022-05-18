@@ -9,6 +9,9 @@ import javafx.scene.control.Label;
 import javafx.scene.control.RadioButton;
 import javafx.scene.control.ToggleGroup;
 
+/**
+ * This class is responsible for controlling the game creation menu.
+ */
 public class GameCreationMenuController implements ScreenController {
     @FXML
     public ToggleGroup playersGroup;
@@ -26,9 +29,9 @@ public class GameCreationMenuController implements ScreenController {
     private boolean expertMode = false;
 
     public void initialize() {
+        //default values
         playersGroup.selectToggle(playersGroup.getToggles().get(0));
         expertGroup.selectToggle(expertGroup.getToggles().get(0));
-
 
         playersGroup.selectedToggleProperty().addListener((observable, oldValue, newValue) -> {
             RadioButton rb = (RadioButton) newValue;
@@ -54,6 +57,10 @@ public class GameCreationMenuController implements ScreenController {
         Client.getInstance().createGame(numberOfPlayers, expertMode, e -> showCreationError(e.getMessage()));
     }
 
+    /**
+     * Shows error label with the given message
+     * @param message
+     */
     private void showCreationError(String message) {
         Platform.runLater(() -> {
             creationError.setVisible(true);

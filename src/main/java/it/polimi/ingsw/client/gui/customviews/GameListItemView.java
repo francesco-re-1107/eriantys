@@ -13,6 +13,9 @@ import javafx.scene.layout.HBox;
 
 import java.util.UUID;
 
+/**
+ * This class represents an item in the games list
+ */
 public class GameListItemView extends HBox {
 
     private final ImageView playerIcon;

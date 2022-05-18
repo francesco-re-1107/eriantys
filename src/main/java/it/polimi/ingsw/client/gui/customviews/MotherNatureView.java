@@ -6,12 +6,16 @@ import javafx.scene.image.ImageView;
 import java.util.EnumMap;
 import java.util.Map;
 
+/**
+ * This class shows mother nature on every island
+ */
 public class MotherNatureView extends ImageView {
 
     private State state;
 
     private static final Map<State, Image> motherNatureImages = new EnumMap<>(State.class);
 
+    //load images statically
     static {
         motherNatureImages.put(
                 State.ENABLED,
@@ -34,10 +38,17 @@ public class MotherNatureView extends ImageView {
         updateState();
     }
 
+    /**
+     * @return the current state of mother nature
+     */
     public State getState() {
         return state;
     }
 
+    /**
+     * Update the state of mother nature
+     * @param state
+     */
     public void setState(State state) {
         this.state = state;
         updateState();
@@ -48,14 +59,13 @@ public class MotherNatureView extends ImageView {
             setVisible(false);
         }else {
             setVisible(true);
-            setImage(getCurrentImage());
+            setImage(motherNatureImages.get(state));
         }
     }
 
-    private Image getCurrentImage() {
-        return motherNatureImages.get(state);
-    }
-
+    /**
+     * All possible states of mother nature
+     */
     public enum State {
         INVISIBLE,
         ENABLED,

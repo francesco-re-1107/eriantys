@@ -11,6 +11,9 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Consumer;
 
+/**
+ * This class shows a popup with the list of the available assistant cards
+ */
 public class AssistantCardDeckView extends VBox {
 
     private Consumer<AssistantCard> listener;
@@ -64,6 +67,10 @@ public class AssistantCardDeckView extends VBox {
         }
     }
 
+    /**
+     * Set deck to show
+     * @param deck
+     */
     public void setDeck(Map<AssistantCard, Boolean> deck) {
         hideError();
         for(var c : AssistantCard.getDefaultDeck()) {
@@ -74,10 +81,18 @@ public class AssistantCardDeckView extends VBox {
         }
     }
 
-    public void setOnCardSelected(Consumer<AssistantCard> listener) {
+    /**
+     * Set the listener for the card selection
+     * @param listener
+     */
+    public void setOnCardSelectedListener(Consumer<AssistantCard> listener) {
         this.listener = listener;
     }
 
+    /**
+     * Show an error message
+     * @param message
+     */
     public void showError(String message) {
         Platform.runLater(() -> {
             selectionError.setManaged(true);
@@ -86,6 +101,9 @@ public class AssistantCardDeckView extends VBox {
         });
     }
 
+    /**
+     * Hide the error message
+     */
     private void hideError() {
         Platform.runLater(() -> {
             selectionError.setVisible(false);

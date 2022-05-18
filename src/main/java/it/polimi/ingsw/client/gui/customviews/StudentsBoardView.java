@@ -15,13 +15,16 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.function.Consumer;
 
+/**
+ * This class shows my students board
+ */
 public class StudentsBoardView extends GridPane {
 
-    private Map<Student, Label> entranceLabels = new EnumMap<>(Student.class);
+    private final Map<Student, Label> entranceLabels = new EnumMap<>(Student.class);
 
-    private Map<Student, Label> schoolLabels = new EnumMap<>(Student.class);
+    private final Map<Student, Label> schoolLabels = new EnumMap<>(Student.class);
 
-    private Map<Student, StudentView> studentViews = new EnumMap<>(Student.class);
+    private final Map<Student, StudentView> studentViews = new EnumMap<>(Student.class);
     private Consumer<Student> listener;
     private ReducedPlayer player;
 
@@ -83,10 +86,18 @@ public class StudentsBoardView extends GridPane {
         }
     }
 
+    /**
+     * Set listener for student click
+     * @param listener
+     */
     public void setOnStudentClickListener(Consumer<Student> listener) {
         this.listener = listener;
     }
 
+    /**
+     * Set my player
+     * @param player
+     */
     public void setPlayer(ReducedPlayer player) {
         this.player = player;
 
@@ -96,6 +107,10 @@ public class StudentsBoardView extends GridPane {
         }
     }
 
+    /**
+     * Sets the current professors
+     * @param professors
+     */
     public void setProfessors(Map<Student, String> professors) {
         for(Student s : Student.values()) {
             var hasProfessor = Objects.equals(player.nickname(), professors.get(s));
@@ -103,6 +118,10 @@ public class StudentsBoardView extends GridPane {
         }
     }
 
+    /**
+     * Set click on students enabled or disabled
+     * @param disable
+     */
     public void setStudentsClickDisable(boolean disable) {
         for(Student s : Student.values()) {
             studentViews.get(s).setDisable(disable);

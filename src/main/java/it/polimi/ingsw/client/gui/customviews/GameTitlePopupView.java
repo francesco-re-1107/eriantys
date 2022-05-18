@@ -5,6 +5,9 @@ import javafx.scene.control.Label;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 
+/**
+ * This class is used to display win, lose, pause and other game states
+ */
 public class GameTitlePopupView extends VBox {
 
     private Label stateLabel;
@@ -36,6 +39,11 @@ public class GameTitlePopupView extends VBox {
         getChildren().add(descriptionLabel);
     }
 
+    /**
+     * Set state of the title
+     * @param state
+     * @param description
+     */
     public void setState(State state, String description){
         switch (state) {
             case WIN -> {
@@ -73,6 +81,9 @@ public class GameTitlePopupView extends VBox {
         setManaged(false);
     }
 
+    /**
+     * Possible states of the title
+     */
     public enum State {
         WIN,
         LOSE,

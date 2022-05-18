@@ -11,6 +11,7 @@ import it.polimi.ingsw.common.reducedmodel.ReducedPlayer;
 import it.polimi.ingsw.common.requests.MoveMotherNatureRequest;
 import it.polimi.ingsw.common.requests.PlaceStudentsRequest;
 import it.polimi.ingsw.common.requests.PlayAssistantCardRequest;
+import it.polimi.ingsw.common.requests.SelectCloudRequest;
 import it.polimi.ingsw.server.model.AssistantCard;
 import it.polimi.ingsw.server.model.Stage;
 import it.polimi.ingsw.server.model.Student;
@@ -28,6 +29,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+/**
+ * This class is responsible for controlling the game screen.
+ */
 public class GameController implements ScreenController, Client.GameUpdateListener {
     @FXML
     private IslandCircularPane islandsPane;
@@ -77,9 +81,13 @@ public class GameController implements ScreenController, Client.GameUpdateListen
     private ReducedPlayer myPlayer;
     private List<ReducedPlayer> otherPlayers;
 
+    /**
+     * This method sets the assistant cards deck of my player
+     * @param deck
+     */
     private void setAssistantCardsDeck(Map<AssistantCard, Boolean> deck) {
         assistantCardsDeck.setDeck(deck);
-        assistantCardsDeck.setOnCardSelected(card -> Client.getInstance().forwardGameRequest(
+        assistantCardsDeck.setOnCardSelectedListener(card -> Client.getInstance().forwardGameRequest(
                 new PlayAssistantCardRequest(card),
                 () -> assistantCardsLayer.setVisible(false),
                 err -> assistantCardsDeck.showError("Non puoi giocare questa carta")
@@ -91,6 +99,10 @@ public class GameController implements ScreenController, Client.GameUpdateListen
         Client.getInstance().leaveGame();
     }
 
+    /**
+     * This method shows or hides components based on the current game expert mode
+     * @param expertMode
+     */
     public void setVisibilityForExpertMode(boolean expertMode) {
         player2BoardView.setVisibilityForExpertMode(expertMode);
         player3BoardView.setVisibilityForExpertMode(expertMode);
@@ -102,11 +114,18 @@ public class GameController implements ScreenController, Client.GameUpdateListen
         characterCardsView.setManaged(expertMode);
     }
 
+    /**
+     * This method shows or hides components based on the number of players of the current game
+     * @param numberOfPlayers
+     */
     public void setVisibilityForNumberOfPlayers(int numberOfPlayers) {
         player3BoardView.setVisible(numberOfPlayers == 3);
         player3BoardView.setManaged(numberOfPlayers == 3);
     }
 
+    /**
+     * Check if all students were placed in the placing students phase
+     */
     private void checkIfAllStudentsPlaced(){
         var count = 0;
         count += studentsPlacedInSchool.getSize();
@@ -134,6 +153,10 @@ public class GameController implements ScreenController, Client.GameUpdateListen
         }
     }
 
+    /**
+     * Place student in school
+     * @param s
+     */
     private void placeStudentInSchool(Student s) {
         if(myPlayer.entrance().getCountForStudent(s) <= 0) return;
 
@@ -145,6 +168,11 @@ public class GameController implements ScreenController, Client.GameUpdateListen
         checkIfAllStudentsPlaced();
     }
 
+    /**
+     * Place student in island
+     * @param s
+     * @param islandView
+     */
     private void placeStudentInIsland(Student s, IslandView islandView) {
         if(myPlayer.entrance().getCountForStudent(s) <= 0) return;
 
@@ -179,9 +207,14 @@ public class GameController implements ScreenController, Client.GameUpdateListen
 
     @Override
     public void onGameUpdate(ReducedGame game) {
+        //run game update on the FX thread
         Platform.runLater(() -> gameUpdate(game));
     }
 
+    /**
+     * Update views based on the game update
+     * @param game
+     */
     private void gameUpdate(ReducedGame game) {
         currentGame = game;
         myPlayer = findMyPlayer(game);
@@ -196,7 +229,12 @@ public class GameController implements ScreenController, Client.GameUpdateListen
         setVisibilityForExpertMode(game.expertMode());
         islandsPane.setIslands(game.islands());
         islandsPane.setMotherNaturePosition(game.motherNaturePosition());
-        cloudsPane.setClouds(game.currentRound().clouds());
+        cloudsPane.setClouds(game.currentRound().clouds(), c -> Client.getInstance()
+                .forwardGameRequest(
+                        new SelectCloudRequest(c),
+                        () -> {},
+                        err -> Utils.LOGGER.info("Error selecting cloud " + err.getMessage())
+                ));
 
         //set players boards
         setMyBoard();
@@ -215,6 +253,9 @@ public class GameController implements ScreenController, Client.GameUpdateListen
         }
     }
 
+    /**
+     * Update the views when it's my turn
+     */
     private void processMyTurn() {
         if (currentGame.currentRound().stage() instanceof Stage.Attack s) { //attack
             var cardPlayed = currentGame.currentRound()
@@ -261,6 +302,9 @@ public class GameController implements ScreenController, Client.GameUpdateListen
         }
     }
 
+    /**
+     * Update the views based on the game state
+     */
     private void processGameState() {
         var offlinePlayers = currentGame.players()
                         .stream()
@@ -295,47 +339,9 @@ public class GameController implements ScreenController, Client.GameUpdateListen
         }
     }
 
-    private void setPlayer2Board() {
-        player2BoardView.setPlayer(otherPlayers.get(0));
-        player2BoardView.setProfessors(currentGame.currentProfessors());
-
-        var cardPlayedByPlayer2 = currentGame.currentRound()
-                .playedAssistantCards()
-                .get(otherPlayers.get(0).nickname());
-        player2BoardView.setPlayedCard(cardPlayedByPlayer2);
-    }
-
-    private void setPlayer3Board() {
-        player3BoardView.setPlayer(otherPlayers.get(1));
-        player3BoardView.setProfessors(currentGame.currentProfessors());
-
-        var cardPlayedByPlayer3 = currentGame.currentRound()
-                .playedAssistantCards()
-                .get(otherPlayers.get(1).nickname());
-        player3BoardView.setPlayedCard(cardPlayedByPlayer3);
-    }
-
-    private void resetView() {
-        myNickname = Client.getInstance().getNickname();
-        leaveButton.setText("ABBANDONA");
-        gameTitlePopup.hide();
-        characterCards.setDisable(true);
-        cloudsPane.setDisable(true);
-        myStudentsBoard.setStudentsClickDisable(true);
-        studentsPlacedInSchool = new StudentsContainer();
-        studentsPlacedInIslands = new HashMap<>();
-        assistantCardsLayer.setVisible(false);
-    }
-
-    private void arrangeIslandsForMotherNatureMovement(int motherNaturePosition, int maxMotherNatureSteps) {
-        islandsPane.arrangeIslandsForMotherNatureMovement(motherNaturePosition, maxMotherNatureSteps,
-                s -> Client.getInstance().forwardGameRequest(
-                        new MoveMotherNatureRequest(s),
-                        () -> {},
-                        err -> Utils.LOGGER.info("Error moving mother nature: " + err.getMessage())
-                ));
-    }
-
+    /**
+     * Setup my board
+     */
     private void setMyBoard() {
         myPlayerBoardView.setPlayer(myPlayer);
         myStudentsBoard.setPlayer(myPlayer);
@@ -350,6 +356,61 @@ public class GameController implements ScreenController, Client.GameUpdateListen
                 .playedAssistantCards()
                 .get(myPlayer.nickname());
         myPlayerBoardView.setPlayedCard(cardPlayedByMe);
+    }
+
+    /**
+     * Setup player 2 board
+     */
+    private void setPlayer2Board() {
+        player2BoardView.setPlayer(otherPlayers.get(0));
+        player2BoardView.setProfessors(currentGame.currentProfessors());
+
+        var cardPlayedByPlayer2 = currentGame.currentRound()
+                .playedAssistantCards()
+                .get(otherPlayers.get(0).nickname());
+        player2BoardView.setPlayedCard(cardPlayedByPlayer2);
+    }
+
+    /**
+     * Setup player 3 board
+     */
+    private void setPlayer3Board() {
+        player3BoardView.setPlayer(otherPlayers.get(1));
+        player3BoardView.setProfessors(currentGame.currentProfessors());
+
+        var cardPlayedByPlayer3 = currentGame.currentRound()
+                .playedAssistantCards()
+                .get(otherPlayers.get(1).nickname());
+        player3BoardView.setPlayedCard(cardPlayedByPlayer3);
+    }
+
+    /**
+     * Reset views
+     */
+    private void resetView() {
+        myNickname = Client.getInstance().getNickname();
+        leaveButton.setText("ABBANDONA");
+        gameTitlePopup.hide();
+        characterCards.setDisable(true);
+        cloudsPane.setDisable(true);
+        myStudentsBoard.setStudentsClickDisable(true);
+        studentsPlacedInSchool = new StudentsContainer();
+        studentsPlacedInIslands = new HashMap<>();
+        assistantCardsLayer.setVisible(false);
+    }
+
+    /**
+     * Arrange islands for the move mother nature phase
+     * @param motherNaturePosition
+     * @param maxMotherNatureSteps
+     */
+    private void arrangeIslandsForMotherNatureMovement(int motherNaturePosition, int maxMotherNatureSteps) {
+        islandsPane.arrangeIslandsForMotherNatureMovement(motherNaturePosition, maxMotherNatureSteps,
+                s -> Client.getInstance().forwardGameRequest(
+                        new MoveMotherNatureRequest(s),
+                        () -> {},
+                        err -> Utils.LOGGER.info("Error moving mother nature: " + err.getMessage())
+                ));
     }
 
     /**

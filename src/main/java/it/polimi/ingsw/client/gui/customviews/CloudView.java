@@ -7,6 +7,9 @@ import javafx.geometry.Pos;
 import javafx.scene.image.Image;
 import javafx.scene.layout.*;
 
+/**
+ * This class show a cloud with the given students
+ */
 public class CloudView extends FlowPane {
 
     public CloudView() {
@@ -15,6 +18,7 @@ public class CloudView extends FlowPane {
 
     private static final Image cloudImage;
 
+    //load image statically
     static {
         cloudImage = new Image(CloudView.class.getResourceAsStream("/assets/cloud.png"));
     }

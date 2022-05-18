@@ -9,6 +9,9 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.stage.Stage;
 
+/**
+ * This class is responsible for controlling the waiting room screen.
+ */
 public class WaitingRoomController implements ScreenController, Client.GameUpdateListener {
     @FXML
     public Label waitingLabel;
@@ -24,6 +27,9 @@ public class WaitingRoomController implements ScreenController, Client.GameUpdat
         stage.close();
     }
 
+    /**
+     * This method is called when the user presses the leave game button.
+     */
     public void leaveGame() {
         Client.getInstance().leaveGame();
     }
@@ -47,6 +53,7 @@ public class WaitingRoomController implements ScreenController, Client.GameUpdat
                 () -> waitingLabel.setText("In attesa di altri " + playersLeft + " giocatori...")
         );
 
+        //if the game is full, go to the game screen
         if(playersLeft == 0)
             Client.getInstance().goToGame();
     }

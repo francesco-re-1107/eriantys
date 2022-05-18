@@ -7,6 +7,9 @@ import javafx.scene.control.CustomMenuItem;
 
 import java.util.function.Consumer;
 
+/**
+ * This class shows a context menu for the student selection
+ */
 public class StudentSelectContextMenu extends ContextMenu {
 
     public StudentSelectContextMenu() {

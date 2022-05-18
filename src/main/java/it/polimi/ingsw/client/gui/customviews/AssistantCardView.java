@@ -18,6 +18,9 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
+/**
+ * This class shows an assistant card if present or the empty card.
+ */
 public class AssistantCardView extends StackPane implements EventHandler<MouseEvent> {
 
     private Optional<AssistantCard> card = Optional.empty();
@@ -31,7 +34,7 @@ public class AssistantCardView extends StackPane implements EventHandler<MouseEv
     private static final Image emptyImage;
     private static final Map<String, Image> assistantCardImages = new HashMap<>();
 
-    //load static images
+    //load images statically
     static {
         emptyImage = new Image(AssistantCardView.class.getResourceAsStream("/assets/assistant_cards/empty.png"));
 
@@ -81,6 +84,10 @@ public class AssistantCardView extends StackPane implements EventHandler<MouseEv
     }
 
 
+    /**
+     * Set the card as greyed out
+     * @param grayedOut
+     */
     public void setGrayedOut(boolean grayedOut) {
         var desaturate = new ColorAdjust();
         desaturate.setSaturation(-1);
@@ -95,6 +102,10 @@ public class AssistantCardView extends StackPane implements EventHandler<MouseEv
         }
     }
 
+    /**
+     * Set the assistant card to show
+     * @param card the card to show, null for empty
+     */
     public void setCard(AssistantCard card) {
         this.card = Optional.ofNullable(card);
 
@@ -107,10 +118,19 @@ public class AssistantCardView extends StackPane implements EventHandler<MouseEv
         }
     }
 
+    /**
+     * Get the current card
+     * @return the current card
+     */
     public Optional<AssistantCard> getCard() {
         return card;
     }
 
+    /**
+     * This method is called when the mouse enters and exits this view
+     * It is used to show and hide the description
+     * @param mouseEvent
+     */
     @Override
     public void handle(MouseEvent mouseEvent) {
         if(card.isEmpty()) return;

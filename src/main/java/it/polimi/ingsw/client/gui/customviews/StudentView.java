@@ -1,13 +1,15 @@
 package it.polimi.ingsw.client.gui.customviews;
 
 import it.polimi.ingsw.server.model.Student;
-import javafx.scene.effect.Glow;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 
 import java.util.EnumMap;
 import java.util.Map;
 
+/**
+ * This class shows a student (or professor) of the specified color
+ */
 public class StudentView extends ImageView {
 
     private Student student;
@@ -16,6 +18,7 @@ public class StudentView extends ImageView {
 
     private static final Map<Student, Image> professorsImages = new EnumMap<>(Student.class);
 
+    //load images statically
     static {
         for(Student s : Student.values()) {
             studentsImages.put(s, new Image(StudentView.class.getResourceAsStream("/assets/students/" + s.name().toLowerCase() + ".png")));
@@ -23,14 +26,26 @@ public class StudentView extends ImageView {
         }
     }
 
+    /**
+     * Create a StudentView as example
+     */
     public StudentView() {
         this(Student.BLUE);
     }
 
+    /**
+     * Create a StudentView with isProfessor set to false
+     * @param student student color
+     */
     public StudentView(Student student) {
         this(student, false);
     }
 
+    /**
+     * Create a StudentView with specified student and professor status
+     * @param student student color
+     * @param isProfessor whether the student is a professor or not
+     */
     public StudentView(Student student, boolean isProfessor) {
         super();
         this.student = student;
@@ -41,24 +56,28 @@ public class StudentView extends ImageView {
         setPreserveRatio(true);
     }
 
+    /**
+     * Set whether the student is a professor or not
+     * @param isProfessor
+     */
     public void setProfessor(boolean isProfessor) {
         this.isProfessor = isProfessor;
         setImage(getCurrentImage());
     }
 
+    /**
+     * Set the student color to show
+     * @param student
+     */
     public void setStudent(Student student) {
         this.student = student;
         setImage(getCurrentImage());
     }
 
-    public boolean isProfessor() {
-        return isProfessor;
-    }
-
-    public Student getStudent() {
-        return student;
-    }
-
+    /**
+     * Get the current image to show (used internally)
+     * @return
+     */
     private Image getCurrentImage() {
         if(isProfessor)
             return professorsImages.get(student);
@@ -66,15 +85,4 @@ public class StudentView extends ImageView {
             return studentsImages.get(student);
     }
 
-    public void setSelected(boolean selected) {
-        if(selected) {
-            setEffect(new Glow(0.2));
-            setScaleX(1.3);
-            setScaleY(1.3);
-        } else {
-            setEffect(null);
-            setScaleX(1.0);
-            setScaleY(1.0);
-        }
-    }
 }

@@ -14,6 +14,9 @@ import javafx.util.Duration;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * This class shows an island
+ */
 public class IslandView extends StackPane {
 
     private final ReducedIsland island;
@@ -121,6 +124,9 @@ public class IslandView extends StackPane {
         elementsVbox.getChildren().add(motherNatureView);
     }
 
+    /**
+     * Add a student to the island
+     */
     public void addStudent(Student student) {
         var sv = new StudentView(student);
         sv.setFitWidth(Math.min(27, size/6));
@@ -159,10 +165,16 @@ public class IslandView extends StackPane {
         setBackground(new Background(backgroundImage));
     }
 
+    /**
+     * @return mother nature view of this island
+     */
     public MotherNatureView getMotherNatureView() {
         return motherNatureView;
     }
 
+    /**
+     * @return the index of the island
+     */
     public int getIndex() {
         return index;
     }

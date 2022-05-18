@@ -13,6 +13,9 @@ import java.util.List;
 import java.util.function.BiConsumer;
 import java.util.function.IntConsumer;
 
+/**
+ * This class shows the island in a circular way, and manages various game states
+ */
 public class IslandCircularPane extends Pane {
 
     private List<ReducedIsland> islands;
@@ -65,6 +68,10 @@ public class IslandCircularPane extends Pane {
         getChildren().add(iv);
     }
 
+    /**
+     * Set the islands to show
+     * @param islands
+     */
     public void setIslands(List<ReducedIsland> islands) {
         this.islands = islands;
         getChildren().clear();
@@ -73,6 +80,10 @@ public class IslandCircularPane extends Pane {
             addIsland(i);
     }
 
+    /**
+     * Show mother nature on the given island index
+     * @param index
+     */
     public void setMotherNaturePosition(int index) {
         //reset
         for (var iv : getChildren())
@@ -82,14 +93,17 @@ public class IslandCircularPane extends Pane {
         iv.getMotherNatureView().setState(MotherNatureView.State.ENABLED);
     }
 
+    /**
+     * Arrange islands in order to show the player the possibility to move mother nature
+     * @param mnIndex current mother nature position
+     * @param steps max number of steps to move
+     * @param listener listener to call when the player moves the mother nature
+     */
     public void arrangeIslandsForMotherNatureMovement(int mnIndex, int steps, IntConsumer listener){
         //disable all islands
         for (int i = 0; i < getChildren().size(); i++) {
             var iv = (IslandView) getChildren().get(i);
             iv.setDisable(true);
-
-            //var isPossibleStep = (i > mnIndex && i <= mnIndex + steps) ||
-            //                        (i < ((mnIndex + steps) % islands.size()) && (i + steps) >= islands.size());
 
             var isPossibleStep = (i <= mnIndex + steps && i > mnIndex) || (i <= (mnIndex + steps) % islands.size() && i <= mnIndex && mnIndex + steps >= islands.size());
 
@@ -108,6 +122,11 @@ public class IslandCircularPane extends Pane {
         }
     }
 
+    /**
+     * Arrange islands in order to show the player the possibility to place students
+     * @param myPlayer used to show the students available to place
+     * @param listener called when a student is placed
+     */
     public void arrangeIslandsForPlacingStudents(ReducedPlayer myPlayer, BiConsumer<Student, IslandView> listener) {
         for (var n : getChildren()) {
             var iv = (IslandView) n;

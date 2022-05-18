@@ -15,6 +15,10 @@ import java.util.EnumMap;
 import java.util.Map;
 import java.util.Objects;
 
+/**
+ * This class shows a player's board.
+ * if myBoard is flagged true, it only shows the nickname and the card played by this client.
+ */
 public class PlayerBoardView extends VBox {
 
     public final boolean myBoard;
@@ -105,6 +109,10 @@ public class PlayerBoardView extends VBox {
         }
     }
 
+    /**
+     * Sets the player to be displayed.
+     * @param player
+     */
     public void setPlayer(ReducedPlayer player) {
         if(myBoard) return;
 
@@ -123,6 +131,10 @@ public class PlayerBoardView extends VBox {
         coinLabel.setText(String.valueOf(player.coins()));
     }
 
+    /**
+     * Sets current professors
+     * @param professors
+     */
     public void setProfessors(Map<Student, String> professors) {
         if(myBoard) return;
 
@@ -132,10 +144,18 @@ public class PlayerBoardView extends VBox {
         }
     }
 
+    /**
+     * Set card played by the player
+     * @param card
+     */
     public void setPlayedCard(AssistantCard card) {
         assistantCardView.setCard(card);
     }
 
+    /**
+     * Set whether the game is expert mode or not
+     * @param expertMode
+     */
     public void setVisibilityForExpertMode(boolean expertMode) {
         if(myBoard) return;
 

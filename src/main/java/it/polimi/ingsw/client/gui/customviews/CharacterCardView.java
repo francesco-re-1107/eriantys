@@ -8,8 +8,11 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
+/**
+ * This class shows an assistant card if present or the empty card.
+ */
 public class CharacterCardView extends ImageView {
-    private Optional<ReducedCharacterCard> card = Optional.empty();
+    private Optional<ReducedCharacterCard> card;
 
     private static final Image emptyImage;
 

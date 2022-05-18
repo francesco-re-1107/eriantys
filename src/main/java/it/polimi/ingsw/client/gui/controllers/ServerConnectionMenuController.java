@@ -12,6 +12,9 @@ import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.VBox;
 
+/**
+ * This class is responsible for controlling the server connection menu screen.
+ */
 public class ServerConnectionMenuController implements ScreenController {
 
     @FXML
@@ -43,24 +46,6 @@ public class ServerConnectionMenuController implements ScreenController {
         });
     }
 
-    public void connect() {
-        connectButton.setDisable(true);
-
-        Client.getInstance()
-                .connect(
-                        hostTextField.getText(),
-                        portTextField.getText(),
-                        () -> {
-                                showRegistrationBox();
-                                connectButton.setDisable(false);
-                            },
-                        e -> {
-                            showConnectionError(e.getMessage());
-                            connectButton.setDisable(false);
-                        }
-                );
-    }
-
     @Override
     public void onShow() {
         connectionBox.requestFocus();
@@ -69,6 +54,14 @@ public class ServerConnectionMenuController implements ScreenController {
         showConnectionBox();
     }
 
+    @Override
+    public void onHide() {
+        //nothing to do
+    }
+
+    /**
+     * Shows the connection box and hides the registration box.
+     */
     private void showConnectionBox() {
         registrationBox.setVisible(false);
         registrationBox.setManaged(false);
@@ -76,6 +69,9 @@ public class ServerConnectionMenuController implements ScreenController {
         connectionBox.setManaged(true);
     }
 
+    /**
+     * Shows the registration box and hides the connection box.
+     */
     private void showRegistrationBox() {
         connectionBox.setVisible(false);
         connectionBox.setManaged(false);
@@ -88,11 +84,30 @@ public class ServerConnectionMenuController implements ScreenController {
         registrationBox.requestFocus();
     }
 
-    @Override
-    public void onHide() {
-        //nothing to do
+    /**
+     * Callback for the connect button.
+     */
+    public void connect() {
+        connectButton.setDisable(true);
+
+        Client.getInstance()
+                .connect(
+                        hostTextField.getText(),
+                        portTextField.getText(),
+                        () -> {
+                            showRegistrationBox();
+                            connectButton.setDisable(false);
+                        },
+                        e -> {
+                            showConnectionError(e.getMessage());
+                            connectButton.setDisable(false);
+                        }
+                );
     }
 
+    /**
+     * Callback for the register button.
+     */
     public void register() {
         registerButton.setDisable(true);
 
@@ -107,17 +122,25 @@ public class ServerConnectionMenuController implements ScreenController {
                 });
     }
 
-    private void showRegistrationError(String message) {
-        Platform.runLater(() -> {
-            registrationError.setVisible(true);
-            registrationError.setText(message);
-        });
-    }
-
+    /**
+     * Shows the connection error message.
+     * @param message
+     */
     private void showConnectionError(String message) {
         Platform.runLater(() -> {
             connectionError.setVisible(true);
             connectionError.setText(message);
+        });
+    }
+
+    /**
+     * Shows the registration error message.
+     * @param message
+     */
+    private void showRegistrationError(String message) {
+        Platform.runLater(() -> {
+            registrationError.setVisible(true);
+            registrationError.setText(message);
         });
     }
 
