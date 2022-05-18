@@ -121,7 +121,7 @@ public class PlayerBoardView extends VBox {
         nicknameLabel.setText(player.nickname());
 
         for (Student s : Student.values()) {
-            var text = player.entrance().getCountForStudent(s) + "(" + player.school().getCountForStudent(s) + ")";
+            var text = player.school().getCountForStudent(s) + "(" + player.entrance().getCountForStudent(s) + ")";
             studentLabels.get(s).setText(text);
         }
 
