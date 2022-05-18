@@ -104,8 +104,4 @@ class ControllerTest {
         assertEquals(1, c.listGames().size());
     }
 
-    @Test
-    void onGameUpdate() {
-        //...
-    }
 }

@@ -294,7 +294,9 @@ public class GUIGameController implements ScreenController, Client.GameUpdateLis
                     infoLabel.setInfoString(InfoString.MY_TURN_SELECT_CLOUD);
                     cloudsPane.setDisable(false);
                 }
-                case SELECTED_CLOUD -> {}//do nothing
+                case SELECTED_CLOUD -> {
+                    //do nothing
+                }
             }
         } else { //plan
             infoLabel.setInfoString(InfoString.MY_TURN_PLAY_ASSISTANT_CARD);

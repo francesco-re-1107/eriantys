@@ -27,6 +27,11 @@ class GameTest {
      */
     @Test
     void testStaticGameTwoPlayers() {
+        assertThrows(
+                InvalidOperationException.class,
+                () -> new Game(4, true)
+        );
+
         Game g = new Game(2, true);
         List<Player> players;
 

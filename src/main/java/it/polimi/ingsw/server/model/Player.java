@@ -3,7 +3,6 @@ package it.polimi.ingsw.server.model;
 import it.polimi.ingsw.common.exceptions.InvalidOperationException;
 
 import java.io.Serializable;
-import java.text.MessageFormat;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -263,17 +262,5 @@ public class Player implements StudentsContainer.StudentNumberReachedListener, S
         coins++;
         //coin obtained -> remove listener
         this.school.removeOnStudentNumberReachedListener(student, count);
-    }
-
-    public String prettyBoard(){
-        String b = MessageFormat.format("Towers: {0}\nCoins: {1}\n\n", towersCount, coins);
-        int maxEntrance = entrance.getStudents().values().stream().mapToInt(n -> n).max().orElse(0); // used to align
-        for (var s: Student.values()) {
-            var ch = s.toString().substring(0,1); // color first letter
-            var count = entrance.getCountForStudent(s);
-            b = b + ch.repeat(count) + " ".repeat(maxEntrance - count) + " | "; // entrance
-            b = b + ch.repeat(school.getCountForStudent(s)) + '\n'; // school
-        }
-        return b;
     }
 }

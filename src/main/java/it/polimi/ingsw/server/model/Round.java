@@ -4,9 +4,7 @@ import it.polimi.ingsw.Utils;
 import it.polimi.ingsw.common.exceptions.InvalidOperationException;
 
 import java.io.Serializable;
-import java.text.MessageFormat;
 import java.util.*;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public class Round implements Serializable {
@@ -129,8 +127,6 @@ public class Round implements Serializable {
         if(stage instanceof Stage.Plan)
             throw new InvalidOperationException();
         // TODO: further checks
-
-        logger.log(Level.FINE,  MessageFormat.format("Board:\n{0}", getCurrentPlayer().prettyBoard()));
 
         // finished round check
         if(currentPlayer == players.size() - 1)
