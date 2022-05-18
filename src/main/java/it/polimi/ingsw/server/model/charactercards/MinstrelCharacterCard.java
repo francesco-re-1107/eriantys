@@ -1,6 +1,8 @@
 package it.polimi.ingsw.server.model.charactercards;
 
+import it.polimi.ingsw.common.exceptions.InvalidOperationException;
 import it.polimi.ingsw.server.model.CharacterCard;
+import it.polimi.ingsw.server.model.Game;
 import it.polimi.ingsw.server.model.StudentsContainer;
 
 /**
@@ -25,17 +27,11 @@ public class MinstrelCharacterCard extends CharacterCard {
         this.studentsToAdd = studentsToAdd;
     }
 
-    /**
-     * @return the students to remove from school and add to entrance
-     */
-    public StudentsContainer getStudentsToRemove() {
-        return studentsToRemove;
-    }
+    @Override
+    public void play(Game game) {
+        if (studentsToRemove.getSize() > 2 || studentsToAdd.getSize() > 2)
+            throw new InvalidOperationException("Too much students to swap");
 
-    /**
-     * @return the students to add to school and remove from entrance
-     */
-    public StudentsContainer getStudentsToAdd() {
-        return studentsToAdd;
+        game.getCurrentRound().getCurrentPlayer().swapStudents(studentsToRemove, studentsToAdd);
     }
 }

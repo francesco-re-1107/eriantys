@@ -1,6 +1,5 @@
 package it.polimi.ingsw.client.cli;
 
-import it.polimi.ingsw.Utils;
 import it.polimi.ingsw.client.Client;
 import it.polimi.ingsw.common.reducedmodel.ReducedIsland;
 import it.polimi.ingsw.common.reducedmodel.ReducedRound;
@@ -10,37 +9,15 @@ import it.polimi.ingsw.server.model.Student;
 import it.polimi.ingsw.server.model.StudentsContainer;
 import it.polimi.ingsw.server.model.Tower;
 
+import java.util.Collections;
 import java.io.IOException;
 import java.util.*;
 
 public class CLI {
-    public static void main(String[] args) {
-        testDrawBoard();
-    }
 
-    public static void Main(String[] args) {
-        var cfg = Utils.GetAppConfig();
-        try {
-            Client client = new Client(cfg.server_url(), cfg.port());
-
-            do {
-                var n = new Scanner(System.in).nextLine();
-                client.registerNickname("CLI" + n, r -> {
-                    if (r.isSuccessful()) {
-                        System.out.println("Registered successfully");
-                    } else {
-                        System.out.println("Registration failed");
-                        r.getThrowable().printStackTrace();
-                    }
-                }, e -> {
-                    System.out.println("Registration failed");
-                    System.out.println(e.getMessage());
-                });
-
-            } while (true);
-        } catch (IOException e) {
-            Utils.LOGGER.severe(e.getMessage());
-        }
+    public static void main(String[] args){
+        //var cfg = Utils.GetAppConfig();
+        Client.init();
     }
 
     public static void testDrawBoard() {

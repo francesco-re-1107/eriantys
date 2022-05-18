@@ -1,7 +1,9 @@
 package it.polimi.ingsw.server.model;
 
 import org.junit.jupiter.api.Test;
+
 import java.util.List;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class AssistantCardTest {
@@ -23,5 +25,9 @@ class AssistantCardTest {
         assertEquals(10, list.size());
     }
 
+    @Test
+    void getName() {
+        assertEquals("7_4", AssistantCard.getDefaultDeck().get(6).getName());
+    }
 
 }

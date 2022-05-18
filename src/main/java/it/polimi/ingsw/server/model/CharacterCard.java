@@ -3,7 +3,10 @@ package it.polimi.ingsw.server.model;
 import it.polimi.ingsw.common.exceptions.InvalidOperationException;
 
 import java.io.Serializable;
-import java.util.*;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.LinkedList;
+import java.util.List;
 
 /**
  * This class is used to represent a generic character card
@@ -73,4 +76,10 @@ public abstract class CharacterCard implements Serializable {
     public String getName() {
         return this.getClass().getSimpleName();
     }
+
+    /**
+     * Apply the card's effect to the given game
+     * @param game
+     */
+    public abstract void play(Game game);
 }

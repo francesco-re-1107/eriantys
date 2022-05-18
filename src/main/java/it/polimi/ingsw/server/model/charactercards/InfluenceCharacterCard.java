@@ -1,6 +1,7 @@
 package it.polimi.ingsw.server.model.charactercards;
 
 import it.polimi.ingsw.server.model.CharacterCard;
+import it.polimi.ingsw.server.model.Game;
 import it.polimi.ingsw.server.model.InfluenceCalculator;
 import it.polimi.ingsw.server.model.Player;
 
@@ -24,4 +25,12 @@ public abstract class InfluenceCharacterCard extends CharacterCard {
      */
     public abstract InfluenceCalculator getInfluenceCalculator(Player cardPlayer);
 
+    /**
+     * Every influence card is played in the same way
+     * @param game
+     */
+    @Override
+    public void play(Game game) {
+        game.setTemporaryInfluenceCalculator(getInfluenceCalculator(game.getCurrentRound().getCurrentPlayer()));
+    }
 }

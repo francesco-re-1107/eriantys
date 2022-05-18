@@ -64,8 +64,9 @@ public class Controller implements Game.GameUpdateListener {
             if (foundGame != null) {
                 var foundPlayer = findPlayerInGame(nickname, foundGame);
 
+                var gc = new GameController(foundGame, foundPlayer);
                 foundGame.setPlayerReconnected(foundPlayer);
-                return new GameController(foundGame, foundPlayer);
+                return gc;
             }
         } else {
             if (!Utils.isValidNickname(nickname))
@@ -134,7 +135,7 @@ public class Controller implements Game.GameUpdateListener {
 
         var selectedGame = games.stream()
                 .parallel()
-                .filter(g -> g.getUUID() == uuid)
+                .filter(g -> g.getUUID().equals(uuid))
                 .findFirst();
 
         if (selectedGame.isEmpty())
@@ -198,6 +199,11 @@ public class Controller implements Game.GameUpdateListener {
     public void onGameUpdate(Game game) {
         var state = game.getGameState();
 
+        //if no one is connected to the game, remove it
+        if(game.getCurrentNumberOfPlayers() == 0) {
+            games.remove(game);
+        }
+
         //finished games are removed from the list
         if (state == Game.State.TERMINATED || state == Game.State.FINISHED) {
             games.remove(game);
@@ -209,5 +215,28 @@ public class Controller implements Game.GameUpdateListener {
                     nicknameVirtualViewMap.remove(p.getNickname());
             }
         }
+    }
+
+    /**
+     * Find nickname associated with a given virtual view
+     * @param vw the virtual view
+     * @return the nickname associated with the given virtual view
+     */
+    public String findNicknameByVirtualView(VirtualView vw) {
+        return nicknameVirtualViewMap.entrySet()
+                .stream()
+                .filter(e -> e.getValue() == vw)
+                .map(Map.Entry::getKey)
+                .findFirst()
+                .orElse(null);
+    }
+
+    /**
+     * Check if a virtual view is registered, in other words if it is associated with a nickname
+     * @param vw the virtual view
+     * @return true if the virtual view is registered, false otherwise
+     */
+    public boolean isRegistered(VirtualView vw) {
+        return findNicknameByVirtualView(vw) != null;
     }
 }

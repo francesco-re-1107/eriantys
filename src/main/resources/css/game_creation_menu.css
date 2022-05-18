@@ -1,0 +1,114 @@
+@font-face {
+    src: url('../fonts/Recursive_Casual-Bold.ttf');
+}
+
+.button {
+    -fx-background-color: #6572AE;
+    -fx-border-color: #fff;
+    -fx-border-width: 7;
+    -fx-background-insets: 5px;
+    -fx-border-radius: 20;
+    -fx-background-radius: 20;
+    -fx-text-fill: #fff;
+    -fx-text-style: bold;
+    -fx-font-family: 'Recursive Casual';
+    -fx-font-size: 24px;
+}
+
+.button:hover {
+    -fx-background-color: #57639c;
+    -fx-scale-y: 1.01;
+    -fx-scale-x: 1.01;
+    -fx-cursor: hand;
+}
+
+.button:pressed {
+    -fx-background-color: #313d70;
+    -fx-scale-y: 0.99;
+    -fx-scale-x: 0.99;
+}
+
+#game_creation_form {
+    -fx-text-fill: #fff;
+    -fx-text-style: bold;
+    -fx-font-family: 'Recursive Casual';
+    -fx-font-size: 28px;
+}
+
+.label {
+    -fx-text-fill: #fff;
+}
+
+.radio-button {
+    -fx-text-fill: #fff;
+    -fx-padding: 5px;
+}
+
+#leave_button {
+    -fx-background-color: #f00;
+    -fx-border-color: #f00;
+    -fx-border-width: 7;
+    -fx-background-insets: 5px;
+    -fx-border-radius: 20;
+    -fx-background-radius: 20;
+    -fx-text-fill: #fff;
+    -fx-text-style: bold;
+    -fx-font-family: 'Recursive Casual';
+    -fx-font-size: 18px;
+}
+
+#leave_button:hover{
+    -fx-scale-y: 1.05;
+    -fx-scale-x: 1.05;
+    -fx-cursor: hand;
+}
+
+#leave_button:pressed{
+    -fx-scale-y: 0.98;
+    -fx-scale-x: 0.98;
+}
+#game_creation_menu_background {
+    -fx-background-image: url('../assets/dark_menu_background.png');
+    -fx-background-repeat: stretch;   
+    -fx-background-position: center center;
+    -fx-background-size: 1920 1080;
+}
+
+.radio-button .radio {
+    -fx-border-color: transparent;
+    -fx-border-width: 3;
+    -fx-border-radius: 30px;
+    -fx-background-insets: 3px;
+}
+
+.radio-button:selected .radio {
+    -fx-border-color: #57639c;
+    -fx-border-width: 3;
+    -fx-border-radius: 30px;
+    -fx-background-insets: 3px;
+}
+
+.radio-button .dot {
+    -fx-background-radius: 20px;
+    -fx-background-color: transparent;
+    -fx-effect: none;
+}
+
+.radio-button:selected .dot {
+    -fx-background-radius: 20px;
+    -fx-background-color: #57639c;
+    -fx-effect: none;
+}
+
+#nickname_label {
+    -fx-font-family: 'Recursive Casual';
+    -fx-font-size: 20px;
+    -fx-text-style: bold;
+    -fx-text-fill: #fff;
+}
+
+#error_label {
+    -fx-text-fill: #f00;
+    -fx-font-size: 24px;
+    -fx-font-family: 'Recursive Casual';
+}

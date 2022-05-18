@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import it.polimi.ingsw.client.gui.customviews.*?>
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.*?>
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity"
+            prefHeight="720.0" prefWidth="1280.0" stylesheets="@../css/game.css" xmlns="http://javafx.com/javafx/18"
+            xmlns:fx="http://javafx.com/fxml/1" fx:controller="it.polimi.ingsw.client.gui.controllers.GameController">
+    <SplitPane id="game_background" dividerPositions="0.38" prefHeight="720.0" prefWidth="1280.0"
+               AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0"
+               AnchorPane.topAnchor="0.0">
+        <AnchorPane id="dashboard" minWidth="650.0" maxWidth="650.0" SplitPane.resizableWithParent="false">
+            <VBox prefHeight="800.0" prefWidth="500.0" AnchorPane.leftAnchor="0.0"
+                  AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                <InfoLabel fx:id="infoLabel" prefWidth="Infinity">
+                    <VBox.margin>
+                        <Insets top="20" left="20" right="20" bottom="20"/>
+                    </VBox.margin>
+                </InfoLabel>
+
+                <HBox alignment="TOP_CENTER" spacing="30">
+                    <PlayerBoardView fx:id="myPlayerBoardView" myBoard="true"/>
+                    <PlayerBoardView fx:id="player2BoardView"/>
+                    <PlayerBoardView fx:id="player3BoardView"/>
+                </HBox>
+
+                <StudentsBoardView fx:id="myStudentsBoard">
+                    <VBox.margin>
+                        <Insets left="25.0" right="25.0" top="25.0"/>
+                    </VBox.margin>
+                    <padding>
+                        <Insets bottom="15.0" left="15.0" right="15.0" top="15.0"/>
+                    </padding>
+                </StudentsBoardView>
+            </VBox>
+            <VBox AnchorPane.bottomAnchor="20.0" AnchorPane.leftAnchor="20.0">
+                <HBox fx:id="myCoin" alignment="CENTER_LEFT">
+                    <VBox.margin>
+                        <Insets bottom="15.0"/>
+                    </VBox.margin>
+                    <ImageView fitHeight="40.0" fitWidth="40.0" pickOnBounds="true"
+                               preserveRatio="true">
+                        <Image url="@../assets/coin.png"/>
+                    </ImageView>
+                    <Label fx:id="myCoinLabel" text="3">
+                        <HBox.margin>
+                            <Insets left="15.0"/>
+                        </HBox.margin>
+                    </Label>
+                </HBox>
+                <HBox alignment="CENTER_LEFT">
+                    <TowerView fx:id="myTower" towerColor="GREY" fitHeight="150.0" fitWidth="40.0" pickOnBounds="true"
+                               preserveRatio="true"/>
+                    <Label fx:id="myTowerLabel" text="7/8">
+                        <HBox.margin>
+                            <Insets left="15.0"/>
+                        </HBox.margin>
+                    </Label>
+                </HBox>
+            </VBox>
+            <VBox fx:id="characterCardsView" alignment="CENTER" layoutX="377.0" layoutY="484.0" prefHeight="134.0" prefWidth="240.0"
+                  AnchorPane.bottomAnchor="15.0" AnchorPane.rightAnchor="15.0">
+                <Label alignment="CENTER" text="Carte personaggio"/>
+                <HBox fx:id="characterCards" prefHeight="100.0" prefWidth="200.0">
+                    <CharacterCardView fx:id="characterCard1" fitWidth="100" fitHeight="200" preserveRatio="true">
+                        <HBox.margin>
+                            <Insets bottom="5.0" left="5.0" right="5.0" top="5.0"/>
+                        </HBox.margin>
+                    </CharacterCardView>
+                    <CharacterCardView fx:id="characterCard2" fitWidth="100" fitHeight="200" preserveRatio="true">
+                        <HBox.margin>
+                            <Insets bottom="5.0" left="5.0" right="5.0" top="5.0"/>
+                        </HBox.margin>
+                    </CharacterCardView>
+                    <CharacterCardView fx:id="characterCard3" fitWidth="100" fitHeight="200" preserveRatio="true">
+                        <HBox.margin>
+                            <Insets bottom="5.0" left="5.0" right="5.0" top="5.0"/>
+                        </HBox.margin>
+                    </CharacterCardView>
+                </HBox>
+            </VBox>
+        </AnchorPane>
+        <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="160.0" prefWidth="100.0"
+                    SplitPane.resizableWithParent="false">
+            <StackPane prefWidth="Infinity" prefHeight="Infinity" AnchorPane.bottomAnchor="0.0"
+                       AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                <IslandCircularPane fx:id="islandsPane" prefWidth="Infinity" prefHeight="Infinity"/>
+                <CloudsPane fx:id="cloudsPane" maxWidth="400" maxHeight="400"/>
+            </StackPane>
+        </AnchorPane>
+    </SplitPane>
+    <VBox fx:id="assistantCardsLayer" id="card_selection_layer" alignment="CENTER" AnchorPane.leftAnchor="0" AnchorPane.rightAnchor="0"
+          AnchorPane.topAnchor="0" AnchorPane.bottomAnchor="0">
+        <Button onMouseEntered="#startPeekGame" onMouseExited="#endPeekGame">NASCONDI</Button>
+        <AssistantCardDeckView fx:id="assistantCardsDeck"/>
+    </VBox>
+    <GameTitlePopupView fx:id="gameTitlePopup" AnchorPane.rightAnchor="0" AnchorPane.bottomAnchor="0" AnchorPane.topAnchor="0" AnchorPane.leftAnchor="0"/>
+    <Button id="leave_button" fx:id="leaveButton" mnemonicParsing="false" onAction="#onLeavePressed" text="ABBANDONA"
+            AnchorPane.rightAnchor="20.0" AnchorPane.topAnchor="20.0">
+    </Button>
+</AnchorPane>

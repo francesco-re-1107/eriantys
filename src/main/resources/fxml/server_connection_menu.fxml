@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.*?>
+<AnchorPane id="server_connection_menu_background" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity"
+            minWidth="-Infinity" stylesheets="@../css/server_connection_menu.css"
+            xmlns="http://javafx.com/javafx/18" xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="it.polimi.ingsw.client.gui.controllers.ServerConnectionMenuController">
+
+    <VBox AnchorPane.topAnchor="60" AnchorPane.rightAnchor="0" AnchorPane.leftAnchor="0" alignment="TOP_CENTER">
+        <ImageView fitWidth="500.0" pickOnBounds="true" preserveRatio="true">
+            <Image url="@../assets/title.png"/>
+        </ImageView>
+    </VBox>
+
+    <VBox alignment="BOTTOM_CENTER" AnchorPane.bottomAnchor="100.0" AnchorPane.leftAnchor="100.0"
+          AnchorPane.rightAnchor="100.0" spacing="30">
+
+        <VBox fx:id="connectionBox" spacing="30" alignment="CENTER">
+            <Label fx:id="connectionError" id="error_label" text=""/>
+
+            <TextField fx:id="hostTextField" prefHeight="70.0" maxWidth="450.0" alignment="CENTER" promptText="Hostname [localhost]"/>
+
+            <TextField fx:id="portTextField" prefHeight="70.0" maxWidth="450.0" alignment="CENTER" promptText="Porta [6001]"/>
+
+            <Button fx:id="connectButton" onMouseClicked="#connect" prefHeight="70.0" prefWidth="450.0" text="CONNETTI"
+                    textAlignment="CENTER"/>
+        </VBox>
+
+        <VBox fx:id="registrationBox" spacing="30" alignment="CENTER">
+            <Label fx:id="registrationError" id="error_label" text=""/>
+            <TextField fx:id="nicknameTextField" prefHeight="70.0" maxWidth="450.0" alignment="CENTER" promptText="Nickname [casuale]"/>
+
+            <Button fx:id="registerButton" onMouseClicked="#register" prefHeight="70.0" prefWidth="450.0"
+                    text="REGISTRA NICKNAME" textAlignment="CENTER"/>
+        </VBox>
+
+    </VBox>
+    <Button id="leave_button" mnemonicParsing="false" onAction="#onLeavePressed" text="ESCI"
+            AnchorPane.rightAnchor="20.0" AnchorPane.topAnchor="20.0">
+    </Button>
+</AnchorPane>

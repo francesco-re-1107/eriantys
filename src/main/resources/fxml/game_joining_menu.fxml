@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.*?>
+<AnchorPane id="game_joining_menu_background" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity"
+            minWidth="-Infinity" stylesheets="@../css/game_joining_menu.css"
+            xmlns="http://javafx.com/javafx/18" xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="it.polimi.ingsw.client.gui.controllers.GameJoiningMenuController">
+
+    <VBox AnchorPane.topAnchor="60" AnchorPane.rightAnchor="0" AnchorPane.leftAnchor="0" alignment="TOP_CENTER">
+        <ImageView fitWidth="500.0" pickOnBounds="true" preserveRatio="true">
+            <Image url="@../assets/title.png"/>
+        </ImageView>
+    </VBox>
+
+    <VBox alignment="CENTER" AnchorPane.bottomAnchor="0" AnchorPane.topAnchor="0" AnchorPane.rightAnchor="0"
+          AnchorPane.leftAnchor="0" maxWidth="700" maxHeight="400">
+        <ScrollPane id="games_list_scroll_pane" maxHeight="400" maxWidth="700">
+            <VBox fx:id="gamesList" spacing="10" alignment="TOP_CENTER" prefWidth="680">
+                <Label text="Nessuna partita in corso" />
+            </VBox>
+        </ScrollPane>
+    </VBox>
+
+    <VBox alignment="BOTTOM_CENTER" AnchorPane.bottomAnchor="100.0" AnchorPane.leftAnchor="100.0"
+          AnchorPane.rightAnchor="100.0" spacing="30">
+
+        <Label fx:id="joiningError" id="error_label" text=""/>
+
+        <Button onMouseClicked="#goBack" alignment="CENTER" mnemonicParsing="false" minHeight="70.0" prefWidth="450.0"
+                text="INDIETRO" textAlignment="CENTER">
+        </Button>
+    </VBox>
+
+    <Button id="leave_button" fx:id="leaveButton" mnemonicParsing="false" onAction="#onLeavePressed" text="ESCI"
+            AnchorPane.rightAnchor="20.0" AnchorPane.topAnchor="20.0">
+    </Button>
+    <Label fx:id="nicknameLabel" id="nickname_label" AnchorPane.bottomAnchor="10.0" AnchorPane.rightAnchor="10.0"/>
+</AnchorPane>

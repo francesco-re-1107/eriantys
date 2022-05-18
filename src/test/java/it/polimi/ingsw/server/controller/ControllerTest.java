@@ -35,9 +35,21 @@ class ControllerTest {
                 () -> c.registerNickname("p1", vw)
         );
 
-        //nickname not valid
+        //duplicated nickname
         assertThrows(
                 DuplicatedNicknameException.class,
+                () -> c.registerNickname("p1", vw)
+        );
+
+        assertEquals("p1", c.findNicknameByVirtualView(vw));
+
+        assertTrue(c.isRegistered(vw));
+
+        c.createGame("p1", 2, false);
+
+        vw.getCommunicator().setConnected(false);
+
+        assertDoesNotThrow(
                 () -> c.registerNickname("p1", vw)
         );
     }

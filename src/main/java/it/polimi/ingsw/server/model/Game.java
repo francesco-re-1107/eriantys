@@ -3,7 +3,6 @@ package it.polimi.ingsw.server.model;
 import it.polimi.ingsw.Constants;
 import it.polimi.ingsw.Utils;
 import it.polimi.ingsw.common.exceptions.InvalidOperationException;
-import it.polimi.ingsw.server.model.charactercards.*;
 import it.polimi.ingsw.server.model.influencecalculators.DefaultInfluenceCalculator;
 
 import java.io.Serializable;
@@ -177,13 +176,19 @@ public class Game implements Serializable {
     private void newRound() {
         logger.info("round started");
         //if the bag is empty the game is finished
-        if (studentsBag.getSize() == 0)
+        if (studentsBag.getSize() <= 0) {
+            logger.info("StudentsBag is empty, game finished");
             setGameFinished(calculateCurrentWinner());
+            return;
+        }
 
         //check if players have any card left
         boolean playersWithZeroCardsLeft = players.stream().anyMatch(p -> p.getAssistantCardsLeftCount() == 0);
-        if (playersWithZeroCardsLeft)
+        if (playersWithZeroCardsLeft) {
+            logger.info("There's a player with zero cards left, game finished");
             setGameFinished(calculateCurrentWinner());
+            return;
+        }
 
         //generate clouds
         List<StudentsContainer> clouds = new ArrayList<>();
@@ -215,6 +220,8 @@ public class Game implements Serializable {
      * @param player the player
      */
     public void selectCloud(Player player, StudentsContainer cloud) {
+        if (gameState != State.STARTED) return;
+
         checkIfCurrentPlayer(player);
 
         if (!currentRound.getClouds().contains(cloud))
@@ -282,13 +289,14 @@ public class Game implements Serializable {
      * @param steps number of steps that mother nature needs to be moved
      */
     public void moveMotherNature(Player player, int steps) {
+        if (gameState != State.STARTED) return;
         checkIfCurrentPlayer(player);
 
         if(steps < 1)
             throw new InvalidOperationException("Cannot move mother nature for less than 1 step");
 
         if ((!(currentRound.getStage() instanceof Stage.Attack)) ||
-                Stage.IsEqOrPost(currentRound.getStage(), Stage.Attack.MOTHER_NATURE_MOVED))
+                Stage.isEqualOrPost(currentRound.getStage(), Stage.Attack.MOTHER_NATURE_MOVED))
             throw new InvalidOperationException("Not currently in ATTACK mode");
 
         //use get directly cause in attack stage every player has played its card
@@ -329,7 +337,7 @@ public class Game implements Serializable {
      * Calculate which player has the most influence on the given island
      * and change the towers on that island respectively
      */
-    private void calculateInfluenceOnIsland(Island island) {
+    public void calculateInfluenceOnIsland(Island island) {
         int max = -1;
         Optional<Player> maxP = Optional.empty();
 
@@ -348,25 +356,28 @@ public class Game implements Serializable {
         }
 
         //only if there's a max without duplicate
-        maxP.ifPresent(player -> {
-                //only if island is not yet conquered by this player
-                if (player.getTowerColor() != island.getTowerColor()) {
-                    if(island.isConquered()) { //island already conquered, remove towers from the previous owner
-                        players.stream()
-                                .filter(p -> p.getTowerColor() == island.getTowerColor())
-                                .findFirst()
-                                .ifPresent(p -> p.incrementTowersCount(island.getTowersCount()));
-                    }
+        if(maxP.isPresent()){
+            var player = maxP.get();
 
-                    island.setConquered(player.getTowerColor());
-                    //in both cases remove towers from player
-                    player.decrementTowersCount(island.getTowersCount());
+            //only if island is not yet conquered by this player
+            if (player.getTowerColor() != island.getTowerColor()) {
+                if(island.isConquered()) { //island already conquered, remove towers from the previous owner
+                    players.stream()
+                            .filter(p -> p.getTowerColor() == island.getTowerColor())
+                            .findFirst()
+                            .ifPresent(p -> p.incrementTowersCount(island.getTowersCount()));
+                }
 
-                    if (player.getTowersCount() <= 0)
-                        setGameFinished(player);
+                island.setConquered(player.getTowerColor());
+                //in both cases remove towers from player
+                player.decrementTowersCount(island.getTowersCount());
+
+                if (player.getTowersCount() <= 0) {
+                    logger.info(player.getNickname() + " with 0 towers left, game finished");
+                    setGameFinished(player);
                 }
             }
-        );
+        }
 
         //remove temporary after use
         temporaryInfluenceCalculator = null;
@@ -377,6 +388,7 @@ public class Game implements Serializable {
      * @param card
      */
     public void playAssistantCard(Player player, AssistantCard card) {
+        if (gameState != State.STARTED) return;
         checkIfCurrentPlayer(player);
 
         if (!player.canPlayAssistantCard(card))
@@ -398,14 +410,15 @@ public class Game implements Serializable {
         if (!expertMode)
             throw new InvalidOperationException("Cannot play character cards in simple mode");
 
+        if (gameState != State.STARTED) return;
         checkIfCurrentPlayer(player);
 
         if ((!(currentRound.getStage() instanceof Stage.Attack)) ||
-                Stage.IsEqOrPost(currentRound.getStage(), Stage.Attack.CARD_PLAYED))
+                Stage.isEqualOrPost(currentRound.getStage(), Stage.Attack.CARD_PLAYED))
             throw new InvalidOperationException();
 
         if (!characterCards.containsKey(card.getName()))
-            throw new InvalidOperationException();
+            throw new InvalidOperationException("This card is not available in this game");
 
         int cost = card.getCost(characterCards.get(card.getName()));
 
@@ -414,25 +427,10 @@ public class Game implements Serializable {
 
         logger.log(Level.INFO,  MessageFormat.format("playing character card {0} at {1}c", card.getName(), cost));
 
+        //play card
+        card.play(this);
+
         player.useCoins(cost);
-
-        if (card instanceof InfluenceCharacterCard influenceCard) {
-            temporaryInfluenceCalculator = influenceCard.getInfluenceCalculator(player);
-        } else if (card instanceof HeraldCharacterCard heraldCard) {
-            calculateInfluenceOnIsland(heraldCard.getIsland());
-        } else if (card instanceof PostmanCharacterCard postmanCard) {
-            currentRound.setAdditionalMotherNatureMoves(postmanCard.getAdditionalMotherNatureMoves());
-        } else if (card instanceof GrandmaCharacterCard grandmaCard) {
-            if (!islands.contains(grandmaCard.getIsland()))
-                throw new InvalidOperationException("Island not present in this game");
-            grandmaCard.getIsland().setNoEntry(true);
-        } else if (card instanceof MinstrelCharacterCard minstrelCard) {
-            if (minstrelCard.getStudentsToRemove().getSize() > 2 ||
-                    minstrelCard.getStudentsToAdd().getSize() > 2)
-                throw new InvalidOperationException("Too much students to swap");
-
-            player.swapStudents(minstrelCard.getStudentsToRemove(), minstrelCard.getStudentsToAdd());
-        }
 
         currentRound.setAttackSubstage(Stage.Attack.CARD_PLAYED);
 
@@ -447,6 +445,7 @@ public class Game implements Serializable {
      * @param inIsland students to add to the relative island
      */
     public void placeStudents(Player player, StudentsContainer inSchool, Map<Island, StudentsContainer> inIsland) {
+        if (gameState != State.STARTED) return;
         checkIfCurrentPlayer(player);
 
         if (currentRound.getStage() != Stage.Attack.STARTED)
@@ -465,7 +464,11 @@ public class Game implements Serializable {
         inIsland.forEach(player::addStudentsToIsland);
 
         updateProfessors();
-        currentRound.setAttackSubstage(Stage.Attack.STUDENTS_PLACED);
+
+        if(expertMode)
+            currentRound.setAttackSubstage(Stage.Attack.STUDENTS_PLACED);
+        else
+            currentRound.setAttackSubstage(Stage.Attack.CARD_PLAYED);
 
         notifyUpdate();
     }
@@ -474,7 +477,7 @@ public class Game implements Serializable {
      * Check if island could be merged.
      * It is called every time mother nature is moved so only the current island is checked
      */
-    private void checkMergeableIslands() {
+    public void checkMergeableIslands() {
         Island curr = getCurrentIsland();
         Island prev = islands.get(calculateMotherNatureIndex(-1));
         Island next = islands.get(calculateMotherNatureIndex(1));
@@ -491,8 +494,10 @@ public class Game implements Serializable {
             islands.remove(next);
         }
 
-        if (islands.size() <= 3)
+        if (islands.size() <= 3) {
+            logger.info("Less than 4 islands left, game finished");
             setGameFinished(calculateCurrentWinner());
+        }
 
         //adjust motherNatureIndex
         this.motherNaturePosition = islands.indexOf(curr);
@@ -511,10 +516,9 @@ public class Game implements Serializable {
                 .sorted(Comparator.comparingInt(Player::getTowersCount))
                 .toList();
 
-        Player firstPlayer =
+        var firstPlayer =
                 orderedPlayers.get(0);
-
-        Player secondPlayer =
+        var secondPlayer =
                 orderedPlayers.get(1);
 
         if (firstPlayer.getTowersCount() < secondPlayer.getTowersCount()) //there's a winner
@@ -522,12 +526,22 @@ public class Game implements Serializable {
 
         //otherwise, look at the professors
         //players with same towers count are ordered by the number of professors
+        var maxTowers = firstPlayer.getTowersCount();
         orderedPlayers = players.stream()
-                .filter(p -> p.getTowersCount() == firstPlayer.getTowersCount())
+                .filter(p -> p.getTowersCount() == maxTowers)
                 .sorted(Comparator.comparingInt(p -> getProfessorsForPlayer((Player)p).size()).reversed())
                 .toList();
 
-        return orderedPlayers.get(0);
+        firstPlayer =
+                orderedPlayers.get(0);
+        secondPlayer =
+                orderedPlayers.get(1);
+
+        if (getProfessorsCountForPlayer(firstPlayer) < getProfessorsCountForPlayer(secondPlayer)) //there's a winner
+            return firstPlayer;
+
+        //otherwise, there's a draw
+        return null;
     }
 
     /**
@@ -601,6 +615,16 @@ public class Game implements Serializable {
     }
 
     /**
+     * Utility method to retrieve the number of professors held by a given player
+     *
+     * @param player
+     * @return the number of professors held by the player
+     */
+    public int getProfessorsCountForPlayer(Player player) {
+        return getProfessorsForPlayer(player).size();
+    }
+
+    /**
      * Utility method to retrieve the professors of a given player
      *
      * @param player
@@ -614,13 +638,21 @@ public class Game implements Serializable {
                 .toList();
     }
 
+    public void setTemporaryInfluenceCalculator(InfluenceCalculator influenceCalculator) {
+        temporaryInfluenceCalculator = influenceCalculator;
+    }
+
     /**
      * End this game and set a winner
      *
      * @param winner the winner of the game
      */
     private void setGameFinished(Player winner) {
-        logger.log(Level.INFO, "game finished! {0} won", winner.getNickname());
+        if(winner != null)
+            logger.log(Level.INFO, "Game finished! {} won", winner.getNickname());
+        else
+            logger.log(Level.INFO, "Game finished! No winner");
+
         gameState = State.FINISHED;
 
         this.winner = winner;

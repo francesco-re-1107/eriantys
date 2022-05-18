@@ -28,4 +28,8 @@ public record AssistantCard(int turnPriority, int motherNatureMaxMoves) implemen
                 new AssistantCard(10, 5)
         );
     }
+
+    public String getName() {
+        return turnPriority() + "_" +  motherNatureMaxMoves();
+    }
 }

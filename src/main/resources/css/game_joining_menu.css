@@ -1,0 +1,105 @@
+@font-face {
+    src: url('../fonts/Recursive_Casual-Bold.ttf');
+}
+
+.button {
+    -fx-background-color: #6572AE;
+    -fx-border-color: #fff;
+    -fx-border-width: 7;
+    -fx-background-insets: 5px;
+    -fx-border-radius: 20;
+    -fx-background-radius: 20;
+    -fx-text-fill: #fff;
+    -fx-text-style: bold;
+    -fx-font-family: 'Recursive Casual';
+    -fx-font-size: 24px;
+}
+
+.button:hover {
+    -fx-background-color: #57639c;
+    -fx-scale-y: 1.01;
+    -fx-scale-x: 1.01;
+    -fx-cursor: hand;
+}
+
+.button:pressed {
+    -fx-background-color: #313d70;
+    -fx-scale-y: 0.99;
+    -fx-scale-x: 0.99;
+}
+
+.label {
+    -fx-font-size: 24px;
+    -fx-text-fill: #fff;
+    -fx-font-family: 'Recursive Casual';
+}
+
+.radio-button {
+    -fx-text-fill: #fff;
+    -fx-padding: 5px;
+}
+
+#leave_button {
+    -fx-background-color: #f00;
+    -fx-border-color: #f00;
+    -fx-border-width: 7;
+    -fx-background-insets: 5px;
+    -fx-border-radius: 20;
+    -fx-background-radius: 20;
+    -fx-text-fill: #fff;
+    -fx-text-style: bold;
+    -fx-font-family: 'Recursive Casual';
+    -fx-font-size: 18px;
+}
+
+#leave_button:hover{
+    -fx-scale-y: 1.05;
+    -fx-scale-x: 1.05;
+    -fx-cursor: hand;
+}
+
+#leave_button:pressed{
+    -fx-scale-y: 0.98;
+    -fx-scale-x: 0.98;
+}
+
+#game_joining_menu_background {
+    -fx-background-image: url('../assets/dark_menu_background.png');
+    -fx-background-repeat: stretch;
+    -fx-background-position: center center;
+    -fx-background-size: 1920 1080;
+}
+
+.scroll-pane > .viewport {
+    -fx-background-color: transparent;
+}
+
+.scroll-bar:horizontal, .scroll-bar:vertical{
+    -fx-background-color: transparent;
+}
+
+#games_list_scroll_pane{
+    -fx-background-color: rgba(0, 0, 0, 0);
+}
+
+#game_list_item {
+    -fx-border-color: #aaa;
+    -fx-border-width: 0 0 2 0;
+    -fx-text-fill: #fff;
+    -fx-font-size: 24px;
+    -fx-text-style: bold;
+    -fx-font-family: 'Recursive Casual';
+}
+
+#nickname_label {
+    -fx-font-family: 'Recursive Casual';
+    -fx-font-size: 20px;
+    -fx-text-style: bold;
+    -fx-text-fill: #fff;
+}
+
+#error_label {
+    -fx-text-fill: #f00;
+    -fx-font-size: 24px;
+    -fx-font-family: 'Recursive Casual';
+}

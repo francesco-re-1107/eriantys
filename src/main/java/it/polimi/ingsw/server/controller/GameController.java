@@ -33,6 +33,8 @@ public class GameController implements Game.GameUpdateListener {
      */
     private final Player player;
 
+    private Game lastUpdate;
+
     /**
      * Create a GameController
      * @param game associated with this controller
@@ -50,6 +52,10 @@ public class GameController implements Game.GameUpdateListener {
      */
     public void setOnGameUpdateListener(GameUpdateListener listener) {
         this.listener = Optional.of(listener);
+
+        //send the latest update to the new listener
+        if(lastUpdate != null)
+            listener.onGameUpdate(ReducedGame.fromGame(lastUpdate));
     }
 
     /**
@@ -60,6 +66,7 @@ public class GameController implements Game.GameUpdateListener {
      */
     @Override
     public void onGameUpdate(Game game) {
+        lastUpdate = game;
         listener.ifPresent(l -> l.onGameUpdate(ReducedGame.fromGame(game)));
 
         if(game.getGameState() == Game.State.FINISHED ||

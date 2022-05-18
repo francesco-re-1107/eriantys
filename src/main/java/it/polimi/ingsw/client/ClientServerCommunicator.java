@@ -57,33 +57,35 @@ public class ClientServerCommunicator {
     }
 
     /**
-     * This method binds to the socket input stream and listens for response from the server
+     * This method binds to the socket input stream and listens for response from the server on a new thread
      */
     public void startListening() {
         startPinging();
-        try {
-            this.socket.setSoTimeout(Constants.DISCONNECTION_TIMEOUT);
-            var in = new ObjectInputStream(socket.getInputStream());
+        new Thread(() -> {
+            try {
+                this.socket.setSoTimeout(Constants.DISCONNECTION_TIMEOUT);
+                var in = new ObjectInputStream(socket.getInputStream());
 
-            while (socket.isConnected()){
-                var r = (Response) in.readObject();
+                while (socket.isConnected()) {
+                    var r = (Response) in.readObject();
 
-                //it's an update response
-                if(r instanceof Update u) {
-                    communicatorListener.onUpdate(u);
-                }else if(r instanceof Reply re){ //it's a request reply
-                    pendingRequests.get(re.getRequestId()).successListener.onSuccess(re);
-                    pendingRequests.remove(re.getRequestId());
+                    //it's an update response
+                    if (r instanceof Update u) {
+                        communicatorListener.onUpdate(u);
+                    } else if (r instanceof Reply re) { //it's a request reply
+                        pendingRequests.get(re.getRequestId()).successListener.onSuccess(re);
+                        pendingRequests.remove(re.getRequestId());
+                    }
                 }
-            }
 
-            disconnect();
-        } catch (IOException e){
-            disconnect();
-        } catch (ClassNotFoundException e) {
-            Utils.LOGGER.warning("Server transmitted something illegal");
-            e.printStackTrace();
-        }
+                disconnect();
+            } catch (IOException e) {
+                disconnect();
+            } catch (ClassNotFoundException e) {
+                Utils.LOGGER.warning("Server transmitted something illegal");
+                e.printStackTrace();
+            }
+        }).start();
     }
 
     /**
@@ -165,7 +167,7 @@ public class ClientServerCommunicator {
                 outputStream = new ObjectOutputStream(socket.getOutputStream());
 
             outputStream.writeObject(request);
-            pendingRequests.put(request.getId(), new ListenersPair(successListener, errorListener));
+            pendingRequests.put(request.getRequestId(), new ListenersPair(successListener, errorListener));
         }catch (IOException e){
             errorListener.onError(e);
             disconnect();
@@ -190,7 +192,7 @@ public class ClientServerCommunicator {
      * Listener interface
      */
     public interface CommunicatorListener {
-        void onUpdate(Update r);
+        void onUpdate(Update u);
         void onDisconnect();
     }
 

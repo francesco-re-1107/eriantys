@@ -1,6 +1,7 @@
 package it.polimi.ingsw.server.model.charactercards;
 
 import it.polimi.ingsw.server.model.CharacterCard;
+import it.polimi.ingsw.server.model.Game;
 
 /**
  * This class models the postman card
@@ -15,10 +16,9 @@ public class PostmanCharacterCard extends CharacterCard {
         super(1);
     }
 
-    /**
-     * @return the number of additional moves that mother nature can do
-     */
-    public int getAdditionalMotherNatureMoves(){
-        return ADDITIONAL_MOTHER_NATURE_MOVES;
+
+    @Override
+    public void play(Game game) {
+        game.getCurrentRound().setAdditionalMotherNatureMoves(ADDITIONAL_MOTHER_NATURE_MOVES);
     }
 }

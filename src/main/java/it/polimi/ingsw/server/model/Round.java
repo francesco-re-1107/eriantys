@@ -84,7 +84,7 @@ public class Round implements Serializable {
     }
 
     public void setAttackSubstage(Stage.Attack newStage){
-        if(Stage.IsEqOrPost(stage, newStage))
+        if(Stage.isEqualOrPost(stage, newStage))
             throw new InvalidOperationException("newStage must be post to current stage");
         stage = newStage;
     }
@@ -131,11 +131,13 @@ public class Round implements Serializable {
         // TODO: further checks
 
         logger.log(Level.FINE,  MessageFormat.format("Board:\n{0}", getCurrentPlayer().prettyBoard()));
-        currentPlayer++;
+
         // finished round check
-        if(currentPlayer == players.size())
+        if(currentPlayer == players.size() - 1)
             return true;
+
         // more players to come
+        currentPlayer++;
         stage = Stage.Attack.STARTED;
         return false;
     }

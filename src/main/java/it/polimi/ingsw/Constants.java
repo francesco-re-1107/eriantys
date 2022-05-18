@@ -1,5 +1,7 @@
 package it.polimi.ingsw;
 
+import java.util.List;
+
 /**
  * This class holds all the constants across the project
  */
@@ -25,8 +27,14 @@ public final class Constants {
      */
     public static final String CONFIG_FILE_PATH = "app.config";
 
+
     /**
-     * Port number used by default by server
+     * Hostname used by default by the client
+     */
+    public static final String DEFAULT_HOSTNAME = "localhost";
+
+    /**
+     * Port number used by default by server and client
      */
     public static final int DEFAULT_SERVER_PORT = 6001;
 
@@ -40,6 +48,58 @@ public final class Constants {
      * If a ping request (or ping reply) doesn't arrive in this time, the client is considered disconnected
      */
     public static final int DISCONNECTION_TIMEOUT = 8000;
+    public static final long GAMES_LIST_REFRESH_INTERVAL = 3000;
+    public static final int MAX_NICKNAME_LENGTH = 20;
+    public static final List<String> NICKNAMES_PART_1 = List.of(
+            "Attractive",
+            "Bald",
+            "Beautiful",
+            "Chubby",
+            "Clean",
+            "Elegant",
+            "Fancy",
+            "Flabby",
+            "Glamorous",
+            "Gorgeous",
+            "Handsome",
+            "Magnificent",
+            "Muscular",
+            "Plain",
+            "Plump",
+            "Scruffy",
+            "Shapely",
+            "Short",
+            "Skinny",
+            "Stocky",
+            "Ugly",
+            "Unsightly"
+    );
+
+    public static final List<String> NICKNAMES_PART_2 = List.of(
+            "Penguin",
+            "Pony",
+            "Puppy",
+            "Raccoon",
+            "Rabbit",
+            "Rat",
+            "Robin",
+            "Squirrel",
+            "Turtle",
+            "Wolf",
+            "Zebra",
+            "Bear",
+            "Cat",
+            "Dog",
+            "Fox",
+            "Horse",
+            "Lion",
+            "Monkey",
+            "Pig",
+            "Rabbit",
+            "Sheep",
+            "Tiger",
+            "Zebra"
+    );
 
     /**
      * These constants are used in a game with 2 players (commented only once)

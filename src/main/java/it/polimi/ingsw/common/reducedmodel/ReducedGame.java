@@ -15,6 +15,7 @@ import java.util.stream.Collectors;
  */
 public record ReducedGame(
         UUID uuid,
+        int currentNumberOfPlayers,
         int numberOfPlayers,
         boolean expertMode,
         List<ReducedPlayer> players,
@@ -23,9 +24,9 @@ public record ReducedGame(
         int studentsBagSize,
         ReducedRound currentRound,
         Map<String, Integer> characterCards,
-        Map<Student, ReducedPlayer> currentProfessors,
+        Map<Student, String> currentProfessors, //student -> nickname
         Game.State currentState,
-        ReducedPlayer winner
+        String winner //nickname
 ) implements Serializable {
 
     /**
@@ -34,9 +35,9 @@ public record ReducedGame(
      * @return the ReducedGame just created
      */
     public static ReducedGame fromGame(Game g){
-        ReducedPlayer winner = null;
+        String winner = null;
         if(g.getWinner() != null)
-            winner = ReducedPlayer.fromPlayer(g.getWinner());
+            winner = g.getWinner().getNickname();
 
         ReducedRound reducedRound = null;
         if(g.getCurrentRound() != null)
@@ -44,6 +45,7 @@ public record ReducedGame(
 
         return new ReducedGame(
                 g.getUUID(),
+                g.getCurrentNumberOfPlayers(),
                 g.getNumberOfPlayers(),
                 g.isExpertMode(),
                 g.getPlayers()
@@ -63,7 +65,7 @@ public record ReducedGame(
                         .stream()
                         .collect(Collectors.toMap(
                                 Map.Entry::getKey,
-                                e -> ReducedPlayer.fromPlayer(e.getValue())
+                                e -> e.getValue().getNickname()
                         )),
                 g.getGameState(),
                 winner

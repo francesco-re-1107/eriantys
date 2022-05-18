@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.*?>
+<AnchorPane id="main_menu_background" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity"
+            minWidth="-Infinity" prefHeight="720.0" prefWidth="1280.0" stylesheets="@../css/main_menu.css"
+            xmlns="http://javafx.com/javafx/18" xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="it.polimi.ingsw.client.gui.controllers.MainMenuController">
+    <VBox AnchorPane.topAnchor="100" AnchorPane.rightAnchor="0" AnchorPane.leftAnchor="0" alignment="TOP_CENTER">
+        <ImageView fitWidth="1000.0" pickOnBounds="true" preserveRatio="true">
+            <Image url="@../assets/title.png"/>
+        </ImageView>
+    </VBox>
+    <VBox alignment="BOTTOM_CENTER" AnchorPane.bottomAnchor="100.0" AnchorPane.leftAnchor="100.0" AnchorPane.rightAnchor="100.0" spacing="30">
+        <Button onMouseClicked="#createGame" alignment="CENTER" mnemonicParsing="false" prefHeight="70.0" prefWidth="450.0" text="CREA PARTITA"
+                textAlignment="CENTER">
+        </Button>
+        <Button onMouseClicked="#joinGame" alignment="CENTER" mnemonicParsing="false" prefHeight="70.0" prefWidth="450.0"
+                text="UNISCITI A PARTITA ESISTENTE" textAlignment="CENTER">
+        </Button>
+    </VBox>
+    <Button id="leave_button" fx:id="leaveButton" mnemonicParsing="false" text="ESCI" AnchorPane.rightAnchor="20.0"
+            AnchorPane.topAnchor="20.0" onAction="#onLeavePressed">
+    </Button>
+    <Label fx:id="nicknameLabel" id="nickname_label" AnchorPane.bottomAnchor="10.0" AnchorPane.rightAnchor="10.0"/>
+</AnchorPane>

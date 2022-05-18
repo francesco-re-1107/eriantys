@@ -61,7 +61,7 @@ public class ServerClientCommunicator {
 
                 //ping requests are bounced back to the client immediately
                 if (r instanceof PingRequest) {
-                    send(new AckReply(r.getId()));
+                    send(new AckReply(r.getRequestId()));
                 } else { //otherwise, the request is forwarded to the listener
                     Utils.LOGGER.info("Request received: " + r.getClass().getSimpleName());
                     communicatorListener.onRequest(r);
@@ -124,6 +124,13 @@ public class ServerClientCommunicator {
      */
     public boolean isConnected() {
         return isConnected;
+    }
+
+    /**
+     * TESTING PURPOSES ONLY
+     */
+    public void setConnected(boolean connected) {
+        isConnected = connected;
     }
 
     /**

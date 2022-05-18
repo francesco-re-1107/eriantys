@@ -1,5 +1,9 @@
 package it.polimi.ingsw.common.requests;
 
+import it.polimi.ingsw.common.responses.Reply;
+import it.polimi.ingsw.common.responses.replies.AckReply;
+import it.polimi.ingsw.server.VirtualView;
+import it.polimi.ingsw.server.controller.GameController;
 import it.polimi.ingsw.server.model.AssistantCard;
 
 /**
@@ -13,7 +17,9 @@ public class PlayAssistantCardRequest extends GameRequest{
         this.card = card;
     }
 
-    public AssistantCard getCard() {
-        return card;
+    @Override
+    public Reply handleGameRequest(VirtualView vw, GameController gc) {
+        gc.playAssistantCard(card);
+        return new AckReply(getRequestId());
     }
 }
