@@ -12,7 +12,7 @@ import javafx.scene.control.ToggleGroup;
 /**
  * This class is responsible for controlling the game creation menu.
  */
-public class GameCreationMenuController implements ScreenController {
+public class GUIGameCreationMenuController implements ScreenController {
     @FXML
     public ToggleGroup playersGroup;
     @FXML

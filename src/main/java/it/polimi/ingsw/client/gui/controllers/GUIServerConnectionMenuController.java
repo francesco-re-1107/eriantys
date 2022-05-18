@@ -15,7 +15,7 @@ import javafx.scene.layout.VBox;
 /**
  * This class is responsible for controlling the server connection menu screen.
  */
-public class ServerConnectionMenuController implements ScreenController {
+public class GUIServerConnectionMenuController implements ScreenController {
 
     @FXML
     public VBox connectionBox;

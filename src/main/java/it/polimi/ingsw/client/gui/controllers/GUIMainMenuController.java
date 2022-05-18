@@ -8,7 +8,7 @@ import javafx.scene.control.Label;
 /**
  * This class is responsible for controlling the main menu screen.
  */
-public class MainMenuController implements ScreenController {
+public class GUIMainMenuController implements ScreenController {
 
     @FXML
     public Label nicknameLabel;

@@ -19,7 +19,7 @@ public class WelcomeView extends BaseView {
             "                                                           `Y8P\"           ";
 
     @Override
-    protected void init() {
+    protected void draw() {
         cursor.clearScreen();
         cursor.printBold(logo);
         cursor.printPrompt("Username:");

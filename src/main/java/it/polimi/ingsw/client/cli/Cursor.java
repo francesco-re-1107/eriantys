@@ -12,6 +12,7 @@ import org.fusesource.jansi.AnsiConsole;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+import java.util.Scanner;
 
 import static org.fusesource.jansi.Ansi.ansi;
 
@@ -199,7 +200,7 @@ public class Cursor {
         };
     }
 
-    private void moveToXY(int x, int y) {
+    public void moveToXY(int x, int y) {
         System.out.print(ansi().cursor(y, x).reset());
     }
 
@@ -226,4 +227,16 @@ public class Cursor {
         System.out.println(ansi().bold().a(s).reset());
     }
 
+    public String input() {
+        return new Scanner(System.in).nextLine();
+    }
+
+    public void print(String s) {
+        System.out.print(s);
+    }
+
+    public void print(String s, int x, int y) {
+        moveToXY(x, y);
+        print(s);
+    }
 }

@@ -1,8 +1,11 @@
 package it.polimi.ingsw;
 
+import it.polimi.ingsw.client.cli.CLI;
 import it.polimi.ingsw.client.gui.GUI;
 import it.polimi.ingsw.server.Server;
 import javafx.application.Application;
+
+import java.util.logging.Level;
 
 public class App {
     public static void main(String[] args) {
@@ -46,7 +49,8 @@ public class App {
             Utils.LOGGER.info("Starting client with GUI");
             Application.launch(GUI.class);
         } else {
-            Utils.LOGGER.info("Starting CLI client");
+            Utils.LOGGER.setLevel(Level.SEVERE);
+            CLI.start();
         }
     }
 }

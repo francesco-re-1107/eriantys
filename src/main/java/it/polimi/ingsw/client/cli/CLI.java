@@ -16,7 +16,7 @@ import java.util.Scanner;
 
 public class CLI {
 
-    public static void main(String[] args){
+    public static void start(){
         Client.init();
     }
 

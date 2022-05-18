@@ -8,7 +8,7 @@
 <AnchorPane id="main_menu_background" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity"
             minWidth="-Infinity" prefHeight="720.0" prefWidth="1280.0" stylesheets="@../css/main_menu.css"
             xmlns="http://javafx.com/javafx/18" xmlns:fx="http://javafx.com/fxml/1"
-            fx:controller="it.polimi.ingsw.client.gui.controllers.MainMenuController">
+            fx:controller="it.polimi.ingsw.client.gui.controllers.GUIMainMenuController">
     <VBox AnchorPane.topAnchor="100" AnchorPane.rightAnchor="0" AnchorPane.leftAnchor="0" alignment="TOP_CENTER">
         <ImageView fitWidth="1000.0" pickOnBounds="true" preserveRatio="true">
             <Image url="@../assets/title.png"/>

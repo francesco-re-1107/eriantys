@@ -12,7 +12,7 @@ import javafx.stage.Stage;
 /**
  * This class is responsible for controlling the waiting room screen.
  */
-public class WaitingRoomController implements ScreenController, Client.GameUpdateListener {
+public class GUIWaitingRoomController implements ScreenController, Client.GameUpdateListener {
     @FXML
     public Label waitingLabel;
     @FXML

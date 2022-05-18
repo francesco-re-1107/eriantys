@@ -7,7 +7,7 @@
 <AnchorPane id="server_connection_menu_background" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity"
             minWidth="-Infinity" stylesheets="@../css/server_connection_menu.css"
             xmlns="http://javafx.com/javafx/18" xmlns:fx="http://javafx.com/fxml/1"
-            fx:controller="it.polimi.ingsw.client.gui.controllers.ServerConnectionMenuController">
+            fx:controller="it.polimi.ingsw.client.gui.controllers.GUIServerConnectionMenuController">
 
     <VBox AnchorPane.topAnchor="60" AnchorPane.rightAnchor="0" AnchorPane.leftAnchor="0" alignment="TOP_CENTER">
         <ImageView fitWidth="500.0" pickOnBounds="true" preserveRatio="true">

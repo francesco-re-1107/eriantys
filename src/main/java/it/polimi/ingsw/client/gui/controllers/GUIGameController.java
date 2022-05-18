@@ -32,7 +32,7 @@ import java.util.stream.Collectors;
 /**
  * This class is responsible for controlling the game screen.
  */
-public class GameController implements ScreenController, Client.GameUpdateListener {
+public class GUIGameController implements ScreenController, Client.GameUpdateListener {
     @FXML
     private IslandCircularPane islandsPane;
     @FXML

@@ -3,6 +3,7 @@ package it.polimi.ingsw.client;
 import it.polimi.ingsw.Constants;
 import it.polimi.ingsw.Utils;
 import it.polimi.ingsw.client.ClientServerCommunicator.CommunicatorListener;
+import it.polimi.ingsw.client.cli.CLINavigationManager;
 import it.polimi.ingsw.client.gui.GUINavigationManager;
 import it.polimi.ingsw.common.reducedmodel.GameListItem;
 import it.polimi.ingsw.common.reducedmodel.ReducedGame;
@@ -60,9 +61,7 @@ public class Client implements CommunicatorListener {
      */
     private Client() {
         gameUpdateListeners = new ArrayList<>();
-
-        //navigationManager = new CLINavigationManager();
-        navigationManager = null;
+        navigationManager = new CLINavigationManager();
     }
 
     /**
@@ -71,8 +70,6 @@ public class Client implements CommunicatorListener {
     private Client(Stage stage) {
         gameUpdateListeners = new ArrayList<>();
         navigationManager = new GUINavigationManager(stage);
-
-        navigationManager.navigateTo(Screen.SERVER_CONNECTION_MENU);
     }
 
     /**
@@ -81,6 +78,8 @@ public class Client implements CommunicatorListener {
      */
     public static void init() {
         instance = new Client();
+
+        Client.getInstance().getNavigationManager().navigateTo(Screen.SERVER_CONNECTION_MENU);
     }
 
     /**
@@ -89,6 +88,8 @@ public class Client implements CommunicatorListener {
      */
     public static void init(Stage stage) {
         instance = new Client(stage);
+
+        Client.getInstance().getNavigationManager().navigateTo(Screen.SERVER_CONNECTION_MENU);
     }
 
     /**
@@ -338,6 +339,13 @@ public class Client implements CommunicatorListener {
      */
     public String getNickname() {
         return nickname;
+    }
+
+    /**
+     * @return the current navigation manager
+     */
+    private NavigationManager getNavigationManager() {
+        return navigationManager;
     }
 
     /**

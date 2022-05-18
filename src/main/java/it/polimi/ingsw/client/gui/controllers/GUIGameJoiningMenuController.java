@@ -19,7 +19,7 @@ import java.util.TimerTask;
 /**
  * This class is responsible for the game joining menu.
  */
-public class GameJoiningMenuController implements ScreenController {
+public class GUIGameJoiningMenuController implements ScreenController {
     @FXML
     public VBox gamesList;
     @FXML
