@@ -217,8 +217,10 @@ public class Client implements CommunicatorListener {
                 r -> {
                     if (r.isSuccessful())
                         navigationManager.navigateTo(Screen.WAITING_ROOM);
-                    else
+                    else {
                         errorListener.accept(r.getThrowable());
+                        r.getThrowable().printStackTrace();
+                    }
                 },
                 errorListener::accept
         );
@@ -315,6 +317,14 @@ public class Client implements CommunicatorListener {
                 },
                 errorListener::accept
         );
+    }
+
+    public void forwardGameRequest(GameRequest request) {
+        forwardGameRequest(request, () -> {}, e -> {});
+    }
+
+    public void forwardGameRequest(GameRequest request, Consumer<Throwable> errorListener) {
+        forwardGameRequest(request, () -> {}, errorListener);
     }
 
     /**

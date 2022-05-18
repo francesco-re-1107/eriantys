@@ -1,6 +1,7 @@
 package it.polimi.ingsw.server.model.charactercards;
 
 import it.polimi.ingsw.common.exceptions.InvalidOperationException;
+import it.polimi.ingsw.server.model.Character;
 import it.polimi.ingsw.server.model.CharacterCard;
 import it.polimi.ingsw.server.model.Game;
 import it.polimi.ingsw.server.model.Island;
@@ -14,8 +15,13 @@ public class GrandmaCharacterCard extends CharacterCard {
     private final Island island;
 
     public GrandmaCharacterCard(Island island) {
-        super(2);
+        super();
         this.island = island;
+    }
+
+    @Override
+    public Character getCharacter() {
+        return Character.GRANDMA;
     }
 
     @Override

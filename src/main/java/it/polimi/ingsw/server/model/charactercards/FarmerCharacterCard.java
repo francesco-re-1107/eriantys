@@ -1,5 +1,6 @@
 package it.polimi.ingsw.server.model.charactercards;
 
+import it.polimi.ingsw.server.model.Character;
 import it.polimi.ingsw.server.model.InfluenceCalculator;
 import it.polimi.ingsw.server.model.Player;
 import it.polimi.ingsw.server.model.influencecalculators.ProfessorsControlInfluenceCalculator;
@@ -10,12 +11,13 @@ import it.polimi.ingsw.server.model.influencecalculators.ProfessorsControlInflue
  */
 public class FarmerCharacterCard extends InfluenceCharacterCard {
 
-    public FarmerCharacterCard() {
-        super(2);
-    }
-
     @Override
     public InfluenceCalculator getInfluenceCalculator(Player cardPlayer) {
         return new ProfessorsControlInfluenceCalculator(cardPlayer);
+    }
+
+    @Override
+    public Character getCharacter() {
+        return Character.FARMER;
     }
 }

@@ -1,9 +1,10 @@
 package it.polimi.ingsw.server.model.charactercards;
 
+import it.polimi.ingsw.server.model.Character;
 import it.polimi.ingsw.server.model.InfluenceCalculator;
 import it.polimi.ingsw.server.model.Player;
-import it.polimi.ingsw.server.model.influencecalculators.NoColorInfluenceCalculator;
 import it.polimi.ingsw.server.model.Student;
+import it.polimi.ingsw.server.model.influencecalculators.NoColorInfluenceCalculator;
 
 /**
  * This class models the mushroom man card
@@ -17,12 +18,17 @@ public class MushroomManCharacterCard extends InfluenceCharacterCard {
     private final Student studentColorNotInfluencing;
 
     public MushroomManCharacterCard(Student studentColorNotInfluencing) {
-        super(3);
+        super();
         this.studentColorNotInfluencing = studentColorNotInfluencing;
     }
 
     @Override
     public InfluenceCalculator getInfluenceCalculator(Player cardPlayer) {
         return new NoColorInfluenceCalculator(studentColorNotInfluencing);
+    }
+
+    @Override
+    public Character getCharacter() {
+        return Character.MUSHROOM_MAN;
     }
 }

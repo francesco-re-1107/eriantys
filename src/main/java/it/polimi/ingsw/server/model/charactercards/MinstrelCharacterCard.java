@@ -1,6 +1,7 @@
 package it.polimi.ingsw.server.model.charactercards;
 
 import it.polimi.ingsw.common.exceptions.InvalidOperationException;
+import it.polimi.ingsw.server.model.Character;
 import it.polimi.ingsw.server.model.CharacterCard;
 import it.polimi.ingsw.server.model.Game;
 import it.polimi.ingsw.server.model.StudentsContainer;
@@ -22,9 +23,14 @@ public class MinstrelCharacterCard extends CharacterCard {
     private final StudentsContainer studentsToAdd;
 
     public MinstrelCharacterCard(StudentsContainer studentsToRemove, StudentsContainer studentsToAdd) {
-        super(1);
+        super();
         this.studentsToRemove = studentsToRemove;
         this.studentsToAdd = studentsToAdd;
+    }
+
+    @Override
+    public Character getCharacter() {
+        return Character.MINSTREL;
     }
 
     @Override

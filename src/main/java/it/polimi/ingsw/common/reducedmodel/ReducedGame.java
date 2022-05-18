@@ -1,5 +1,6 @@
 package it.polimi.ingsw.common.reducedmodel;
 
+import it.polimi.ingsw.server.model.Character;
 import it.polimi.ingsw.server.model.Game;
 import it.polimi.ingsw.server.model.Student;
 
@@ -23,7 +24,7 @@ public record ReducedGame(
         int motherNaturePosition,
         int studentsBagSize,
         ReducedRound currentRound,
-        Map<String, Integer> characterCards,
+        Map<Character, Integer> characterCards,
         Map<Student, String> currentProfessors, //student -> nickname
         Game.State currentState,
         String winner //nickname

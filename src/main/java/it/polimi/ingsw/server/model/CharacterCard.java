@@ -3,10 +3,7 @@ package it.polimi.ingsw.server.model;
 import it.polimi.ingsw.common.exceptions.InvalidOperationException;
 
 import java.io.Serializable;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.*;
 
 /**
  * This class is used to represent a generic character card
@@ -14,68 +11,25 @@ import java.util.List;
 public abstract class CharacterCard implements Serializable {
 
     /**
-     * This list holds all the available character cards that can be randomly extracted
-     */
-    private static final List<String> availableCards = Arrays.asList(
-            "CentaurCharacterCard",
-            "FarmerCharacterCard",
-            "GrandmaCharacterCard",
-            "HeraldCharacterCard",
-            "KnightCharacterCard",
-            "MinstrelCharacterCard",
-            "MushroomManCharacterCard",
-            "PostmanCharacterCard"
-    );
-
-    /**
-     * This is the initial cost of the card, it will change when the card is used
-     */
-    private final int cost;
-
-    /**
-     * Create a generic character card
-     * @param cost initial cost of the card
-     */
-    protected CharacterCard(int cost) {
-        this.cost = cost;
-    }
-
-    /**
      * Generate a random deck of character cards without duplicates
      * @param howManyCards number of cards to pick randomly
      * @return the generated deck
      */
-    public static List<String> generateRandomDeck(int howManyCards) {
-        if(howManyCards > availableCards.size())
+    public static List<Character> generateRandomDeck(int howManyCards) {
+        var list = new ArrayList<>(Arrays.asList(Character.values()));
+
+        if(howManyCards > list.size())
             throw new InvalidOperationException("Too many cards");
 
-        Collections.shuffle(availableCards);
+        Collections.shuffle(list);
 
-        return new LinkedList<>(availableCards.subList(0, howManyCards));
-    }
-
-    /**
-     * @return the initial cost of the card
-     */
-    public int getCost() {
-        return cost;
-    }
-
-    /**
-     * Calculate current cost based on how many times the card was used
-     * @param usedTimes number of times the card was used
-     * @return the initial cost if card was not used, initial cost +1 otherwise
-     */
-    public int getCost(int usedTimes) {
-        return usedTimes <= 0 ? cost : cost + 1;
+        return new LinkedList<>(list.subList(0, howManyCards));
     }
 
     /**
      * @return the name (simple class name) of the card
      */
-    public String getName() {
-        return this.getClass().getSimpleName();
-    }
+    public abstract Character getCharacter();
 
     /**
      * Apply the card's effect to the given game

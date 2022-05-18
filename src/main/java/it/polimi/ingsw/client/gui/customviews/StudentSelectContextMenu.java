@@ -12,8 +12,27 @@ import java.util.function.Consumer;
  */
 public class StudentSelectContextMenu extends ContextMenu {
 
+    /**
+     * Context menu with all students and no listener
+     */
     public StudentSelectContextMenu() {
-        this(new StudentsContainer(), s -> {});
+        this(s -> {});
+    }
+
+    /**
+     * Context menu with all students and custom listener
+     * @param onStudentSelected
+     */
+    public StudentSelectContextMenu(Consumer<Student> onStudentSelected) {
+        this(
+                new StudentsContainer()
+                        .addStudent(Student.YELLOW)
+                        .addStudent(Student.RED)
+                        .addStudent(Student.BLUE)
+                        .addStudent(Student.GREEN)
+                        .addStudent(Student.PINK),
+                onStudentSelected
+        );
     }
 
     public StudentSelectContextMenu(StudentsContainer studentsSelectable, Consumer<Student> onStudentSelected) {

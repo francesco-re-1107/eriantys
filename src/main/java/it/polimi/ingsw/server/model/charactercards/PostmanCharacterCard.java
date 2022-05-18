@@ -1,5 +1,6 @@
 package it.polimi.ingsw.server.model.charactercards;
 
+import it.polimi.ingsw.server.model.Character;
 import it.polimi.ingsw.server.model.CharacterCard;
 import it.polimi.ingsw.server.model.Game;
 
@@ -12,10 +13,10 @@ public class PostmanCharacterCard extends CharacterCard {
 
     private static final int ADDITIONAL_MOTHER_NATURE_MOVES = 2;
 
-    public PostmanCharacterCard() {
-        super(1);
+    @Override
+    public Character getCharacter() {
+        return Character.POSTMAN;
     }
-
 
     @Override
     public void play(Game game) {

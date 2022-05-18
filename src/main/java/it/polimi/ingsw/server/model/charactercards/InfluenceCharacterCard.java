@@ -11,15 +11,6 @@ import it.polimi.ingsw.server.model.Player;
 public abstract class InfluenceCharacterCard extends CharacterCard {
 
     /**
-     * Create a generic character card
-     *
-     * @param cost initial cost of the card
-     */
-    protected InfluenceCharacterCard(int cost) {
-        super(cost);
-    }
-
-    /**
      * @param cardPlayer the player who played the card
      * @return the specific influence calculator for every card depending on the card effect
      */

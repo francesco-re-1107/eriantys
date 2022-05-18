@@ -53,7 +53,7 @@ public class Game implements Serializable {
     /**
      * Stores the 3 character cards selected for this game and the number of times they've been used
      */
-    private final Map<String, Integer> characterCards = new HashMap<>();
+    private final Map<Character, Integer> characterCards;
 
     /**
      * Stores for each student color which player has the professor, it is empty when the game is started
@@ -115,9 +115,10 @@ public class Game implements Serializable {
         this.professors = new EnumMap<>(Student.class);
         this.expertMode = expertMode;
         this.listeners = new ArrayList<>();
+        this.characterCards = new EnumMap<>(Character.class);
 
         CharacterCard.generateRandomDeck(Constants.NUMBER_OF_CHARACTER_CARD)
-                .forEach(s -> this.characterCards.put(s, 0));
+                .forEach(s -> characterCards.put(s, 0));
         logger.log(Level.FINER, "Character cards -> {0}", characterCards.keySet());
 
         initializeIslands();
@@ -427,19 +428,21 @@ public class Game implements Serializable {
                 Stage.isEqualOrPost(currentRound.getStage(), Stage.Attack.CARD_PLAYED))
             throw new InvalidOperationException();
 
-        if (!characterCards.containsKey(card.getName()))
+        if (!characterCards.containsKey(card.getCharacter()))
             throw new InvalidOperationException("This card is not available in this game");
 
-        int cost = card.getCost(characterCards.get(card.getName()));
+        int usedTimes = characterCards.get(card.getCharacter());
+        int cost = card.getCharacter().getCost(usedTimes);
 
         if (player.getCoins() < cost)
             throw new InvalidOperationException("Player cannot buy the card");
 
-        logger.log(Level.INFO,  MessageFormat.format("playing character card {0} at {1}c", card.getName(), cost));
+        logger.log(Level.INFO,  MessageFormat.format("playing character card {0} at {1}c", card.getCharacter().name(), cost));
 
         //play card
         card.play(this);
 
+        characterCards.put(card.getCharacter(), usedTimes + 1);
         player.useCoins(cost);
 
         currentRound.setAttackSubstage(Stage.Attack.CARD_PLAYED);
@@ -728,9 +731,9 @@ public class Game implements Serializable {
     /**
      * @return a copy of the character cards selected for this game
      */
-    public Map<String, Integer> getCharacterCards() {
+    public Map<Character, Integer> getCharacterCards() {
         //return a copy
-        return new HashMap<>(characterCards);
+        return new EnumMap<>(characterCards);
     }
 
     /**

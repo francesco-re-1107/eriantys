@@ -8,18 +8,15 @@ import it.polimi.ingsw.client.ScreenController;
 import it.polimi.ingsw.client.gui.customviews.*;
 import it.polimi.ingsw.common.reducedmodel.ReducedGame;
 import it.polimi.ingsw.common.reducedmodel.ReducedPlayer;
-import it.polimi.ingsw.common.requests.MoveMotherNatureRequest;
-import it.polimi.ingsw.common.requests.PlaceStudentsRequest;
-import it.polimi.ingsw.common.requests.PlayAssistantCardRequest;
-import it.polimi.ingsw.common.requests.SelectCloudRequest;
-import it.polimi.ingsw.server.model.AssistantCard;
-import it.polimi.ingsw.server.model.Stage;
-import it.polimi.ingsw.server.model.Student;
-import it.polimi.ingsw.server.model.StudentsContainer;
+import it.polimi.ingsw.common.reducedmodel.charactercards.*;
+import it.polimi.ingsw.common.requests.*;
+import it.polimi.ingsw.server.model.Character;
+import it.polimi.ingsw.server.model.*;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 
@@ -142,8 +139,6 @@ public class GUIGameController implements ScreenController, Client.GameUpdateLis
                                     studentsPlacedInSchool,
                                     studentsPlacedInIslands
                             ),
-                            () -> {
-                            },
                             err -> Utils.LOGGER.info("Error placing students: " + err)
                     );
         } else {
@@ -232,9 +227,11 @@ public class GUIGameController implements ScreenController, Client.GameUpdateLis
         cloudsPane.setClouds(game.currentRound().clouds(), c -> Client.getInstance()
                 .forwardGameRequest(
                         new SelectCloudRequest(c),
-                        () -> {},
                         err -> Utils.LOGGER.info("Error selecting cloud " + err.getMessage())
                 ));
+
+        //set character cards
+        setCharacterCards();
 
         //set players boards
         setMyBoard();
@@ -250,6 +247,59 @@ public class GUIGameController implements ScreenController, Client.GameUpdateLis
             processMyTurn();
         } else {
             infoLabel.setInfoString(InfoString.OTHER_PLAYER_WAIT_FOR_HIS_TURN, game.currentRound().currentPlayer());
+        }
+    }
+
+    /**
+     * Set up character cards
+     */
+    private void setCharacterCards() {
+        int i = 0;
+        for(var e : currentGame.characterCards().entrySet()) {
+            var ccv = (CharacterCardView) characterCards.getChildren().get(i);
+            var canPlay = myPlayer.coins() >= e.getKey().getCost(e.getValue());
+
+            ccv.setCharacter(e.getKey());
+            ccv.setDisable(!canPlay);
+            ccv.setGrayedOut(!canPlay);
+            ccv.setOnMouseClicked(event -> processCharacterCardClick(e.getKey(), ccv, event));
+            i++;
+        }
+
+    }
+
+    private void processCharacterCardClick(Character character, CharacterCardView ccv, MouseEvent event) {
+        switch (character) {
+            case CENTAUR, FARMER, KNIGHT, POSTMAN -> {
+                //send directly the request
+                var card = switch(character) {
+                    case CENTAUR -> new ReducedCentaurCharacterCard();
+                    case FARMER -> new ReducedFarmerCharacterCard();
+                    case KNIGHT -> new ReducedKnightCharacterCard();
+                    case POSTMAN -> new ReducedPostmanCharacterCard();
+                    default -> null;
+                };
+                Client.getInstance().forwardGameRequest(new PlayCharacterCardRequest(card));
+            }
+            case GRANDMA, HERALD -> {
+                //select island
+                //islandsPane.arrangeIslandsForPlayingCharacterCard();
+            }
+            case MUSHROOM_MAN -> {
+                //select student
+                var studentSelectContextMenu = new StudentSelectContextMenu(
+                        s -> Client.getInstance().forwardGameRequest(
+                                new PlayCharacterCardRequest(
+                                        new ReducedMushroomManCharacterCard(s)
+                                )
+                        )
+                );
+
+                studentSelectContextMenu.show(ccv, event.getScreenX(), event.getScreenY());
+            }
+            case MINSTREL -> {
+                //swap students
+            }
         }
     }
 
@@ -410,7 +460,6 @@ public class GUIGameController implements ScreenController, Client.GameUpdateLis
         islandsPane.arrangeIslandsForMotherNatureMovement(motherNaturePosition, maxMotherNatureSteps,
                 s -> Client.getInstance().forwardGameRequest(
                         new MoveMotherNatureRequest(s),
-                        () -> {},
                         err -> Utils.LOGGER.info("Error moving mother nature: " + err.getMessage())
                 ));
     }

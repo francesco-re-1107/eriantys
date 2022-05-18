@@ -6,6 +6,7 @@ import org.junit.jupiter.api.Test;
 
 import java.util.List;
 
+import static it.polimi.ingsw.server.model.Character.CENTAUR;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
@@ -13,7 +14,7 @@ class CharacterCardTest {
 
     @Test
     void generateRandomDeck() {
-        List<String> d = CharacterCard.generateRandomDeck(6);
+        List<Character> d = CharacterCard.generateRandomDeck(6);
         assertEquals(6, d.size());
 
         assertThrows(
@@ -24,12 +25,12 @@ class CharacterCardTest {
 
     @Test
     void getCost() {
-        assertEquals(3, new CentaurCharacterCard().getCost());
-        assertEquals(4, new CentaurCharacterCard().getCost(2));
+        assertEquals(3, CENTAUR.getCost());
+        assertEquals(4, CENTAUR.getCost(3));
     }
 
     @Test
-    void getName() {
-        assertEquals("CentaurCharacterCard", new CentaurCharacterCard().getName());
+    void getCharacter() {
+        assertEquals(CENTAUR, new CentaurCharacterCard().getCharacter());
     }
 }

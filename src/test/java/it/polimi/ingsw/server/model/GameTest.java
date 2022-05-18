@@ -318,12 +318,12 @@ class GameTest {
                     CharacterCard cardToPlay = null;
 
                     switch (pickedCard) {
-                        case "CentaurCharacterCard" -> cardToPlay = new CentaurCharacterCard();
-                        case "FarmerCharacterCard" -> cardToPlay = new FarmerCharacterCard();
-                        case "GrandmaCharacterCard" -> cardToPlay = new GrandmaCharacterCard(g.getIslands().get(r.nextInt(g.getIslands().size())));
-                        case "HeraldCharacterCard" -> cardToPlay = new HeraldCharacterCard(g.getIslands().get(r.nextInt(g.getIslands().size())));
-                        case "KnightCharacterCard" -> cardToPlay = new KnightCharacterCard();
-                        case "MinstrelCharacterCard" -> {
+                        case CENTAUR -> cardToPlay = new CentaurCharacterCard();
+                        case FARMER -> cardToPlay = new FarmerCharacterCard();
+                        case GRANDMA -> cardToPlay = new GrandmaCharacterCard(g.getIslands().get(r.nextInt(g.getIslands().size())));
+                        case HERALD -> cardToPlay = new HeraldCharacterCard(g.getIslands().get(r.nextInt(g.getIslands().size())));
+                        case KNIGHT -> cardToPlay = new KnightCharacterCard();
+                        case MINSTREL -> {
                             var entrance = new RandomizedStudentsContainer(currentPlayer.getEntrance());
                             var school = new RandomizedStudentsContainer(currentPlayer.getSchool());
                             cardToPlay = new MinstrelCharacterCard(
@@ -331,11 +331,11 @@ class GameTest {
                                     entrance.pickManyRandom(2)
                             );
                         }
-                        case "MushroomManCharacterCard" -> cardToPlay = new MushroomManCharacterCard(Student.BLUE);
-                        case "PostmanCharacterCard" -> cardToPlay = new PostmanCharacterCard();
+                        case MUSHROOM_MAN -> cardToPlay = new MushroomManCharacterCard(Student.BLUE);
+                        case POSTMAN -> cardToPlay = new PostmanCharacterCard();
                     }
 
-                    if (cardToPlay != null && cardToPlay.getCost(usedTimes) <= currentPlayer.getCoins())
+                    if (cardToPlay != null && cardToPlay.getCharacter().getCost(usedTimes) <= currentPlayer.getCoins())
                         g.playCharacterCard(currentPlayer, cardToPlay);
                 }
 
