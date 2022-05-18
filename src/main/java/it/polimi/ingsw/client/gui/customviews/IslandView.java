@@ -12,6 +12,7 @@ import javafx.scene.layout.*;
 import javafx.util.Duration;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 
 /**
@@ -130,7 +131,15 @@ public class IslandView extends StackPane {
     public void addStudent(Student student) {
         var sv = new StudentView(student);
         sv.setFitWidth(Math.min(27, size/6));
-        studentsFlowPane.getChildren().add(sv);
+
+        var students = new ArrayList<>(studentsFlowPane.getChildren());
+        students.add(sv);
+
+        //order students by their colors
+        students.sort(Comparator.comparingInt(s -> ((StudentView) s).getStudent().ordinal()));
+
+        studentsFlowPane.getChildren().clear();
+        studentsFlowPane.getChildren().addAll(students);
     }
 
     private void setupNoEntry() {

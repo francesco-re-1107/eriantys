@@ -14,19 +14,19 @@ import java.util.function.BiConsumer;
 import java.util.function.IntConsumer;
 
 /**
- * This class shows the island in a circular way, and manages various game states
+ * This class shows the islands in a circular way, and manages various game states
  */
-public class IslandCircularPane extends Pane {
+public class IslandsCircularPane extends Pane {
 
     private List<ReducedIsland> islands;
 
     private StudentSelectContextMenu studentSelectContextMenu;
     
-    public IslandCircularPane(){
+    public IslandsCircularPane(){
         this(new ArrayList<>());
     }
 
-    public IslandCircularPane(List<ReducedIsland> islands) {
+    public IslandsCircularPane(List<ReducedIsland> islands) {
         super();
         this.islands = islands;
 

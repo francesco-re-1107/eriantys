@@ -34,7 +34,7 @@ import java.util.stream.Collectors;
  */
 public class GUIGameController implements ScreenController, Client.GameUpdateListener {
     @FXML
-    private IslandCircularPane islandsPane;
+    private IslandsCircularPane islandsPane;
     @FXML
     private CloudsPane cloudsPane;
     @FXML

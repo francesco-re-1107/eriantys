@@ -87,7 +87,7 @@
                     SplitPane.resizableWithParent="false">
             <StackPane prefWidth="Infinity" prefHeight="Infinity" AnchorPane.bottomAnchor="0.0"
                        AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
-                <IslandCircularPane fx:id="islandsPane" prefWidth="Infinity" prefHeight="Infinity"/>
+                <IslandsCircularPane fx:id="islandsPane" prefWidth="Infinity" prefHeight="Infinity"/>
                 <CloudsPane fx:id="cloudsPane" maxWidth="400" maxHeight="400"/>
             </StackPane>
         </AnchorPane>

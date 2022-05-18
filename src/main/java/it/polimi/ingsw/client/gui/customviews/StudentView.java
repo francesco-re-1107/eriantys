@@ -75,6 +75,14 @@ public class StudentView extends ImageView {
     }
 
     /**
+     * Get the student color
+     * @return student color
+     */
+    public Student getStudent() {
+        return student;
+    }
+
+    /**
      * Get the current image to show (used internally)
      * @return
      */
@@ -84,5 +92,4 @@ public class StudentView extends ImageView {
         else
             return studentsImages.get(student);
     }
-
 }
