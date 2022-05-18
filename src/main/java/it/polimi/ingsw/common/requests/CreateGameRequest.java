@@ -26,8 +26,9 @@ public class CreateGameRequest extends Request{
     public Reply handleRequest(VirtualView vw, Controller c, GameController gc) {
         if(gc != null) //already in game
             throw new InvalidOperationException("Client already in game");
+
         //game created -> new game controller
-        vw.setGameController(c.createGame(c.findNicknameByVirtualView(vw), numberOfPlayers, expertMode));
+        vw.setGameController(c.createGame(vw.getNickname(), numberOfPlayers, expertMode));
         return new AckReply(getRequestId());
     }
 }

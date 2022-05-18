@@ -35,7 +35,7 @@ public class App {
      * Start the server
      */
     public static void startServer() {
-        new Server(Utils.getAppConfig().port())
+        new Server(Utils.getServerConfig().port())
                 .startListening();
     }
 

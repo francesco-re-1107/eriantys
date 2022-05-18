@@ -34,6 +34,11 @@ public class VirtualView implements ServerClientCommunicator.CommunicatorListene
     private GameController gameController;
 
     /**
+     * Registered nickname, null if the client is not yet registered
+     */
+    private String nickname;
+
+    /**
      * Create a VirtualView
      * @param controller the instance of the main controller
      * @param socket the client socket accepted by the server
@@ -95,14 +100,24 @@ public class VirtualView implements ServerClientCommunicator.CommunicatorListene
     public void onDisconnect() {
         if(gameController != null)
             gameController.disconnect();
+
+        if(nickname != null)
+            controller.disconnect(nickname);
     }
 
     /**
-     * Whether the client associated with this virtual view disconnected
-     * @return true if disconnected, false otherwise
+     * Set registered nickname
+     * @param nickname
      */
-    public boolean isConnected() {
-        return communicator.isConnected();
+    public void setNickname(String nickname) {
+        this.nickname = nickname;
+    }
+
+    /**
+     * @return the registered nickname
+     */
+    public String getNickname() {
+        return nickname;
     }
 
     /**
@@ -128,4 +143,5 @@ public class VirtualView implements ServerClientCommunicator.CommunicatorListene
     public ServerClientCommunicator getCommunicator() {
         return communicator;
     }
+
 }

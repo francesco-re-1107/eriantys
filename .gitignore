@@ -4,3 +4,4 @@ target/
 out/
 *.iml
 src/**/META-INF
+games.bak

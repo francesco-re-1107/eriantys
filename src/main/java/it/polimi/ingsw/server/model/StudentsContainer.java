@@ -3,6 +3,7 @@ package it.polimi.ingsw.server.model;
 import it.polimi.ingsw.common.exceptions.StudentNotFoundException;
 import it.polimi.ingsw.common.exceptions.StudentsMaxReachedException;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -201,12 +202,12 @@ public class StudentsContainer extends AStudentsContainer {
     /**
      * Listener for specific student and count
      */
-    public interface StudentNumberReachedListener {
+    public interface StudentNumberReachedListener extends Serializable{
         void onStudentNumberReachedListener(Student student, int count);
     }
 
     /**
      * Used internally for listeners
      */
-    private record Trigger(Student student, int count) {}
+    private record Trigger(Student student, int count) implements Serializable {}
 }

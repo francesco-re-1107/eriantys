@@ -1,17 +1,17 @@
 package it.polimi.ingsw.server.controller;
 
+import it.polimi.ingsw.Constants;
 import it.polimi.ingsw.Utils;
 import it.polimi.ingsw.common.exceptions.DuplicatedNicknameException;
 import it.polimi.ingsw.common.exceptions.GameJoiningError;
 import it.polimi.ingsw.common.exceptions.NicknameNotRegisteredError;
 import it.polimi.ingsw.common.exceptions.NicknameNotValidException;
 import it.polimi.ingsw.common.reducedmodel.GameListItem;
-import it.polimi.ingsw.server.VirtualView;
 import it.polimi.ingsw.server.model.Game;
 import it.polimi.ingsw.server.model.Player;
 
+import java.io.*;
 import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * This is the main controller for the server.
@@ -21,22 +21,24 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 public class Controller implements Game.GameUpdateListener {
 
+    private static final long serialVersionUID = 6548392839402918690L;
+
     /**
      * Stores all the currently active games
      */
-    private final List<Game> games;
+    private List<Game> games;
 
-    /**
-     * Stores nicknames of the registered players and their virtual view
-     */
-    private final Map<String, VirtualView> nicknameVirtualViewMap;
+    private final Set<String> registeredNicknames;
 
     /**
      * Create a controller
      */
     public Controller() {
         this.games = new ArrayList<>();
-        this.nicknameVirtualViewMap = new ConcurrentHashMap<>();
+        this.registeredNicknames = new HashSet<>();
+
+        loadBackupIfPresent();
+        startAutoSaveTimer();
     }
 
     /**
@@ -44,40 +46,35 @@ public class Controller implements Game.GameUpdateListener {
      * This method must be called as soon as a player connects to this server.
      *
      * @param nickname
-     * @param virtualView
+     * @param nickname
      * @return the gameController if this player was in a game before disconnecting, null otherwise
      * @throws DuplicatedNicknameException if the nickname is already in use by another player
      * @throws NicknameNotValidException   if the nickname does not meet all the criteria
      */
-    public synchronized GameController registerNickname(String nickname, VirtualView virtualView)
+    public synchronized GameController registerNickname(String nickname)
             throws DuplicatedNicknameException, NicknameNotValidException {
-        if (nicknameVirtualViewMap.containsKey(nickname)) {
-            if (nicknameVirtualViewMap.get(nickname).isConnected())
-                throw new DuplicatedNicknameException();
 
-            //replace disconnected view with the new one
-            nicknameVirtualViewMap.put(nickname, virtualView);
+        if (isRegistered(nickname))
+            throw new DuplicatedNicknameException();
 
-            //find the previous game
-            var foundGame = findGameByNickname(nickname);
+        if (!Utils.isValidNickname(nickname))
+            throw new NicknameNotValidException();
 
-            if (foundGame != null) {
-                var foundPlayer = findPlayerInGame(nickname, foundGame);
+        registeredNicknames.add(nickname);
 
-                var gc = new GameController(foundGame, foundPlayer);
-                foundGame.setPlayerReconnected(foundPlayer);
-                return gc;
-            }
-        } else {
-            if (!Utils.isValidNickname(nickname))
-                throw new NicknameNotValidException();
+        //check if the player was previously in a game
+        //return the game controller if so
+        var foundGame = findGameByNickname(nickname);
+        if (foundGame != null) {
+            var foundPlayer = findPlayerInGame(nickname, foundGame);
 
-            //insert the virtual view in the map
-            nicknameVirtualViewMap.put(nickname, virtualView);
+            var gc = new GameController(foundGame, foundPlayer);
+            foundGame.setPlayerReconnected(foundPlayer);
+            return gc;
         }
+
         return null;
     }
-
 
     /**
      * Find the player in the game with the given nickname.
@@ -131,7 +128,8 @@ public class Controller implements Game.GameUpdateListener {
      * @return the GameController needed to control this game
      */
     public synchronized GameController joinGame(String nickname, UUID uuid) {
-        checkIfNicknameRegistered(nickname);
+        if (!isRegistered(nickname))
+            throw new NicknameNotRegisteredError();
 
         var selectedGame = games.stream()
                 .parallel()
@@ -161,13 +159,14 @@ public class Controller implements Game.GameUpdateListener {
     /**
      * Create a new game
      *
-     * @param nickname        of the player playing this action
+     * @param nickname client nickname
      * @param numberOfPlayers number of player desired for this game
      * @param expertMode      whether the game will use expert rules
      * @return the GameController needed to control this game
      */
     public synchronized GameController createGame(String nickname, int numberOfPlayers, boolean expertMode) {
-        checkIfNicknameRegistered(nickname);
+        if (!isRegistered(nickname))
+            throw new NicknameNotRegisteredError();
 
         var g = new Game(numberOfPlayers, expertMode);
         g.addGameUpdateListener(this);
@@ -176,17 +175,6 @@ public class Controller implements Game.GameUpdateListener {
         games.add(g);
 
         return new GameController(g, p);
-    }
-
-    /**
-     * Check if the nickname is correctly registered on this server.
-     * If not a NicknameNotRegisteredError is thrown.
-     *
-     * @param nickname
-     */
-    private synchronized void checkIfNicknameRegistered(String nickname) {
-        if (!nicknameVirtualViewMap.containsKey(nickname))
-            throw new NicknameNotRegisteredError();
     }
 
     /**
@@ -199,44 +187,84 @@ public class Controller implements Game.GameUpdateListener {
     public void onGameUpdate(Game game) {
         var state = game.getGameState();
 
-        //if no one is connected to the game, remove it
-        if(game.getCurrentNumberOfPlayers() == 0) {
+        //if no one is connected to the game when it is not started yet, remove it
+        if(game.getCurrentNumberOfPlayers() == 0)
             games.remove(game);
-        }
 
         //finished games are removed from the list
-        if (state == Game.State.TERMINATED || state == Game.State.FINISHED) {
+        if (state == Game.State.TERMINATED || state == Game.State.FINISHED)
             games.remove(game);
+    }
 
-            //when a game is finished or terminated remove all the disconnected players
-            //connected players instead are kept, so they can start a new game if they want
-            for (Player p : game.getPlayers()) {
-                if (!nicknameVirtualViewMap.get(p.getNickname()).isConnected())
-                    nicknameVirtualViewMap.remove(p.getNickname());
+    /**
+     * Check if a nickname is registered, in other words if it is associated with a nickname
+     * @param nickname the client nickname
+     * @return true if the virtual view is registered, false otherwise
+     */
+    public boolean isRegistered(String nickname) {
+        return registeredNicknames.contains(nickname);
+    }
+
+    /**
+     * Start the scheduling of games auto-save
+     */
+    private void startAutoSaveTimer() {
+        new Timer().schedule(new TimerTask() {
+            @Override
+            public void run() {
+                saveGames();
             }
+        }, Constants.AUTO_SAVE_INTERVAL, Constants.AUTO_SAVE_INTERVAL);
+    }
+
+    /**
+     * Load backup from file, if it exists
+     */
+    @SuppressWarnings("unchecked")
+    private void loadBackupIfPresent() {
+        var backupFile = new File(Utils.getServerConfig().backupFolder() + "/games.bak");
+
+        if(!backupFile.isFile()) return;
+
+        try (
+                var f = new FileInputStream(backupFile);
+                var o = new ObjectInputStream(f);
+        ) {
+            games = (ArrayList<Game>) o.readObject();
+            //games loaded
+            games.forEach(Game::initializeFromBackup);
+            for (var g : games) {
+                g.initializeFromBackup();
+                g.addGameUpdateListener(this);
+            }
+
+            Utils.LOGGER.info(games.size() + " games loaded from backup");
+        } catch (Exception e) {
+            Utils.LOGGER.warning("Error loading games backup");
+            e.printStackTrace();
         }
     }
 
     /**
-     * Find nickname associated with a given virtual view
-     * @param vw the virtual view
-     * @return the nickname associated with the given virtual view
+     * Save games list to file
      */
-    public String findNicknameByVirtualView(VirtualView vw) {
-        return nicknameVirtualViewMap.entrySet()
-                .stream()
-                .filter(e -> e.getValue() == vw)
-                .map(Map.Entry::getKey)
-                .findFirst()
-                .orElse(null);
+    private synchronized void saveGames() {
+        try (
+                var f = new FileOutputStream(Utils.getServerConfig().backupFolder() + "/games.bak");
+                var o = new ObjectOutputStream(f)
+        ) {
+            o.writeObject(games);
+            Utils.LOGGER.info("Games saved");
+        } catch (IOException e) {
+            Utils.LOGGER.warning("Error saving games: " + e.getMessage());
+        }
     }
 
     /**
-     * Check if a virtual view is registered, in other words if it is associated with a nickname
-     * @param vw the virtual view
-     * @return true if the virtual view is registered, false otherwise
+     * Called when a registered client disconnects
+     * @param nickname
      */
-    public boolean isRegistered(VirtualView vw) {
-        return findNicknameByVirtualView(vw) != null;
+    public void disconnect(String nickname) {
+        registeredNicknames.remove(nickname);
     }
 }

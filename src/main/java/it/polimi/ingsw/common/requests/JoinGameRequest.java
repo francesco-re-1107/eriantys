@@ -26,7 +26,7 @@ public class JoinGameRequest extends Request{
             throw new InvalidOperationException("Client already in game");
 
         //game joined -> new game controller
-        vw.setGameController(c.joinGame(c.findNicknameByVirtualView(vw), gameId));
+        vw.setGameController(c.joinGame(vw.getNickname(), gameId));
         return new AckReply(getRequestId());
     }
 }

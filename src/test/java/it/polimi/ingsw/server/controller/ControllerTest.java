@@ -9,6 +9,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.util.UUID;
+import java.util.concurrent.atomic.AtomicReference;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -20,7 +21,7 @@ class ControllerTest {
     @BeforeEach
     void setUp() {
         c = new Controller();
-        vw = new VirtualView(null, null);
+        vw = new VirtualView(c, null);
     }
 
     @Test
@@ -28,39 +29,44 @@ class ControllerTest {
         //nickname not valid
         assertThrows(
                 NicknameNotValidException.class,
-                () -> c.registerNickname("", vw)
+                () -> c.registerNickname("")
         );
 
         assertDoesNotThrow(
-                () -> c.registerNickname("p1", vw)
+                () -> c.registerNickname("p1")
         );
 
         //duplicated nickname
         assertThrows(
                 DuplicatedNicknameException.class,
-                () -> c.registerNickname("p1", vw)
+                () -> c.registerNickname("p1")
         );
+        vw.setNickname("p1");
 
-        assertEquals("p1", c.findNicknameByVirtualView(vw));
+        //check isRegistered
+        assertTrue(c.isRegistered("p1"));
 
-        assertTrue(c.isRegistered(vw));
-
+        //create a game
         c.createGame("p1", 2, false);
 
-        vw.getCommunicator().setConnected(false);
+        //simulate disconnection
+        vw.onDisconnect();
 
+        //register again after disconnection
+        var gc = new AtomicReference<>(null);
         assertDoesNotThrow(
-                () -> c.registerNickname("p1", vw)
+                () -> gc.set(c.registerNickname("p1"))
         );
+        assertNotNull(gc);
     }
 
     @Test
     void joinGame() {
         assertDoesNotThrow(
                 () -> {
-                    c.registerNickname("p1", vw);
-                    c.registerNickname("p2", vw);
-                    c.registerNickname("p3", vw);
+                    c.registerNickname("p1");
+                    c.registerNickname("p2");
+                    c.registerNickname("p3");
                 }
         );
 
@@ -96,7 +102,7 @@ class ControllerTest {
         );
 
         assertDoesNotThrow(
-                () -> c.registerNickname("p1", vw)
+                () -> c.registerNickname("p1")
         );
 
         c.createGame("p1", 2, false);

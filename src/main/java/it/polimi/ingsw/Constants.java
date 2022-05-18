@@ -25,7 +25,7 @@ public final class Constants {
     /**
      * Represents the path for the configuration file used
      */
-    public static final String CONFIG_FILE_PATH = "app.config";
+    public static final String CONFIG_FILE_PATH = "server.config";
 
 
     /**
@@ -48,8 +48,30 @@ public final class Constants {
      * If a ping request (or ping reply) doesn't arrive in this time, the client is considered disconnected
      */
     public static final int DISCONNECTION_TIMEOUT = 8000;
+
+    /**
+     * Interval between two auto-saves of the server games
+     */
+    public static final long AUTO_SAVE_INTERVAL = 10000;
+
+    /**
+     * Interval between two refresh of the client lsit of games
+     */
     public static final long GAMES_LIST_REFRESH_INTERVAL = 3000;
+
+    /**
+     * Max length of the nickname to be valid
+     */
     public static final int MAX_NICKNAME_LENGTH = 20;
+
+    /**
+     * Default configuration file used
+     */
+    public static final String SERVER_CONFIG_FILE_NAME = "server.config";
+
+    /**
+     * Adjectives words used to create random nicknames
+     */
     public static final List<String> NICKNAMES_PART_1 = List.of(
             "Attractive",
             "Bald",
@@ -75,6 +97,9 @@ public final class Constants {
             "Unsightly"
     );
 
+    /**
+     * Animals words used to create random nicknames
+     */
     public static final List<String> NICKNAMES_PART_2 = List.of(
             "Penguin",
             "Pony",
@@ -100,6 +125,11 @@ public final class Constants {
             "Tiger",
             "Zebra"
     );
+
+    /**
+     * Default folder used by the server to store backups
+     */
+    public static final String DEFAULT_BACKUP_FOLDER = "";
 
     /**
      * These constants are used in a game with 2 players (commented only once)

@@ -47,21 +47,21 @@ public class Utils {
 
     private Utils() {}
 
-    public static AppConfig getAppConfig(){
+    public static ServerConfig getServerConfig(){
         Properties prop = new Properties();
         try {
-            InputStream is = Utils.class.getClassLoader().getResourceAsStream("app.config");
+            InputStream is = Utils.class.getClassLoader().getResourceAsStream(Constants.SERVER_CONFIG_FILE_NAME);
             prop.load(is);
         } catch (Exception e) {
             LOGGER.severe(e.toString());
-            return new AppConfig(
-                    "127.0.0.1",
-                    Constants.DEFAULT_SERVER_PORT
+            return new ServerConfig(
+                    Constants.DEFAULT_SERVER_PORT,
+                    Constants.DEFAULT_BACKUP_FOLDER
             );
         }
-        return new AppConfig(
-            prop.getProperty("server.address"),
-            Integer.parseInt(prop.getProperty("server.port"))
+        return new ServerConfig(
+            Integer.parseInt(prop.getProperty("server.port")),
+            prop.getProperty("server.backupFolder")
         );
     }
 

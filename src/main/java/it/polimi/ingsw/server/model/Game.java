@@ -94,9 +94,9 @@ public class Game implements Serializable {
     /**
      * Stores all the listeners observing this game
      */
-    private final transient ArrayList<GameUpdateListener> listeners;
+    private transient ArrayList<GameUpdateListener> listeners;
 
-    private static final transient Logger logger = Utils.LOGGER;
+    private static transient Logger logger = Utils.LOGGER;
 
     /**
      * Create a new game
@@ -121,6 +121,16 @@ public class Game implements Serializable {
         logger.log(Level.FINER, "Character cards -> {0}", characterCards.keySet());
 
         initializeIslands();
+    }
+
+    /**
+     * This method must be called when a game is loaded from backup
+     */
+    public void initializeFromBackup() {
+        //listeners list is not stored
+        this.listeners = new ArrayList<>();
+        //every player is disconnected
+        players.forEach(this::setPlayerDisconnected);
     }
 
     /**
@@ -584,6 +594,13 @@ public class Game implements Serializable {
     }
 
     /**
+     * Remove all listeners
+     */
+    public void clearGameUpdateListeners() {
+        listeners.clear();
+    }
+
+    /**
      * This method is called whenever there's a change to be notified to the listeners
      */
     private void notifyUpdate() {
@@ -825,6 +842,19 @@ public class Game implements Serializable {
      */
     public RandomizedStudentsContainer getStudentsBag() {
         return new RandomizedStudentsContainer(studentsBag);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Game game = (Game) o;
+        return uuid.equals(game.uuid);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(uuid);
     }
 
     /**
