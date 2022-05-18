@@ -152,7 +152,7 @@ public class Game implements Serializable {
      * Start this game
      * Only if the numberOfPlayers is reached and if the Game is in state CREATED.
      */
-    public void startGame() {
+    public synchronized void startGame() {
         if (players.size() != numberOfPlayers)
             throw new InvalidOperationException("Number of players not reached yet");
 
@@ -219,7 +219,7 @@ public class Game implements Serializable {
      * @param cloud  the cloud chose by the player
      * @param player the player
      */
-    public void selectCloud(Player player, StudentsContainer cloud) {
+    public synchronized void selectCloud(Player player, StudentsContainer cloud) {
         if (gameState != State.STARTED) return;
 
         checkIfCurrentPlayer(player);
@@ -256,7 +256,7 @@ public class Game implements Serializable {
      * @param nickname the nickname chose by the player
      * @return the newly created player
      */
-    public Player addPlayer(String nickname) {
+    public synchronized Player addPlayer(String nickname) {
         if (players.size() >= numberOfPlayers)
             throw new InvalidOperationException("Players lobby is already full");
 
@@ -288,7 +288,7 @@ public class Game implements Serializable {
      *
      * @param steps number of steps that mother nature needs to be moved
      */
-    public void moveMotherNature(Player player, int steps) {
+    public synchronized void moveMotherNature(Player player, int steps) {
         if (gameState != State.STARTED) return;
         checkIfCurrentPlayer(player);
 
@@ -337,7 +337,7 @@ public class Game implements Serializable {
      * Calculate which player has the most influence on the given island
      * and change the towers on that island respectively
      */
-    public void calculateInfluenceOnIsland(Island island) {
+    public synchronized void calculateInfluenceOnIsland(Island island) {
         int max = -1;
         Optional<Player> maxP = Optional.empty();
 
@@ -387,7 +387,7 @@ public class Game implements Serializable {
      * @param player
      * @param card
      */
-    public void playAssistantCard(Player player, AssistantCard card) {
+    public synchronized void playAssistantCard(Player player, AssistantCard card) {
         if (gameState != State.STARTED) return;
         checkIfCurrentPlayer(player);
 
@@ -406,7 +406,7 @@ public class Game implements Serializable {
      * @param player the player that plays the card
      * @param card the card to paly
      */
-    public void playCharacterCard(Player player, CharacterCard card) {
+    public synchronized void playCharacterCard(Player player, CharacterCard card) {
         if (!expertMode)
             throw new InvalidOperationException("Cannot play character cards in simple mode");
 
@@ -444,7 +444,7 @@ public class Game implements Serializable {
      * @param inSchool students to add to school
      * @param inIsland students to add to the relative island
      */
-    public void placeStudents(Player player, StudentsContainer inSchool, Map<Island, StudentsContainer> inIsland) {
+    public synchronized void placeStudents(Player player, StudentsContainer inSchool, Map<Island, StudentsContainer> inIsland) {
         if (gameState != State.STARTED) return;
         checkIfCurrentPlayer(player);
 
@@ -477,7 +477,7 @@ public class Game implements Serializable {
      * Check if island could be merged.
      * It is called every time mother nature is moved so only the current island is checked
      */
-    public void checkMergeableIslands() {
+    public synchronized void checkMergeableIslands() {
         Island curr = getCurrentIsland();
         Island prev = islands.get(calculateMotherNatureIndex(-1));
         Island next = islands.get(calculateMotherNatureIndex(1));
@@ -567,7 +567,7 @@ public class Game implements Serializable {
      *
      * @param listener
      */
-    public void addGameUpdateListener(GameUpdateListener listener) {
+    public synchronized void addGameUpdateListener(GameUpdateListener listener) {
         listeners.add(listener);
 
         //when a new listener is added, notify to this new listener only
@@ -579,7 +579,7 @@ public class Game implements Serializable {
      *
      * @param listener
      */
-    public void removeGameUpdateListener(GameUpdateListener listener) {
+    public synchronized void removeGameUpdateListener(GameUpdateListener listener) {
         listeners.remove(listener);
     }
 
@@ -630,7 +630,7 @@ public class Game implements Serializable {
      * @param player
      * @return a list of student for which the player has the professor
      */
-    public List<Student> getProfessorsForPlayer(Player player) {
+    private List<Student> getProfessorsForPlayer(Player player) {
         return professors.entrySet()
                 .stream()
                 .filter(e -> e.getValue().equals(player))
@@ -638,7 +638,7 @@ public class Game implements Serializable {
                 .toList();
     }
 
-    public void setTemporaryInfluenceCalculator(InfluenceCalculator influenceCalculator) {
+    public synchronized void setTemporaryInfluenceCalculator(InfluenceCalculator influenceCalculator) {
         temporaryInfluenceCalculator = influenceCalculator;
     }
 
@@ -736,7 +736,7 @@ public class Game implements Serializable {
      * When a player disconnects the game is paused until it reconnects back
      * @param player the player disconnected
      */
-    public void setPlayerDisconnected(Player player){
+    public synchronized void setPlayerDisconnected(Player player){
         checkIfValidPlayer(player);
 
         player.setConnected(false);
@@ -751,7 +751,7 @@ public class Game implements Serializable {
      * This method is called when a player (previously disconnected) reconnects
      * @param player
      */
-    public void setPlayerReconnected(Player player){
+    public synchronized void setPlayerReconnected(Player player){
         checkIfValidPlayer(player);
 
         player.setConnected(true);
@@ -769,7 +769,7 @@ public class Game implements Serializable {
      * The game is terminated for all and there is no winner.
      * @param player
      */
-    public void leaveGame(Player player) {
+    public synchronized void leaveGame(Player player) {
         checkIfValidPlayer(player);
 
         if(gameState == State.CREATED) {
