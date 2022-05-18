@@ -12,7 +12,11 @@ public class LeaveGameRequest extends GameRequest{
 
     @Override
     public Reply handleGameRequest(VirtualView vw, GameController gc) {
+        //remove game controller from virtual view
+        vw.setGameController(null);
+
         gc.leaveGame();
+
         return new AckReply(getRequestId());
     }
 
