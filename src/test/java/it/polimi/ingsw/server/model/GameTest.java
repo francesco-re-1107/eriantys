@@ -43,7 +43,7 @@ class GameTest {
         //start the game without enough players
         assertThrows(
                 InvalidOperationException.class,
-                () -> g.startGame()
+                g::startGame
         );
 
         //add player 2
@@ -68,7 +68,7 @@ class GameTest {
         //start the game again
         assertThrows(
                 InvalidOperationException.class,
-                () -> g.startGame()
+                g::startGame
         );
 
         //check round

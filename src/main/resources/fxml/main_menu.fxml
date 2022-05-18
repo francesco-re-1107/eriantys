@@ -22,7 +22,7 @@
                 text="UNISCITI A PARTITA ESISTENTE" textAlignment="CENTER">
         </Button>
     </VBox>
-    <Button id="leave_button" fx:id="leaveButton" mnemonicParsing="false" text="ESCI" AnchorPane.rightAnchor="20.0"
+    <Button id="leave_button" mnemonicParsing="false" text="ESCI" AnchorPane.rightAnchor="20.0"
             AnchorPane.topAnchor="20.0" onAction="#onLeavePressed">
     </Button>
     <Label fx:id="nicknameLabel" id="nickname_label" AnchorPane.bottomAnchor="10.0" AnchorPane.rightAnchor="10.0"/>

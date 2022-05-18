@@ -44,7 +44,7 @@ public class Client implements CommunicatorListener {
     /**
      * List of all the listeners for game updates
      */
-    private List<GameUpdateListener> gameUpdateListeners;
+    private final List<GameUpdateListener> gameUpdateListeners;
 
     /**
      * Last received game update

@@ -1,6 +1,5 @@
 package it.polimi.ingsw.server.controller;
 
-import it.polimi.ingsw.common.reducedmodel.ReducedGame;
 import it.polimi.ingsw.server.model.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -33,12 +32,7 @@ class GameControllerTest {
     void setOnGameUpdateListener() {
         AtomicBoolean called = new AtomicBoolean(false);
 
-        gc1.setOnGameUpdateListener(new GameController.GameUpdateListener() {
-            @Override
-            public void onGameUpdate(ReducedGame game) {
-                called.set(true);
-            }
-        });
+        gc1.setOnGameUpdateListener(game -> called.set(true));
 
         gc1.playAssistantCard(AssistantCard.getDefaultDeck().get(0));
 

@@ -152,7 +152,7 @@ public class Cursor {
             //name
             moveToXY(LEFT_MARGIN, incremental_y);
             printBold(p.nickname());
-            if (round.currentPlayer() == p.nickname()) {
+            if (round.currentPlayer().equals(p.nickname())) {
                 moveToXY(LEFT_MARGIN - 2, incremental_y);
                 printBold("➤");
             }
@@ -160,7 +160,7 @@ public class Cursor {
             incremental_y++;
             for (Student color : Student.values()) {
                 if (game.currentProfessors().containsKey(color)){
-                    if (game.currentProfessors().get(color) == p.nickname()) {
+                    if (game.currentProfessors().get(color).equals(p.nickname())) {
                         moveToXY(LEFT_MARGIN - 1, incremental_y);
                         System.out.print(ansi().fg(STUDENT_COLOR_MAP.get(color)).a("⬣").reset());  
                     }

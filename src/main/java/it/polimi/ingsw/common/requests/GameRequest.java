@@ -11,7 +11,7 @@ import it.polimi.ingsw.server.controller.GameController;
  */
 public abstract class GameRequest extends Request{
 
-    public abstract Reply handleGameRequest(VirtualView vw, GameController gameController) throws Exception;
+    public abstract Reply handleGameRequest(VirtualView vw, GameController gameController);
 
     @Override
     public Reply handleRequest(VirtualView vw, Controller c, GameController gc) throws Exception {

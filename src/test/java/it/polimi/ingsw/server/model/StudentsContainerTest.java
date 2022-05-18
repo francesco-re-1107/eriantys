@@ -16,7 +16,7 @@ class StudentsContainerTest {
     StudentsContainer containerWithMaxSize;
 
     @BeforeEach
-    void setUp() throws Exception {
+    void setUp() {
         //test constructors
 
         this.container = new StudentsContainer();
@@ -177,9 +177,7 @@ class StudentsContainerTest {
             callback2Called.set(true);
         });
 
-        container.addOnStudentNumberReachedListener(Student.PINK, 1, (s, c) -> {
-            callback3Called.set(true);
-        });
+        container.addOnStudentNumberReachedListener(Student.PINK, 1, (s, c) -> callback3Called.set(true));
 
         container.addStudents(Student.RED, 2);
         assertFalse(callback2Called.get());

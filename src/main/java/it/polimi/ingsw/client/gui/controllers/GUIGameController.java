@@ -342,7 +342,7 @@ public class GUIGameController implements ScreenController, Client.GameUpdateLis
     }
 
     /**
-     * Setup my board
+     * Set up my board
      */
     private void setMyBoard() {
         myPlayerBoardView.setPlayer(myPlayer);

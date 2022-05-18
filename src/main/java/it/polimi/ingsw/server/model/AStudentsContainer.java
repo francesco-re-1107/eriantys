@@ -42,6 +42,7 @@ public abstract class AStudentsContainer implements Serializable {
      */
     protected AStudentsContainer(AStudentsContainer studentsContainer) {
         this.students = new EnumMap<>(studentsContainer.students);
+        this.maxSize = studentsContainer.maxSize;
     }
 
     /**
