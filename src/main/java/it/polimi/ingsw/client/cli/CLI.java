@@ -1,22 +1,22 @@
 package it.polimi.ingsw.client.cli;
 
 import it.polimi.ingsw.client.Client;
-import it.polimi.ingsw.common.reducedmodel.ReducedIsland;
-import it.polimi.ingsw.common.reducedmodel.ReducedRound;
-import it.polimi.ingsw.common.reducedmodel.ReducedPlayer;
 import it.polimi.ingsw.common.reducedmodel.ReducedGame;
+import it.polimi.ingsw.common.reducedmodel.ReducedIsland;
+import it.polimi.ingsw.common.reducedmodel.ReducedPlayer;
+import it.polimi.ingsw.common.reducedmodel.ReducedRound;
 import it.polimi.ingsw.server.model.Student;
 import it.polimi.ingsw.server.model.StudentsContainer;
 import it.polimi.ingsw.server.model.Tower;
 
 import java.util.Collections;
-import java.io.IOException;
-import java.util.*;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Scanner;
 
 public class CLI {
 
     public static void main(String[] args){
-        //var cfg = Utils.GetAppConfig();
         Client.init();
     }
 
@@ -69,13 +69,13 @@ public class CLI {
                 null,
                 4);
 
-        ReducedRound r = new ReducedRound(null, p1, null, 0);
+        ReducedRound r = new ReducedRound(null, "p1", null, 0, null);
         var players = List.of(p1, p2);
-        var prof = new HashMap<Student, ReducedPlayer>();
-        prof.put(Student.YELLOW, p1);
-        prof.put(Student.GREEN, p2);
-        prof.put(Student.RED, p1);
-        var g = new ReducedGame(null, 2, false, players, null, 0, 5, r, null, prof, null, null);
+        var prof = new HashMap<Student, String>();
+        prof.put(Student.YELLOW, "p1");
+        prof.put(Student.GREEN, "p2");
+        prof.put(Student.RED, "p1");
+        var g = new ReducedGame(null, 2, 2, false, players, null, 0, 5, r, null, prof, null, null);
         c.drawBoard(players, r, g);
         c.printPrompt("Comando", "...");
         var n = new Scanner(System.in).nextLine();

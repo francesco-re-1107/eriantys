@@ -2,8 +2,8 @@ package it.polimi.ingsw.client.cli;
 
 import it.polimi.ingsw.common.reducedmodel.ReducedGame;
 import it.polimi.ingsw.common.reducedmodel.ReducedIsland;
-import it.polimi.ingsw.common.reducedmodel.ReducedRound;
 import it.polimi.ingsw.common.reducedmodel.ReducedPlayer;
+import it.polimi.ingsw.common.reducedmodel.ReducedRound;
 import it.polimi.ingsw.server.model.Student;
 import it.polimi.ingsw.server.model.Tower;
 import org.fusesource.jansi.Ansi;
@@ -12,9 +12,8 @@ import org.fusesource.jansi.AnsiConsole;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
-import java.util.Scanner;
 
-import static org.fusesource.jansi.Ansi.*;
+import static org.fusesource.jansi.Ansi.ansi;
 
 public class Cursor {
     public static Cursor instance = null;
@@ -152,7 +151,7 @@ public class Cursor {
             //name
             moveToXY(LEFT_MARGIN, incremental_y);
             printBold(p.nickname());
-            if (round.currentPlayer().nickname() == p.nickname()) {
+            if (round.currentPlayer() == p.nickname()) {
                 moveToXY(LEFT_MARGIN - 2, incremental_y);
                 printBold("➤");
             }
@@ -160,7 +159,7 @@ public class Cursor {
             incremental_y++;
             for (Student color : Student.values()) {
                 if (game.currentProfessors().containsKey(color)){
-                    if (game.currentProfessors().get(color).nickname() == p.nickname()) {
+                    if (game.currentProfessors().get(color) == p.nickname()) {
                         moveToXY(LEFT_MARGIN - 1, incremental_y);
                         System.out.print(ansi().fg(STUDENT_COLOR_MAP.get(color)).a("⬣").reset());  
                     }
