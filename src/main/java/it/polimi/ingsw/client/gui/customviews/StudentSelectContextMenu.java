@@ -35,6 +35,11 @@ public class StudentSelectContextMenu extends ContextMenu {
         );
     }
 
+    /**
+     * Context menu with custom students and custom listener
+     * @param studentsSelectable
+     * @param onStudentSelected
+     */
     public StudentSelectContextMenu(StudentsContainer studentsSelectable, Consumer<Student> onStudentSelected) {
         super();
 

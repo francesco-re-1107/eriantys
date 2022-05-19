@@ -11,7 +11,8 @@ public enum InfoString {
     MY_TURN_PLAY_CHARACTER_CARD("È il tuo turno: gioca una carta personaggio oppure muovi madre natura al più di %s passi"),
     MY_TURN_MOVE_MOTHER_NATURE("È il tuo turno: muovi madre natura al più di %s passi"),
     MY_TURN_SELECT_CLOUD("È il tuo turno: seleziona una nuvola"),
-    OTHER_PLAYER_WAIT_FOR_HIS_TURN("È il turno di %s: attendi");
+    OTHER_PLAYER_WAIT_FOR_HIS_TURN("È il turno di %s: attendi"),
+    MY_TURN_SELECT_ISLAND_FOR_GRANDMA_HERALD("Seleziona l'isola su cui applicare l'effetto della carta personaggio");
 
 
     private final String text;

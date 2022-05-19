@@ -21,23 +21,23 @@ public abstract class Reply extends Response {
     /**
      * The id of the request that generated this reply.
      */
-    private final UUID requestId;
+    private final UUID associatedRequestId;
 
     /**
      * Create a reply to the specified request with the specified success status.
-     * @param requestId
+     * @param associatedRequestId
      * @param isSuccessful
      */
-    protected Reply(UUID requestId, boolean isSuccessful) {
-        this.requestId = requestId;
+    protected Reply(UUID associatedRequestId, boolean isSuccessful) {
+        this.associatedRequestId = associatedRequestId;
         this.isSuccessful = isSuccessful;
     }
 
     /**
      * Create a reply to the specified request which failed because of the specified error.
      */
-    protected Reply(UUID requestId, Throwable throwable) {
-        this(requestId, false);
+    protected Reply(UUID associatedRequestId, Throwable throwable) {
+        this(associatedRequestId, false);
         this.throwable = throwable;
     }
 
@@ -58,7 +58,7 @@ public abstract class Reply extends Response {
     /**
      * @return the id of the request that generated this reply.
      */
-    public UUID getRequestId() {
-        return requestId;
+    public UUID getAssociatedRequestId() {
+        return associatedRequestId;
     }
 }

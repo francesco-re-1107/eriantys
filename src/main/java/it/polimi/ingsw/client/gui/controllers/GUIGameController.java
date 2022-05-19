@@ -77,6 +77,7 @@ public class GUIGameController implements ScreenController, Client.GameUpdateLis
     private String myNickname;
     private ReducedPlayer myPlayer;
     private List<ReducedPlayer> otherPlayers;
+    private StudentSelectContextMenu studentSelectContextMenu;
 
     /**
      * This method sets the assistant cards deck of my player
@@ -257,9 +258,10 @@ public class GUIGameController implements ScreenController, Client.GameUpdateLis
         int i = 0;
         for(var e : currentGame.characterCards().entrySet()) {
             var ccv = (CharacterCardView) characterCards.getChildren().get(i);
-            var canPlay = myPlayer.coins() >= e.getKey().getCost(e.getValue());
+            var usedTimes = e.getValue();
+            var canPlay = myPlayer.coins() >= e.getKey().getCost(usedTimes);
 
-            ccv.setCharacter(e.getKey());
+            ccv.setCharacter(e.getKey(), usedTimes);
             ccv.setDisable(!canPlay);
             ccv.setGrayedOut(!canPlay);
             ccv.setOnMouseClicked(event -> processCharacterCardClick(e.getKey(), ccv, event));
@@ -283,15 +285,18 @@ public class GUIGameController implements ScreenController, Client.GameUpdateLis
             }
             case GRANDMA, HERALD -> {
                 //select island
-                //islandsPane.arrangeIslandsForPlayingCharacterCard();
+                islandsPane.arrangeIslandsForPlayingCharacterCard(iv -> Client.getInstance().forwardGameRequest(
+                    new PlayCharacterCardRequest(character == Character.GRANDMA ?
+                            new ReducedGrandmaCharacterCard(iv.getIndex()) :
+                            new ReducedHeraldCharacterCard(iv.getIndex()))
+                ));
+                infoLabel.setInfoString(InfoString.MY_TURN_SELECT_ISLAND_FOR_GRANDMA_HERALD);
             }
             case MUSHROOM_MAN -> {
                 //select student
-                var studentSelectContextMenu = new StudentSelectContextMenu(
+                studentSelectContextMenu = new StudentSelectContextMenu(
                         s -> Client.getInstance().forwardGameRequest(
-                                new PlayCharacterCardRequest(
-                                        new ReducedMushroomManCharacterCard(s)
-                                )
+                                new PlayCharacterCardRequest(new ReducedMushroomManCharacterCard(s))
                         )
                 );
 
@@ -299,6 +304,7 @@ public class GUIGameController implements ScreenController, Client.GameUpdateLis
             }
             case MINSTREL -> {
                 //swap students
+
             }
         }
     }

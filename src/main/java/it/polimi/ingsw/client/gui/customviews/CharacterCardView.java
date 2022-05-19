@@ -1,9 +1,12 @@
 package it.polimi.ingsw.client.gui.customviews;
 
+import it.polimi.ingsw.client.gui.CharacterCardInformationPopup;
 import it.polimi.ingsw.server.model.Character;
+import javafx.event.EventHandler;
 import javafx.scene.effect.ColorAdjust;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.input.MouseEvent;
 
 import java.util.EnumMap;
 import java.util.Map;
@@ -11,8 +14,12 @@ import java.util.Map;
 /**
  * This class shows an assistant card if present or the empty card.
  */
-public class CharacterCardView extends ImageView {
+public class CharacterCardView extends ImageView implements EventHandler<MouseEvent> {
     private Character character;
+
+    private int usedTimes;
+
+    private CharacterCardInformationPopup infoPopup;
 
     private static final Image emptyImage;
 
@@ -39,6 +46,8 @@ public class CharacterCardView extends ImageView {
 
         setPreserveRatio(true);
         setId("character_card");
+        setOnMouseEntered(this);
+        setOnMouseExited(this);
 
         updateView();
     }
@@ -47,13 +56,17 @@ public class CharacterCardView extends ImageView {
      * Set character to show
      * @param character
      */
-    public void setCharacter(Character character) {
+    public void setCharacter(Character character, int usedTimes) {
         this.character = character;
+        this.usedTimes = usedTimes;
         updateView();
     }
 
     private void updateView() {
         setImage(character == null ? emptyImage : characterImages.get(character));
+        if(infoPopup != null)
+            infoPopup.hide();
+        infoPopup = null;
     }
 
     /**
@@ -69,8 +82,24 @@ public class CharacterCardView extends ImageView {
 
         if (grayedOut) {
             setEffect(desaturate);
+            setOpacity(0.6);
         } else {
             setEffect(original);
+            setOpacity(1);
+        }
+    }
+
+    @Override
+    public void handle(MouseEvent mouseEvent) {
+        if(character == null) return;
+
+        if (mouseEvent.getEventType() == MouseEvent.MOUSE_ENTERED) {
+            infoPopup = new CharacterCardInformationPopup(character, usedTimes);
+            infoPopup.show(this, mouseEvent.getScreenX() + 10, mouseEvent.getScreenY() + 10);
+        } else if (mouseEvent.getEventType() == MouseEvent.MOUSE_EXITED) {
+            if(infoPopup != null)
+                infoPopup.hide();
+            infoPopup = null;
         }
     }
 }

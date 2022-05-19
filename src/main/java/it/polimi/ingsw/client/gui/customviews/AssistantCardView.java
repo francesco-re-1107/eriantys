@@ -97,8 +97,10 @@ public class AssistantCardView extends StackPane implements EventHandler<MouseEv
 
         if (grayedOut) {
             image.setEffect(desaturate);
+            image.setOpacity(0.6);
         } else {
             image.setEffect(original);
+            image.setOpacity(1);
         }
     }
 

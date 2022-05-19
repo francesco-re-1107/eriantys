@@ -11,6 +11,7 @@ import javafx.scene.layout.Pane;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.BiConsumer;
+import java.util.function.Consumer;
 import java.util.function.IntConsumer;
 
 /**
@@ -40,6 +41,8 @@ public class IslandsCircularPane extends Pane {
         if(getChildren().isEmpty()) return;
 
         var increment = 360 / getChildren().size();
+
+
         var degree = -90;
         var islandSize = 200.0;
 
@@ -143,6 +146,18 @@ public class IslandsCircularPane extends Pane {
 
                 studentSelectContextMenu.show(iv, e.getScreenX(), e.getScreenY());
             });
+        }
+    }
+
+    /**
+     * Arrange islands in order to show the player the possibility to select an island
+     * @param listener
+     */
+    public void arrangeIslandsForPlayingCharacterCard(Consumer<IslandView> listener) {
+        for (var n : getChildren()) {
+            var iv = (IslandView) n;
+            iv.setDisable(false);
+            iv.setOnMouseClicked(e -> listener.accept(iv));
         }
     }
 }

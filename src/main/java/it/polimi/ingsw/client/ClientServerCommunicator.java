@@ -73,8 +73,7 @@ public class ClientServerCommunicator {
                     if (r instanceof Update u) {
                         communicatorListener.onUpdate(u);
                     } else if (r instanceof Reply re) { //it's a request reply
-                        pendingRequests.get(re.getRequestId()).successListener.onSuccess(re);
-                        pendingRequests.remove(re.getRequestId());
+                        processReply(re);
                     }
                 }
 
@@ -86,6 +85,19 @@ public class ClientServerCommunicator {
                 e.printStackTrace();
             }
         }).start();
+    }
+
+    /**
+     * As soon as a reply is received, the listeners are called and the request is removed from the pending requests.
+     * @param re the reply received
+     */
+    private void processReply(Reply re) {
+        try {
+            pendingRequests.get(re.getAssociatedRequestId()).successListener.onSuccess(re);
+            pendingRequests.remove(re.getAssociatedRequestId());
+        } catch (NullPointerException e) {
+            Utils.LOGGER.info("Request reply received but no listener was bound to it");
+        }
     }
 
     /**
