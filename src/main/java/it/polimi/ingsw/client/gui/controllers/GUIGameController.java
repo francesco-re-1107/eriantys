@@ -256,7 +256,13 @@ public class GUIGameController implements ScreenController, Client.GameUpdateLis
      */
     private void setCharacterCards() {
         int i = 0;
-        for(var e : currentGame.characterCards().entrySet()) {
+        var orderedCharacterCards =
+                currentGame.characterCards().entrySet()
+                        .stream()
+                        .sorted(Comparator.comparingInt(e -> e.getKey().getCost()))
+                        .toList();
+
+        for(var e : orderedCharacterCards) {
             var ccv = (CharacterCardView) characterCards.getChildren().get(i);
             var usedTimes = e.getValue();
             var canPlay = myPlayer.coins() >= e.getKey().getCost(usedTimes);
@@ -267,7 +273,6 @@ public class GUIGameController implements ScreenController, Client.GameUpdateLis
             ccv.setOnMouseClicked(event -> processCharacterCardClick(e.getKey(), ccv, event));
             i++;
         }
-
     }
 
     private void processCharacterCardClick(Character character, CharacterCardView ccv, MouseEvent event) {
@@ -290,7 +295,7 @@ public class GUIGameController implements ScreenController, Client.GameUpdateLis
                             new ReducedGrandmaCharacterCard(iv.getIndex()) :
                             new ReducedHeraldCharacterCard(iv.getIndex()))
                 ));
-                infoLabel.setInfoString(InfoString.MY_TURN_SELECT_ISLAND_FOR_GRANDMA_HERALD);
+                infoLabel.setInfoString(InfoString.MY_TURN_SELECT_ISLAND_FOR_GRANDMA_HERALD, character.name());
             }
             case MUSHROOM_MAN -> {
                 //select student

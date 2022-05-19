@@ -34,8 +34,11 @@ public class IslandView extends StackPane {
 
     private static final List<Image> islandImages = new ArrayList<>();
 
+    private static final Image noEntryImage;
+
     //load images statically
     static {
+        noEntryImage = new Image(IslandView.class.getResource("/assets/no_entry.png").toExternalForm());
         for(int i = 1; i <= 3; i++)
             islandImages.add(new Image(IslandView.class.getResourceAsStream("/assets/island" + i + ".png")));
     }
@@ -80,10 +83,9 @@ public class IslandView extends StackPane {
         setupTowersView();
         setupStudents();
         setupMotherNatureView();
+        getChildren().add(elementsVbox);
 
         setupNoEntry();
-
-        getChildren().add(elementsVbox);
     }
 
     private void setupTowersView() {
@@ -143,21 +145,21 @@ public class IslandView extends StackPane {
     }
 
     private void setupNoEntry() {
-        var noEntry = new ImageView(new Image(getClass().getResourceAsStream("/assets/no_entry.png")));
-        noEntry.setFitWidth(size/1.4);
-        noEntry.setFitHeight(size/1.4);
+        var noEntry = new ImageView(noEntryImage);
+        noEntry.setFitWidth(size);
+        noEntry.setFitHeight(size);
         noEntry.setOpacity(1);
 
         setOnMouseEntered(event -> {
             FadeTransition ft = new FadeTransition(Duration.millis(150), noEntry);
             ft.setFromValue(1);
-            ft.setToValue(0);
+            ft.setToValue(0.25);
             ft.play();
         });
 
         setOnMouseExited(event -> {
             FadeTransition ft = new FadeTransition(Duration.millis(150), noEntry);
-            ft.setFromValue(0);
+            ft.setFromValue(0.25);
             ft.setToValue(1);
             ft.play();
         });

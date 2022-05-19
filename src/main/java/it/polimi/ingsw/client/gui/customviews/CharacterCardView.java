@@ -95,7 +95,9 @@ public class CharacterCardView extends ImageView implements EventHandler<MouseEv
 
         if (mouseEvent.getEventType() == MouseEvent.MOUSE_ENTERED) {
             infoPopup = new CharacterCardInformationPopup(character, usedTimes);
-            infoPopup.show(this, mouseEvent.getScreenX() + 10, mouseEvent.getScreenY() + 10);
+            var pos = localToScreen(getBoundsInLocal());
+
+            infoPopup.show(this, pos.getMaxX() + 10, pos.getMinY());
         } else if (mouseEvent.getEventType() == MouseEvent.MOUSE_EXITED) {
             if(infoPopup != null)
                 infoPopup.hide();

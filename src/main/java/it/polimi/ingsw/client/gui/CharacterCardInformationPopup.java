@@ -48,17 +48,21 @@ public class CharacterCardInformationPopup extends ContextMenu {
         super();
 
         var titleLabel = new Label(characterNames.get(character).toUpperCase());
-        titleLabel.setStyle("-fx-font-size: 24px; -fx-font-weight: bold;");
+        titleLabel.setStyle("-fx-font-size: 24px;");
 
         var descriptionLabel = new Label(characterDescriptions.get(character));
         descriptionLabel.setWrapText(true);
-        descriptionLabel.setMaxWidth(500);
+        descriptionLabel.setMaxWidth(450);
+        descriptionLabel.setStyle("-fx-font-size: 18px;");
 
         var coinImage = new ImageView(getClass().getResource("/assets/coin.png").toExternalForm());
         coinImage.setFitHeight(25);
         coinImage.setFitWidth(25);
 
-        var costBox = new HBox(coinImage, new Label(String.valueOf(character.getCost(usedTimes))));
+        var costLabel = new Label(String.valueOf(character.getCost(usedTimes)));
+        costLabel.setStyle("-fx-font-size: 22px;");
+
+        var costBox = new HBox(coinImage, costLabel);
         costBox.setSpacing(5);
         costBox.setAlignment(Pos.CENTER_RIGHT);
 
