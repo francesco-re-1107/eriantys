@@ -145,6 +145,8 @@ public class IslandView extends StackPane {
     }
 
     private void setupNoEntry() {
+        if(!island.noEntry()) return;
+
         var noEntry = new ImageView(noEntryImage);
         noEntry.setFitWidth(size);
         noEntry.setFitHeight(size);
@@ -163,8 +165,8 @@ public class IslandView extends StackPane {
             ft.setToValue(1);
             ft.play();
         });
-        noEntry.setVisible(island.noEntry());
         getChildren().add(noEntry);
+
     }
 
     private void setupBackground(int index) {
