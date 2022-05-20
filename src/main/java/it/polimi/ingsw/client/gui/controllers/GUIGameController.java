@@ -39,12 +39,6 @@ public class GUIGameController implements ScreenController, Client.GameUpdateLis
     @FXML
     private HBox characterCards;
     @FXML
-    private CharacterCardView characterCard1;
-    @FXML
-    private CharacterCardView characterCard2;
-    @FXML
-    private CharacterCardView characterCard3;
-    @FXML
     private AssistantCardDeckView assistantCardsDeck;
     @FXML
     private VBox assistantCardsLayer;
@@ -78,6 +72,10 @@ public class GUIGameController implements ScreenController, Client.GameUpdateLis
     private ReducedPlayer myPlayer;
     private List<ReducedPlayer> otherPlayers;
     private StudentSelectContextMenu studentSelectContextMenu;
+    private StudentsContainer studentsSwapToAdd;
+    private StudentsContainer studentsSwapToRemove;
+    
+    private Client client;
 
     /**
      * This method sets the assistant cards deck of my player
@@ -85,7 +83,7 @@ public class GUIGameController implements ScreenController, Client.GameUpdateLis
      */
     private void setAssistantCardsDeck(Map<AssistantCard, Boolean> deck) {
         assistantCardsDeck.setDeck(deck);
-        assistantCardsDeck.setOnCardSelectedListener(card -> Client.getInstance().forwardGameRequest(
+        assistantCardsDeck.setOnCardSelectedListener(card -> client.forwardGameRequest(
                 new PlayAssistantCardRequest(card),
                 () -> assistantCardsLayer.setVisible(false),
                 err -> assistantCardsDeck.showError("Non puoi giocare questa carta")
@@ -94,7 +92,7 @@ public class GUIGameController implements ScreenController, Client.GameUpdateLis
 
     @FXML
     private void onLeavePressed() {
-        Client.getInstance().leaveGame();
+        client.leaveGame();
     }
 
     /**
@@ -134,7 +132,7 @@ public class GUIGameController implements ScreenController, Client.GameUpdateLis
                 Constants.TwoPlayers.STUDENTS_TO_MOVE : Constants.ThreePlayers.STUDENTS_TO_MOVE;
 
         if(count == studentsToMove) {
-            Client.getInstance()
+            client
                     .forwardGameRequest(
                             new PlaceStudentsRequest(
                                     studentsPlacedInSchool,
@@ -190,7 +188,8 @@ public class GUIGameController implements ScreenController, Client.GameUpdateLis
 
     @Override
     public void onShow() {
-        Client.getInstance().addGameUpdateListener(this);
+        client = Client.getInstance();
+        client.addGameUpdateListener(this);
 
         //reset view
         resetView();
@@ -198,7 +197,7 @@ public class GUIGameController implements ScreenController, Client.GameUpdateLis
 
     @Override
     public void onHide() {
-        Client.getInstance().removeGameUpdateListener(this);
+        client.removeGameUpdateListener(this);
     }
 
     @Override
@@ -225,7 +224,7 @@ public class GUIGameController implements ScreenController, Client.GameUpdateLis
         setVisibilityForExpertMode(game.expertMode());
         islandsPane.setIslands(game.islands());
         islandsPane.setMotherNaturePosition(game.motherNaturePosition());
-        cloudsPane.setClouds(game.currentRound().clouds(), c -> Client.getInstance()
+        cloudsPane.setClouds(game.currentRound().clouds(), c -> client
                 .forwardGameRequest(
                         new SelectCloudRequest(c),
                         err -> Utils.LOGGER.info("Error selecting cloud " + err.getMessage())
@@ -265,7 +264,13 @@ public class GUIGameController implements ScreenController, Client.GameUpdateLis
         for(var e : orderedCharacterCards) {
             var ccv = (CharacterCardView) characterCards.getChildren().get(i);
             var usedTimes = e.getValue();
-            var canPlay = myPlayer.coins() >= e.getKey().getCost(usedTimes);
+            var hasEnoughCoins = myPlayer.coins() >= e.getKey().getCost(usedTimes);
+
+            //minstrel (implies) hasEnough students
+            //the minstrel card requires at least 2 students in entrance and school
+            var hasEnoughStudents = (e.getKey() != Character.MINSTREL) || myPlayer.school().getSize() >= 2;
+
+            var canPlay = hasEnoughCoins && hasEnoughStudents;
 
             ccv.setCharacter(e.getKey(), usedTimes);
             ccv.setDisable(!canPlay);
@@ -276,6 +281,7 @@ public class GUIGameController implements ScreenController, Client.GameUpdateLis
     }
 
     private void processCharacterCardClick(Character character, CharacterCardView ccv, MouseEvent event) {
+        characterCards.setDisable(true);
         switch (character) {
             case CENTAUR, FARMER, KNIGHT, POSTMAN -> {
                 //send directly the request
@@ -286,21 +292,25 @@ public class GUIGameController implements ScreenController, Client.GameUpdateLis
                     case POSTMAN -> new ReducedPostmanCharacterCard();
                     default -> null;
                 };
-                Client.getInstance().forwardGameRequest(new PlayCharacterCardRequest(card));
+                client.forwardGameRequest(new PlayCharacterCardRequest(card));
             }
             case GRANDMA, HERALD -> {
                 //select island
-                islandsPane.arrangeIslandsForPlayingCharacterCard(iv -> Client.getInstance().forwardGameRequest(
+                islandsPane.arrangeIslandsForPlayingCharacterCard(iv -> client.forwardGameRequest(
                     new PlayCharacterCardRequest(character == Character.GRANDMA ?
                             new ReducedGrandmaCharacterCard(iv.getIndex()) :
                             new ReducedHeraldCharacterCard(iv.getIndex()))
                 ));
-                infoLabel.setInfoString(InfoString.MY_TURN_SELECT_ISLAND_FOR_GRANDMA_HERALD, character.name());
+                infoLabel.setInfoString(character == Character.GRANDMA ?
+                        InfoString.MY_TURN_SELECT_ISLAND_FOR_GRANDMA :
+                        InfoString.MY_TURN_SELECT_ISLAND_FOR_HERALD);
             }
             case MUSHROOM_MAN -> {
+                if(studentSelectContextMenu != null)
+                    studentSelectContextMenu.hide();
                 //select student
                 studentSelectContextMenu = new StudentSelectContextMenu(
-                        s -> Client.getInstance().forwardGameRequest(
+                        s -> client.forwardGameRequest(
                                 new PlayCharacterCardRequest(new ReducedMushroomManCharacterCard(s))
                         )
                 );
@@ -309,8 +319,56 @@ public class GUIGameController implements ScreenController, Client.GameUpdateLis
             }
             case MINSTREL -> {
                 //swap students
-
+                infoLabel.setInfoString(InfoString.MY_TURN_SELECT_STUDENT_TO_SWAP_FROM_SCHOOL_TO_ENTRANCE, 2);
+                myStudentsBoard.setStudentsClickDisable(false);
+                myStudentsBoard.setOnStudentClickListener(this::addStudentToSwap);
             }
+        }
+    }
+
+    /**
+     * This method is called when the user played Minstrel character card and clicked on a student to select.
+     * @param s
+     */
+    private void addStudentToSwap(Student s) {
+        if(studentsSwapToRemove.getSize() < 2) {
+            if(myPlayer.school().getCountForStudent(s) <= 0) return;
+
+            //remove from school and add to entrance
+            myPlayer.school().removeStudent(s);
+            myPlayer.entrance().addStudent(s);
+            studentsSwapToRemove.addStudent(s);
+
+            //update my students board
+            myStudentsBoard.setPlayer(myPlayer);
+
+            if(studentsSwapToRemove.getSize() == 2)
+                infoLabel.setInfoString(InfoString.MY_TURN_SELECT_STUDENT_TO_SWAP_FROM_ENTRANCE_TO_SCHOOL, 2);
+            else
+                infoLabel.setInfoString(
+                        InfoString.MY_TURN_SELECT_STUDENT_TO_SWAP_FROM_SCHOOL_TO_ENTRANCE,
+                        2 - studentsSwapToRemove.getSize()
+                );
+        }else if(studentsSwapToAdd.getSize() < 2) {
+            if(myPlayer.entrance().getCountForStudent(s) <= 0) return;
+
+            //add to school and remove from entrance
+            myPlayer.entrance().removeStudent(s);
+            myPlayer.school().addStudent(s);
+            studentsSwapToAdd.addStudent(s);
+            //update my students board
+            myStudentsBoard.setPlayer(myPlayer);
+
+            if(studentsSwapToAdd.getSize() == 2)
+                client.forwardGameRequest(new PlayCharacterCardRequest(
+                        new ReducedMinstrelCharacterCard(studentsSwapToAdd, studentsSwapToRemove))
+                );
+            else
+                infoLabel.setInfoString(
+                        InfoString.MY_TURN_SELECT_STUDENT_TO_SWAP_FROM_ENTRANCE_TO_SCHOOL,
+                        2 - studentsSwapToAdd.getSize()
+                );
+
         }
     }
 
@@ -451,7 +509,7 @@ public class GUIGameController implements ScreenController, Client.GameUpdateLis
      * Reset views
      */
     private void resetView() {
-        myNickname = Client.getInstance().getNickname();
+        myNickname = client.getNickname();
         leaveButton.setText("ABBANDONA");
         gameTitlePopup.hide();
         characterCards.setDisable(true);
@@ -460,6 +518,8 @@ public class GUIGameController implements ScreenController, Client.GameUpdateLis
         studentsPlacedInSchool = new StudentsContainer();
         studentsPlacedInIslands = new HashMap<>();
         assistantCardsLayer.setVisible(false);
+        studentsSwapToAdd = new StudentsContainer();
+        studentsSwapToRemove = new StudentsContainer();
     }
 
     /**
@@ -469,7 +529,7 @@ public class GUIGameController implements ScreenController, Client.GameUpdateLis
      */
     private void arrangeIslandsForMotherNatureMovement(int motherNaturePosition, int maxMotherNatureSteps) {
         islandsPane.arrangeIslandsForMotherNatureMovement(motherNaturePosition, maxMotherNatureSteps,
-                s -> Client.getInstance().forwardGameRequest(
+                s -> client.forwardGameRequest(
                         new MoveMotherNatureRequest(s),
                         err -> Utils.LOGGER.info("Error moving mother nature: " + err.getMessage())
                 ));

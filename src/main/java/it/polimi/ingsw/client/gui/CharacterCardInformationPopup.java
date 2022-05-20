@@ -38,10 +38,10 @@ public class CharacterCardInformationPopup extends ContextMenu {
         characterDescriptions.put(Character.HERALD, "Puoi calcolare l'influenza su un'isola a tua scelta.");
 
         characterNames.put(Character.MINSTREL, "Menestrello");
-        characterDescriptions.put(Character.MINSTREL, "Puoi scambiare 2 studenti della sala con 2 studenti all'entrata");
+        characterDescriptions.put(Character.MINSTREL, "Puoi scambiare 2 studenti della sala con 2 studenti dell'entrata.");
 
         characterNames.put(Character.MUSHROOM_MAN, "Fungaro");
-        characterDescriptions.put(Character.MUSHROOM_MAN, "Puoi selezionare un colore di uno studente, quest'ultimo non influirà nel calcolo dell'influenza");
+        characterDescriptions.put(Character.MUSHROOM_MAN, "Puoi selezionare un colore di uno studente, quest'ultimo non influirà nel calcolo dell'influenza.");
     }
 
     public CharacterCardInformationPopup(Character character, int usedTimes) {

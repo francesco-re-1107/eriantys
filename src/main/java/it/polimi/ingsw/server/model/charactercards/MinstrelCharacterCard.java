@@ -39,5 +39,6 @@ public class MinstrelCharacterCard extends CharacterCard {
             throw new InvalidOperationException("Too much students to swap");
 
         game.getCurrentRound().getCurrentPlayer().swapStudents(studentsToRemove, studentsToAdd);
+        game.updateProfessors();
     }
 }

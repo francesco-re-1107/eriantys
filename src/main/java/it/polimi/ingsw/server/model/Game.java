@@ -5,6 +5,7 @@ import it.polimi.ingsw.Utils;
 import it.polimi.ingsw.common.exceptions.InvalidOperationException;
 import it.polimi.ingsw.server.model.influencecalculators.DefaultInfluenceCalculator;
 
+import java.io.Serial;
 import java.io.Serializable;
 import java.text.MessageFormat;
 import java.util.*;
@@ -18,6 +19,9 @@ import java.util.logging.Logger;
  * with the method startGame(). At this point the game state is State.STARTED.
  */
 public class Game implements Serializable {
+
+    @Serial
+    private static final long serialVersionUID = 8587966332955395580L;
 
     /**
      * Stores the players of this game
@@ -616,7 +620,7 @@ public class Game implements Serializable {
      * Calculate current professors
      * If two players have the same number of students nothing changes for that student
      */
-    private void updateProfessors() {
+    public void updateProfessors() {
         Arrays.stream(Student.values()).forEach(s -> {
             List<Player> sortedPlayers = players.stream()
                     .sorted(

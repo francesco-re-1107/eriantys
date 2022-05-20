@@ -21,8 +21,6 @@ import java.util.*;
  */
 public class Controller implements Game.GameUpdateListener {
 
-    private static final long serialVersionUID = 6548392839402918690L;
-
     /**
      * Stores all the currently active games
      */
