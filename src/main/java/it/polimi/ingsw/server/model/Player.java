@@ -246,10 +246,14 @@ public class Player implements StudentsContainer.StudentNumberReachedListener, S
         if(studentsToAdd.getSize() != studentsToRemove.getSize())
             throw new InvalidOperationException("Cannot swap students containers of different size");
 
-        school.removeAll(studentsToRemove);
-        entrance.addAll(studentsToRemove);
-        entrance.removeAll(studentsToAdd);
-        school.addAll(studentsToAdd);
+        if(!school.contains(studentsToRemove) || !entrance.contains(studentsToAdd))
+            throw new InvalidOperationException("Cannot swap students not owned by the player");
+
+        school.removeAll(studentsToRemove)
+                .addAll(studentsToAdd);
+
+        entrance.removeAll(studentsToAdd)
+                .addAll(studentsToRemove);
     }
 
     /**

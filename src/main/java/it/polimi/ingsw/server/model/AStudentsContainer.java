@@ -103,4 +103,16 @@ public abstract class AStudentsContainer implements Serializable {
     public String toString() {
         return students.toString();
     }
+
+    /**
+     * Check if this container has the given students
+     * @param anotherContainer the container to check
+     * @return true if this all the students present in anotherContainer are present also in this container, false otherwise
+     */
+    public boolean contains(AStudentsContainer anotherContainer) {
+        for(var s : Student.values())
+            if(getCountForStudent(s) < anotherContainer.getCountForStudent(s))
+                return false;
+        return true;
+    }
 }

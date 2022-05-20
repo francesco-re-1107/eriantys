@@ -35,8 +35,8 @@ public class MinstrelCharacterCard extends CharacterCard {
 
     @Override
     public void play(Game game) {
-        if (studentsToRemove.getSize() > 2 || studentsToAdd.getSize() > 2)
-            throw new InvalidOperationException("Too much students to swap");
+        if (studentsToRemove.getSize() != 2 || studentsToAdd.getSize() != 2)
+            throw new InvalidOperationException("You must swap 2 students");
 
         game.getCurrentRound().getCurrentPlayer().swapStudents(studentsToRemove, studentsToAdd);
         game.updateProfessors();

@@ -216,4 +216,19 @@ class StudentsContainerTest {
         assertEquals(0, Collections.frequency(students, Student.PINK));
     }
 
+    @Test
+    void contains() {
+        container.addStudents(Student.RED, 3)
+                .addStudents(Student.GREEN, 5)
+                .addStudents(Student.BLUE, 2)
+                .addStudents(Student.YELLOW, 1);
+
+        assertTrue(container.contains(new StudentsContainer().addStudent(Student.BLUE)));
+
+        var anotherContainer = new StudentsContainer().addAll(container);
+        assertTrue(container.contains(anotherContainer));
+
+        assertFalse(container.contains(new StudentsContainer().addStudents(Student.PINK, 2)));
+    }
+
 }
