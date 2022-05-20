@@ -3,6 +3,7 @@ package it.polimi.ingsw.client.gui.customviews;
 import it.polimi.ingsw.common.reducedmodel.ReducedIsland;
 import it.polimi.ingsw.common.reducedmodel.ReducedPlayer;
 import it.polimi.ingsw.server.model.Student;
+import javafx.animation.FadeTransition;
 import javafx.geometry.HPos;
 import javafx.geometry.VPos;
 import javafx.scene.Node;
@@ -40,10 +41,9 @@ public class IslandsCircularPane extends Pane {
     protected void layoutChildren() {
         if(getChildren().isEmpty()) return;
 
-        var increment = 360 / getChildren().size();
+        var increment = 360.0 / getChildren().size();
 
-
-        var degree = -90;
+        var degree = -90.0;
         var islandSize = 200.0;
 
         var maxSize = getChildren().stream()
@@ -76,11 +76,24 @@ public class IslandsCircularPane extends Pane {
      * @param islands
      */
     public void setIslands(List<ReducedIsland> islands) {
+        //if islands doesn't change, just set all islands as disabled
+        if(islands.equals(this.islands)) {
+            for (var iv : getChildren())
+                iv.setDisable(true);
+            return;
+        }
+
         this.islands = islands;
+        setOpacity(0.0);
         getChildren().clear();
 
         for (var i : islands)
             addIsland(i);
+
+        var ft = new FadeTransition(javafx.util.Duration.millis(100), this);
+        ft.setFromValue(0.0);
+        ft.setToValue(1.0);
+        ft.play();
     }
 
     /**

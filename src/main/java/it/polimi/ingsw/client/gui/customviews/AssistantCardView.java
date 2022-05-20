@@ -56,6 +56,7 @@ public class AssistantCardView extends StackPane implements EventHandler<MouseEv
         setAlignment(Pos.TOP_CENTER);
         getStylesheets().add(getClass().getResource("/css/assistant_card.css").toExternalForm());
         setupElements();
+        setMaxHeight(150);
 
         setOnMouseEntered(this);
         setOnMouseExited(this);
