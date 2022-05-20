@@ -10,6 +10,8 @@ public class Palette {
     public static final int ISLAND_BACKGROUND = 117;
     public static final int TOWER_CONTRAST_BACKGROUND = 237;
 
+    public static final int RED_TEXT = 31;
+
     public static final int TOWER_BLACK = 0;
     public static final int TOWER_WHITE = 15;
     public static final int TOWER_GREY = 250;

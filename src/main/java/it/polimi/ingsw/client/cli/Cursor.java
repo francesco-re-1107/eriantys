@@ -103,6 +103,11 @@ public class Cursor {
         System.out.print(ansi().fgBlack().bg(Palette.ISLAND_BACKGROUND).a(content).reset());
     }
 
+    public void printWithFgColor(String s, int color) {
+        print(ansi().fg(color).a(s).reset());
+    }
+
+
     // draws and island starting at
     private void drawIsland(int x0, int y0, ReducedIsland island, String id) {
         moveToXY(x0, y0);
