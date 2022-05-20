@@ -10,7 +10,7 @@ public class CLIGameCreationMenuController implements ScreenController {
 
     @Override
     public void onShow() {
-        Cursor.getInstance().clearScreen();
+        Cursor.getInstance().eraseScreen();
         System.out.println("This is Game creation menu screen");
         new Thread(() -> {
             new Scanner(System.in).nextLine();

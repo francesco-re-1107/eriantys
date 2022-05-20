@@ -12,7 +12,6 @@ import java.util.concurrent.ConcurrentHashMap;
 
 public class CLINavigationManager implements NavigationManager {
 
-    private Screen currentScreen;
 
     /**
      * Screens with their corresponding controller
@@ -23,6 +22,10 @@ public class CLINavigationManager implements NavigationManager {
      * Backstack used for the inverse navigation
      */
     private final Deque<Screen> backstack;
+
+    private Screen currentScreen;
+
+    private Screen lastScreen;
 
     public CLINavigationManager() {
         this.backstack = new ArrayDeque<>();
@@ -51,17 +54,16 @@ public class CLINavigationManager implements NavigationManager {
             return;
         }
 
-        System.out.println("navigating to " + destination);
         if(withBackStack && currentScreen != null) {
             backstack.push(currentScreen);
         }
-        System.out.println("current backstack is " + backstack);
 
+        lastScreen = currentScreen;
         currentScreen = destination;
 
         //call onHide on the current screen
-        if(currentScreen != null)
-            screenControllers.get(currentScreen).onHide();
+        if(lastScreen != null)
+            screenControllers.get(lastScreen).onHide();
 
         //call onShow on the new screen
         screenControllers.get(destination).onShow();
@@ -74,7 +76,6 @@ public class CLINavigationManager implements NavigationManager {
 
     @Override
     public void goBack() {
-        System.out.println(backstack);
         if(backstack.isEmpty()) return;
 
         var previousScreen = backstack.pop();

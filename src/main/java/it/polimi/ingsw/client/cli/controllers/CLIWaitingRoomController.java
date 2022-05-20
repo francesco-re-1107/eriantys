@@ -7,7 +7,7 @@ public class CLIWaitingRoomController implements ScreenController {
 
     @Override
     public void onShow() {
-        Cursor.getInstance().clearScreen();
+        Cursor.getInstance().eraseScreen();
         System.out.println("This is waiting room screen");
     }
 

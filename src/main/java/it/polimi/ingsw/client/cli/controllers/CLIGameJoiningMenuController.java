@@ -1,30 +1,83 @@
 package it.polimi.ingsw.client.cli.controllers;
 
+import it.polimi.ingsw.Constants;
+import it.polimi.ingsw.Utils;
 import it.polimi.ingsw.client.Client;
 import it.polimi.ingsw.client.ScreenController;
 import it.polimi.ingsw.client.cli.Cursor;
-import it.polimi.ingsw.client.cli.commands.ExitCommand;
-import it.polimi.ingsw.client.cli.views.CommandInputView;
+import it.polimi.ingsw.client.cli.views.ListView;
+import it.polimi.ingsw.common.reducedmodel.GameListItem;
+
+import java.util.Timer;
+import java.util.TimerTask;
+
+import static org.fusesource.jansi.Ansi.ansi;
 
 public class CLIGameJoiningMenuController implements ScreenController {
 
-    private CommandInputView commandInput;
+    private ListView<GameListItem> gamesListView;
+
+    private Timer refreshTimer;
 
     @Override
     public void onShow() {
-        Cursor.getInstance().clearScreen();
+        Cursor.getInstance().eraseScreen();
         System.out.println("This is Game joining menu screen");
-        commandInput = new CommandInputView();
-        commandInput.setCommandListener(c -> {
-            if(c instanceof ExitCommand) {
-                Client.getInstance().exitApp();
+
+        gamesListView = new ListView<>(item -> {
+            if(item.expertMode()){
+                return ansi()
+                        .a("GIOCATORI: ")
+                        .a(item.currentNumberOfPlayers() + "/" + item.numberOfPlayers())
+                        .fgBrightRed().a("  ESPERTIa")
+                        .reset();
+            } else {
+                return ansi()
+                        .a("GIOCATORI: ")
+                        .a(item.currentNumberOfPlayers() + "/" + item.numberOfPlayers()).reset()
+                        .fgBrightYellow().a("  SEMPLICE")
+                        .reset();
             }
         });
-        commandInput.draw();
+        gamesListView.setListener((item, index) -> joinGame(item));
+
+        //start list refresh when the screen is displayed
+        startRefreshTimer();
+    }
+
+    private void joinGame(GameListItem item) {
+        Client.getInstance().joinGame(item.uuid(), e -> {
+            //showError("Impossibile unirsi al gioco");
+        });
+    }
+
+    /**
+     * Starts the refresh timer.
+     * The timer will refresh the list of games every 5 seconds.
+     */
+    private void startRefreshTimer() {
+        refreshTimer = new Timer();
+        refreshTimer.scheduleAtFixedRate(new TimerTask() {
+            @Override
+            public void run() {
+                Client.getInstance().getGameList(
+                        list -> gamesListView.setListItems(list),
+                        e -> Utils.LOGGER.info(e.getMessage())
+                );
+            }
+        }, 0, Constants.GAMES_LIST_REFRESH_INTERVAL);
+    }
+
+    /**
+     * Stops the refresh timer.
+     */
+    private void stopRefreshTimer() {
+        refreshTimer.cancel();
+        refreshTimer.purge();
     }
 
     @Override
     public void onHide() {
-
+        stopRefreshTimer();
     }
 }

@@ -10,7 +10,7 @@ public class CLIGameController implements ScreenController {
 
     @Override
     public void onShow() {
-        Cursor.getInstance().clearScreen();
+        Cursor.getInstance().eraseScreen();
         System.out.println("This is Game screen");
         new Thread(() -> {
             new Scanner(System.in).nextLine();

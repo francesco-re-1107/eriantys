@@ -15,4 +15,16 @@ public class Palette {
     public static final int TOWER_GREY = 250;
 
     public static final int MOTHER_NATURE = 130;
+
+    public static final int ERIANTYS = 86;
+
+    public static final int WIN = 34;
+
+    public static final int LOSE = 124;
+
+    public static final int TIE = 238;
+
+    public static final int PAUSED = 220;
+
+    public static final int TERMINATED = 238;
 }

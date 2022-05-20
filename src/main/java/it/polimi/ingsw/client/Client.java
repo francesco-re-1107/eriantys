@@ -182,8 +182,8 @@ public class Client implements CommunicatorListener {
         communicator.send(new RegisterNicknameRequest(newNickname),
                 r -> {
                     if (r.isSuccessful()) {
-                        navigationManager.navigateTo(Screen.MAIN_MENU);
                         this.nickname = newNickname;
+                        navigationManager.navigateTo(Screen.MAIN_MENU);
                     } else
                         errorListener.accept(r.getThrowable());
                 },

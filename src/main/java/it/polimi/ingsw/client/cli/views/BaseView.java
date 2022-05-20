@@ -4,5 +4,5 @@ import it.polimi.ingsw.client.cli.Cursor;
 
 public abstract class BaseView {
     protected final Cursor cursor = Cursor.getInstance();
-    protected abstract void draw() ;
+    public abstract void draw() ;
 }

@@ -29,8 +29,8 @@ public class Cursor {
             Map.entry(Student.RED, Palette.STUDENT_RED),
             Map.entry(Student.BLUE, Palette.STUDENT_BLUE),
             Map.entry(Student.GREEN, Palette.STUDENT_GREEN));
-    final int WIDTH = 80;
-    final int HEIGHT = 24;
+    public static final int WIDTH = 80;
+    public static final int HEIGHT = 24;
 
     public static Cursor getInstance() {
         if (instance == null) {
@@ -42,15 +42,15 @@ public class Cursor {
     private Cursor() {
         AnsiConsole.systemInstall();
         System.setProperty("jansi.passthrough", "true");
-        System.out.print(ansi().eraseScreen());
-        for (int i = 0; i < HEIGHT-2; i++) {
-            moveToXY(BOARD_DELIMITER-1, i+1);
-            System.out.println(ansi().bg(Palette.ISLAND_BACKGROUND).a(" ".repeat(WIDTH-BOARD_DELIMITER+1)));
-        }
+    }
+
+    public void eraseScreen() {
+        print(ansi().eraseScreen().reset());
     }
 
     public void clearScreen() {
-        System.out.print(ansi().eraseScreen().reset());
+        for(int i = 1; i <= HEIGHT; i++)
+            clearRow(i);
     }
 
     // unused
@@ -201,7 +201,7 @@ public class Cursor {
     }
 
     public void moveToXY(int x, int y) {
-        System.out.print(ansi().cursor(y, x).reset());
+        print(ansi().cursor(y, x).reset());
     }
 
     public void end() {
@@ -231,6 +231,26 @@ public class Cursor {
         return new Scanner(System.in).nextLine();
     }
 
+    public int intInput() {
+        while (true){
+            var s = new Scanner(System.in).nextLine();
+            try {
+                return Integer.parseInt(s);
+            }catch (Exception e){
+                showError("Expected a number");
+            }
+        }
+    }
+
+    public void showError(String err) {
+        printWithFgColor(err, Palette.RED_TEXT);
+    }
+
+    public String input(int x, int y) {
+        moveToXY(x, y);
+        return input();
+    }
+
     public void print(String s) {
         System.out.print(s);
     }
@@ -238,5 +258,41 @@ public class Cursor {
     public void print(String s, int x, int y) {
         moveToXY(x, y);
         print(s);
+    }
+
+    public void print(Ansi s) {
+        print(s.toString());
+    }
+
+    public void print(Ansi s, int x, int y) {
+        moveToXY(x, y);
+        print(s);
+    }
+
+    public void println(String s){
+        print(ansi().a(s).cursorDownLine().reset());
+    }
+
+    public void printCentered(String string, int row) {
+        int x = (WIDTH - realLength(string)) / 2;
+        print(string, x, row);
+    }
+
+    public int realLength(Ansi s) {
+        return realLength(s.toString());
+    }
+
+    public int realLength(String s) {
+        print(s.length() + "", 1, 1);
+        print(s.replaceAll("/(\\x9B|\\x1B\\[)[0-?]*[ -\\/]*[@-~]/", "").length()+"", 1, 2);
+        return s.replaceAll("/(\\x9B|\\x1B\\[)[0-?]*[ -\\/]*[@-~]/", "").length();
+    }
+
+    public void clearRow(int row) {
+        print(ansi().fgDefault().bgDefault().a(" ".repeat(WIDTH)), 1, row);
+    }
+
+    public void moveRelative(int xOffset, int yOffset) {
+        print(ansi().cursorRight(xOffset).cursorDown(yOffset).reset());
     }
 }
