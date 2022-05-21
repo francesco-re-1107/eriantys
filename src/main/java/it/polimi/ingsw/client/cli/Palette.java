@@ -13,7 +13,7 @@ public class Palette {
     public static final int STUDENT_BLUE = 39;
     public static final int ISLAND_BORDER = 22;
     public static final int ISLAND_BACKGROUND = 117;
-    public static final int DASHBOARD_BACKGROUND = 242;
+    public static final int DASHBOARD_BACKGROUND = 236;
 
     public static final int TOWER_CONTRAST_BACKGROUND = 237;
 
@@ -21,11 +21,13 @@ public class Palette {
 
     public static final int TOWER_BLACK = 0;
     public static final int TOWER_WHITE = 15;
-    public static final int TOWER_GREY = 7;//250;
+    public static final int TOWER_GREY = 244;
 
     public static final int MOTHER_NATURE = 130;
 
     public static final int ERIANTYS = 86;
+
+    public static final int WHITE = 15;
 
     public static final int WIN = 34;
 

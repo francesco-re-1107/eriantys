@@ -77,7 +77,8 @@ public class IslandView extends BaseView {
         cursor.print(ansi()
                 .fgBlack()
                 .bg(Palette.ISLAND_BACKGROUND)
-                .a(String.format("I%02d ", index))); //4 charatcters
+                .bold()
+                .a(String.format("I%d ", index))); //4 characters
 
         //1 character
         if(motherNature)
