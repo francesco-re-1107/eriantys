@@ -33,11 +33,11 @@ public class Palette {
 
     public static final int LOSE = 124;
 
-    public static final int TIE = 238;
+    public static final int TIE = 27;
 
     public static final int PAUSED = 220;
 
-    public static final int TERMINATED = 238;
+    public static final int TERMINATED = 25;
     public static final Map<Student, Integer> STUDENTS_COLOR_MAP = Map.ofEntries(
             Map.entry(Student.YELLOW, Palette.STUDENT_YELLOW),
             Map.entry(Student.PINK, Palette.STUDENT_PINK),

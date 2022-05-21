@@ -24,7 +24,6 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 /**
  * This class is responsible for controlling the game screen.
@@ -427,16 +426,11 @@ public class GUIGameController implements ScreenController, Client.GameUpdateLis
      * Update the views based on the game state
      */
     private void processGameState() {
-        var offlinePlayers = currentGame.players()
-                        .stream()
-                        .filter(p -> !p.isConnected())
-                        .map(ReducedPlayer::nickname)
-                        .collect(Collectors.joining(", "));
-
         switch(currentGame.currentState()) {
             case CREATED, STARTED -> gameTitlePopup.hide();
             case PAUSED -> {
-                gameTitlePopup.setState(GameTitlePopupView.State.PAUSED, "Giocatori offline: " + offlinePlayers);
+                gameTitlePopup.setState(GameTitlePopupView.State.PAUSED,
+                        "Giocatori offline: " + currentGame.getOfflinePlayersList());
                 gameTitlePopup.show();
             }
             case FINISHED -> {
@@ -453,7 +447,8 @@ public class GUIGameController implements ScreenController, Client.GameUpdateLis
                 gameTitlePopup.show();
             }
             case TERMINATED -> {
-                gameTitlePopup.setState(GameTitlePopupView.State.TERMINATED, "Giocatori che hanno abbandonato: " + offlinePlayers);
+                gameTitlePopup.setState(GameTitlePopupView.State.TERMINATED,
+                        "Giocatori che hanno abbandonato: " + currentGame.getOfflinePlayersList());
                 leaveButton.setText("VAI AL MENU PRINCIPALE");
                 gameTitlePopup.show();
             }

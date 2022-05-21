@@ -72,4 +72,12 @@ public record ReducedGame(
                 winner
         );
     }
+
+    public String getOfflinePlayersList() {
+        return players()
+                .stream()
+                .filter(p -> !p.isConnected())
+                .map(ReducedPlayer::nickname)
+                .collect(Collectors.joining(", "));
+    }
 }
