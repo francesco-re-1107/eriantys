@@ -11,7 +11,7 @@ public class IslandsLayoutView extends BaseView{
 
     private final List<ReducedIsland> islands;
     private final int motherNaturePosition;
-    private static final int DIVIDER_X = 26;
+    private static final int DIVIDER_X = 25;
 
     public IslandsLayoutView(List<ReducedIsland> islands, int motherNaturePosition) {
         this.islands = islands;
