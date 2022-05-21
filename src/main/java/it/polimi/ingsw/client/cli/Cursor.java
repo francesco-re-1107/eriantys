@@ -1,17 +1,8 @@
 package it.polimi.ingsw.client.cli;
 
-import it.polimi.ingsw.common.reducedmodel.ReducedGame;
-import it.polimi.ingsw.common.reducedmodel.ReducedIsland;
-import it.polimi.ingsw.common.reducedmodel.ReducedPlayer;
-import it.polimi.ingsw.common.reducedmodel.ReducedRound;
-import it.polimi.ingsw.server.model.Student;
-import it.polimi.ingsw.server.model.Tower;
 import org.fusesource.jansi.Ansi;
 import org.fusesource.jansi.AnsiConsole;
 
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
 import java.util.Scanner;
 
 import static org.fusesource.jansi.Ansi.ansi;
@@ -19,18 +10,10 @@ import static org.fusesource.jansi.Ansi.ansi;
 public class Cursor {
     public static Cursor instance = null;
 
-    public static final int ISLAND_WIDTH = 11;
-    public static final int ISLAND_HEIGHT = 6;
-    public static final int BOARD_DELIMITER = 22;
-    public static final int LEFT_MARGIN = 4;
-    private static final Map<Student, Integer> STUDENT_COLOR_MAP = Map.ofEntries(
-            Map.entry(Student.YELLOW, Palette.STUDENT_YELLOW),
-            Map.entry(Student.PINK, Palette.STUDENT_PINK),
-            Map.entry(Student.RED, Palette.STUDENT_RED),
-            Map.entry(Student.BLUE, Palette.STUDENT_BLUE),
-            Map.entry(Student.GREEN, Palette.STUDENT_GREEN));
     public static final int WIDTH = 80;
     public static final int HEIGHT = 24;
+    private int relativeX = 0;
+    private int relativeY = 0;
 
     public static Cursor getInstance() {
         if (instance == null) {
@@ -54,7 +37,7 @@ public class Cursor {
     }
 
     // unused
-    public void drawEdges() {
+    /*public void drawEdges() {
         moveToXY(0, 1);
         System.out.print('╔');
         System.out.print("═".repeat(WIDTH - 2));
@@ -68,6 +51,7 @@ public class Cursor {
         moveToXY(1, HEIGHT - 1);
         System.out.print('╚');
     }
+
 
     // draws a list of islands
     public void drawIslands(Collection<ReducedIsland> islandList) {
@@ -105,49 +89,6 @@ public class Cursor {
 
     public void printWithFgColor(String s, int color) {
         print(ansi().fg(color).a(s).reset());
-    }
-
-
-    // draws and island starting at
-    private void drawIsland(int x0, int y0, ReducedIsland island, String id) {
-        moveToXY(x0, y0);
-
-        String border = "╭" + "─".repeat(ISLAND_WIDTH - 2) + "╮";
-        drawWithBgAndContrast(border);
-
-        moveToXY(x0, y0 + 1);
-        drawWithBgAndContrast("│ " + id);
-        moveToXY(x0 + ISLAND_WIDTH - 1, y0 + 1);
-        drawWithBgAndContrast("│");
-
-        moveToXY(x0, y0 + 2);
-        drawWithBgAndContrast("│");
-        String s = "";
-        for (var x : island.students().getStudents().entrySet()) {
-            s += ansi().bg(Palette.ISLAND_BACKGROUND).fg(STUDENT_COLOR_MAP.get(x.getKey())).a("●".repeat(x.getValue()))
-                    .reset();
-        }
-        System.out.print(s);
-        moveToXY(x0 + ISLAND_WIDTH - 1, y0 + 2);
-        drawWithBgAndContrast("│");
-
-        for (int i = 0; i < ISLAND_HEIGHT - 3; i++) {
-            moveToXY(x0, y0 + 3 + i);
-            drawWithBgAndContrast("│" + " ".repeat(ISLAND_WIDTH - 2) + "│");
-        }
-
-        moveToXY(x0, y0 + ISLAND_HEIGHT - 1);
-        drawWithBgAndContrast("│ ");
-
-        System.out.println(
-                ansi().fg(getTowerAnsiColor(island.towerColor())).bg(117).a("♜".repeat(island.towersCount())).reset());
-        moveToXY(x0 + ISLAND_WIDTH - 1, y0 + ISLAND_HEIGHT - 1);
-        drawWithBgAndContrast("│");
-
-        moveToXY(x0, y0 + ISLAND_HEIGHT);
-
-        border = "╰" + "─".repeat(ISLAND_WIDTH - 2) + "╯";
-        drawWithBgAndContrast(border);
     }
 
     public void drawBoard(List<ReducedPlayer> players, ReducedRound round, ReducedGame game){
@@ -205,14 +146,6 @@ public class Cursor {
         };
     }
 
-    public void moveToXY(int x, int y) {
-        print(ansi().cursor(y, x).reset());
-    }
-
-    public void end() {
-        AnsiConsole.systemUninstall();
-    }
-
     public void printPrompt(String prompt) {
         printPrompt(prompt, "");
     }
@@ -232,10 +165,6 @@ public class Cursor {
         System.out.println(ansi().bold().a(s).reset());
     }
 
-    public String input() {
-        return new Scanner(System.in).nextLine();
-    }
-
     public int intInput() {
         while (true){
             var s = new Scanner(System.in).nextLine();
@@ -250,6 +179,19 @@ public class Cursor {
     public void showError(String err) {
         printWithFgColor(err, Palette.RED_TEXT);
     }
+    */
+
+    public void moveToXY(int x, int y) {
+        print(ansi().cursor(y, x).reset());
+    }
+
+    public void end() {
+        AnsiConsole.systemUninstall();
+    }
+
+    public String input() {
+        return new Scanner(System.in).nextLine();
+    }
 
     public String input(int x, int y) {
         moveToXY(x, y);
@@ -257,6 +199,7 @@ public class Cursor {
     }
 
     public void print(String s) {
+        this.relativeX += realLength(s);
         System.out.print(s);
     }
 
@@ -288,9 +231,7 @@ public class Cursor {
     }
 
     public int realLength(String s) {
-        print(s.length() + "", 1, 1);
-        print(s.replaceAll("/(\\x9B|\\x1B\\[)[0-?]*[ -\\/]*[@-~]/", "").length()+"", 1, 2);
-        return s.replaceAll("/(\\x9B|\\x1B\\[)[0-?]*[ -\\/]*[@-~]/", "").length();
+        return s.replaceAll("(\\x9B|\\x1B\\[)[0-?]*[ -\\/]*[@-~]", "").length();
     }
 
     public void clearRow(int row) {
@@ -298,6 +239,28 @@ public class Cursor {
     }
 
     public void moveRelative(int xOffset, int yOffset) {
+        this.relativeX += xOffset;
+        this.relativeY += yOffset;
         print(ansi().cursorRight(xOffset).cursorDown(yOffset).reset());
+    }
+
+    public void saveCursorPosition() {
+        this.relativeX = 0;
+        this.relativeY = 0;
+    }
+
+    public void restoreCursorPosition() {
+        int x = this.relativeX;
+        int y = this.relativeY;
+        moveRelative(-x, -y);
+    }
+
+    public void paintBackground(int color, int xMin, int yMin, int xMax, int yMax) {
+        for (int i = yMin; i <= yMax; i++) {
+            print(ansi()
+                    .bg(color)
+                    .a(DrawingCharacters.EMPTY.repeat(xMax - xMin + 1))
+                    .reset(), xMin, i);
+        }
     }
 }

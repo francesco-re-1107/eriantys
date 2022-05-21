@@ -21,21 +21,22 @@ public class CLIGameJoiningMenuController implements ScreenController {
 
     @Override
     public void onShow() {
-        Cursor.getInstance().eraseScreen();
-        System.out.println("This is Game joining menu screen");
+        Cursor.getInstance().clearScreen();
 
         gamesListView = new ListView<>(item -> {
             if(item.expertMode()){
                 return ansi()
                         .a("GIOCATORI: ")
                         .a(item.currentNumberOfPlayers() + "/" + item.numberOfPlayers())
-                        .fgBrightRed().a("  ESPERTIa")
+                        .a("  ")
+                        .fgBrightRed().a("ESPERTI ")
                         .reset();
             } else {
                 return ansi()
                         .a("GIOCATORI: ")
                         .a(item.currentNumberOfPlayers() + "/" + item.numberOfPlayers()).reset()
-                        .fgBrightYellow().a("  SEMPLICE")
+                        .a("  ")
+                        .fgBrightYellow().a("SEMPLICE")
                         .reset();
             }
         });

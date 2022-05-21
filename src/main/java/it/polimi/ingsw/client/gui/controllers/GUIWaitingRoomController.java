@@ -50,7 +50,12 @@ public class GUIWaitingRoomController implements ScreenController, Client.GameUp
         int playersLeft = game.numberOfPlayers() - game.currentNumberOfPlayers();
 
         Platform.runLater(
-                () -> waitingLabel.setText("In attesa di altri " + playersLeft + " giocatori...")
+                () -> {
+                    if(playersLeft == 1)
+                        waitingLabel.setText("In attesa di 1 giocatore...");
+                    else
+                        waitingLabel.setText("In attesa di " + playersLeft + " giocatori...");
+                }
         );
 
         //if the game is full, go to the game screen

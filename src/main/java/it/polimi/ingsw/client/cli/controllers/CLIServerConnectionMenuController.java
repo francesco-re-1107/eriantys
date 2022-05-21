@@ -17,7 +17,7 @@ public class CLIServerConnectionMenuController implements ScreenController {
 
     @Override
     public void onShow() {
-        Cursor.getInstance().eraseScreen();
+        Cursor.getInstance().clearScreen();
 
         titleView = new TitleView(TitleView.Title.ERIANTYS);
         titleView.draw();

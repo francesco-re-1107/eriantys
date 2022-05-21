@@ -21,13 +21,14 @@ public class ListView<T> extends BaseView{
     public ListView(List<T> listItems, Function<T, Ansi> customRenderer){
         super();
         this.listItems = listItems;
-        this.inputView = new SimpleInputView("Inserisci un numero");
+        this.inputView = new SimpleInputView("Seleziona partita: ");
         this.customRenderer = customRenderer;
     }
 
     @Override
     public void draw() {
         cursor.clearScreen();
+        cursor.printCentered("Partite disponibili", 1);
         if(listItems.isEmpty()){
             cursor.printCentered("Nessuna partita in corso", 10);
             cursor.moveToXY(1, 23);
@@ -47,10 +48,10 @@ public class ListView<T> extends BaseView{
                 }
             });
 
-            for (int i = 0; i < listItems.size(); i++) {
+            for (int i = 0; i < Math.min(listItems.size(), 10); i++) {
                 cursor.printCentered(
-                        String.format("[%02d] %s", i + 1, customRenderer.apply(listItems.get(i))),
-                        10 + i * 2
+                        String.format("[%01d] %s", i + 1, customRenderer.apply(listItems.get(i))),
+                        3 + i * 2
                 );
                 cursor.moveRelative(0, 1);
             }

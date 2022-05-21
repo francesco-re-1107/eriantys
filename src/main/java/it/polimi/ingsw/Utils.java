@@ -9,6 +9,7 @@ import java.util.logging.ConsoleHandler;
 import java.util.logging.Level;
 import java.util.logging.LogManager;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
 
 /**
  * This class offers several methods useful across the project
@@ -92,5 +93,13 @@ public class Utils {
 
         //append a random digit
         return part1 + part2 + r.nextInt(10);
+    }
+
+    public static <T> List<List<T>> partition(List<T> list, int elementsPerPartition) {
+        return list.stream()
+                .collect(Collectors.groupingBy(e -> list.indexOf(e) / elementsPerPartition))
+                .values()
+                .stream()
+                .toList();
     }
 }
