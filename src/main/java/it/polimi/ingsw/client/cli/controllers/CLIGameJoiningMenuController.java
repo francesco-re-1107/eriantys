@@ -8,6 +8,7 @@ import it.polimi.ingsw.client.cli.Cursor;
 import it.polimi.ingsw.client.cli.views.ListView;
 import it.polimi.ingsw.common.reducedmodel.GameListItem;
 
+import java.util.ArrayList;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -23,7 +24,7 @@ public class CLIGameJoiningMenuController implements ScreenController {
     public void onShow() {
         Cursor.getInstance().clearScreen();
 
-        gamesListView = new ListView<>(item -> {
+        gamesListView = new ListView<>(new ArrayList<>(), item -> {
             if(item.expertMode()){
                 return ansi()
                         .a("GIOCATORI: ")
@@ -39,7 +40,8 @@ public class CLIGameJoiningMenuController implements ScreenController {
                         .fgBrightYellow().a("SEMPLICE")
                         .reset();
             }
-        });
+        }, "Partite disponibili", "Seleziona una partita", "Nessuna partita disponibile");
+
         gamesListView.setListener((item, index) -> joinGame(item));
 
         //start list refresh when the screen is displayed

@@ -1,16 +1,14 @@
 package it.polimi.ingsw.client.cli.views;
 
-import java.util.List;
-import java.util.Map;
-import java.util.function.Consumer;
-
-import org.fusesource.jansi.Ansi;
-
 import it.polimi.ingsw.client.Client;
 import it.polimi.ingsw.client.cli.Palette;
-import it.polimi.ingsw.common.requests.GameRequest;
 import it.polimi.ingsw.common.requests.PlayAssistantCardRequest;
 import it.polimi.ingsw.server.model.AssistantCard;
+import org.fusesource.jansi.Ansi;
+
+import java.util.Comparator;
+import java.util.List;
+import java.util.Map;
 
 public class AssistantCardsView extends CardsView {
     private Map<AssistantCard, Boolean> playerDeck;
@@ -23,12 +21,16 @@ public class AssistantCardsView extends CardsView {
         this.listView = new ListView<>(
                 playerDeck.entrySet().stream()
                         .filter(e -> !e.getValue())
-                        .sorted()
-                        .map(e -> e.getKey())
+                        .sorted(Comparator.comparingInt(e -> e.getKey().turnPriority()))
+                        .map(Map.Entry::getKey)
                         .toList(),
-                (card) -> new Ansi()
-                        .a(String.format("< %d, %d >", card.turnPriority(),
-                                card.motherNatureMaxMoves()))
+
+                card -> new Ansi()
+                        .a(String.format("[%d | ", card.turnPriority()))
+                        .fg(Palette.RAINBOW.get(card.motherNatureMaxMoves() - 1))
+                        .a(card.motherNatureMaxMoves())
+                        .fg(Palette.WHITE)
+                        .a("]")
                         .reset(),
                 "Scegli la carta assistente",
                 "Inserisci il numero corrispondente",

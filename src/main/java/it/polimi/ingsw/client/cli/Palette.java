@@ -3,6 +3,7 @@ package it.polimi.ingsw.client.cli;
 import it.polimi.ingsw.server.model.Student;
 import it.polimi.ingsw.server.model.Tower;
 
+import java.util.List;
 import java.util.Map;
 
 public class Palette {
@@ -52,5 +53,7 @@ public class Palette {
             Map.entry(Tower.WHITE, Palette.TOWER_WHITE),
             Map.entry(Tower.GREY, Palette.TOWER_GREY)
     );
+
+    public static final List<Integer> RAINBOW = List.of(196, 214, 226, 46, 39);
 
 }

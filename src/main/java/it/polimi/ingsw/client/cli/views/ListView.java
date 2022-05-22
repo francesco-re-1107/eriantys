@@ -1,11 +1,14 @@
 package it.polimi.ingsw.client.cli.views;
 
+import it.polimi.ingsw.client.cli.Palette;
 import org.fusesource.jansi.Ansi;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.BiConsumer;
 import java.util.function.Function;
+
+import static org.fusesource.jansi.Ansi.ansi;
 
 public class ListView<T> extends BaseView{
 
@@ -53,8 +56,14 @@ public class ListView<T> extends BaseView{
             });
 
             for (int i = 0; i < Math.min(listItems.size(), 10); i++) {
-                cursor.printCentered(
-                        String.format("[%01d] %s", i + 1, customRenderer.apply(listItems.get(i))),
+                cursor.printCentered(ansi()
+                                .a("[")
+                                .fgBrightYellow()
+                                .a(i + 1)
+                                .fg(Palette.WHITE)
+                                .a("] ")
+                                .a(customRenderer.apply(listItems.get(i)))
+                                .reset(),
                         3 + i * 2
                 );
                 cursor.moveRelative(0, 1);
