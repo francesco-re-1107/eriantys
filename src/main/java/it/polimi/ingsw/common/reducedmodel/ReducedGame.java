@@ -5,6 +5,7 @@ import it.polimi.ingsw.server.model.Game;
 import it.polimi.ingsw.server.model.Student;
 
 import java.io.Serializable;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -82,11 +83,11 @@ public record ReducedGame(
     }
 
     /**
-     * Find my player in the given game
-     * @param game
+     * Find my player in this game
+     * @param myNickname my nickname
      * @return my player
      */
-    public ReducedPlayer findMyPlayer(String myNickname) {
+    public ReducedPlayer getMyPlayer(String myNickname) {
         return players()
                 .stream()
                 .filter(p -> p.nickname().equals(myNickname))
@@ -94,4 +95,22 @@ public record ReducedGame(
                 .orElse(null);
     }
 
+    /**
+     * Find other players in this game
+     * @param myNickname my nickname
+     * @return other players
+     */
+    public List<ReducedPlayer> getOtherPlayers(String myNickname) {
+        return players().stream()
+                .filter(p -> !p.nickname().equals(myNickname))
+                .sorted(Comparator.comparing(ReducedPlayer::nickname))
+                .toList();
+    }
+
+    public int calculateMaxMotherNatureSteps() {
+        var card = currentRound.playedAssistantCards().get(currentRound.currentPlayer());
+
+        return card.motherNatureMaxMoves() +
+                currentRound().additionalMotherNatureMoves();
+    }
 }

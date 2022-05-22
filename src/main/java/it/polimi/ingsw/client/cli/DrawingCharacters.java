@@ -6,7 +6,7 @@ public class DrawingCharacters {
 
     public static final String STUDENT = "●";
 
-    public static final String PROFESSOR = "⬣";
+    public static final String PROFESSOR = "■";
 
     public static final String TOWER = "♜";
     public static final String MOTHER_NATURE = "♟";

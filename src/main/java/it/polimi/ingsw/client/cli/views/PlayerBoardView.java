@@ -107,26 +107,20 @@ public class PlayerBoardView extends BaseView {
     private void drawStudents() {
         cursor.saveCursorPosition();
 
-        cursor.moveRelative(3, 1);
+        cursor.moveRelative(4, 1);
 
         for (var student : Student.values()) {
             var hasProfessor = player.nickname().equals(professors.get(student));
-
-            //professor
-            cursor.print(ansi()
-                    .bg(Palette.DASHBOARD_BACKGROUND)
-                    .fg(Palette.STUDENTS_COLOR_MAP.get(student))
-                    .a(hasProfessor ? DrawingCharacters.PROFESSOR : DrawingCharacters.EMPTY)
-                    .reset());
 
             //student
             cursor.print(ansi()
                     .bg(Palette.DASHBOARD_BACKGROUND)
                     .fg(Palette.STUDENTS_COLOR_MAP.get(student))
-                    .a(DrawingCharacters.STUDENT)
+                    .a(hasProfessor ? DrawingCharacters.PROFESSOR : DrawingCharacters.STUDENT)
                     .reset());
 
             cursor.moveRelative(1, 0);
+
             //students count
             var studentsString = player.school().getCountForStudent(student) +
                     "(" + player.entrance().getCountForStudent(student) + ")";
@@ -137,7 +131,7 @@ public class PlayerBoardView extends BaseView {
                     .a(studentsString)
                     .reset()
             );
-            cursor.moveRelative(-(3 + studentsString.length()), 1);
+            cursor.moveRelative(-(2 + studentsString.length()), 1);
         }
 
         cursor.restoreCursorPosition();

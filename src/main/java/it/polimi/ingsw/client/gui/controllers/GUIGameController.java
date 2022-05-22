@@ -211,11 +211,8 @@ public class GUIGameController implements ScreenController, Client.GameUpdateLis
      */
     private void gameUpdate(ReducedGame game) {
         currentGame = game;
-        myPlayer = game.findMyPlayer(myNickname);
-        otherPlayers = game.players().stream()
-                .filter(p -> !p.nickname().equals(myNickname))
-                .sorted(Comparator.comparing(ReducedPlayer::nickname))
-                .toList();
+        myPlayer = game.getMyPlayer(myNickname);
+        otherPlayers = game.getOtherPlayers(myNickname);
 
         resetView();
 
@@ -379,9 +376,8 @@ public class GUIGameController implements ScreenController, Client.GameUpdateLis
             var cardPlayed = currentGame.currentRound()
                     .playedAssistantCards()
                     .get(myPlayer.nickname());
-            var maxMotherNatureSteps =
-                    cardPlayed.motherNatureMaxMoves() +
-                            currentGame.currentRound().additionalMotherNatureMoves();
+
+            var maxMotherNatureSteps = currentGame.calculateMaxMotherNatureSteps();
 
             switch (s) {
                 case STARTED -> {

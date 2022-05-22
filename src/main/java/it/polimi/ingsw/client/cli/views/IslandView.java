@@ -37,11 +37,13 @@ public class IslandView extends BaseView {
         cursor.saveCursorPosition();
         cursor.moveRelative(1, ISLAND_HEIGHT - 2);
 
-        cursor.print(ansi()
-                .fg(Palette.WIN)//Palette.TOWERS_COLOR_MAP.get(island.towerColor()))
-                .bg(Palette.ISLAND_BACKGROUND)
-                .a(DrawingCharacters.TOWER.repeat(island.towersCount()))
-        );
+        if(island.towersCount() > 0) {
+            cursor.print(ansi()
+                    .fg(Palette.TOWERS_COLOR_MAP.get(island.towerColor()))
+                    .bg(Palette.ISLAND_BACKGROUND)
+                    .a(DrawingCharacters.TOWER.repeat(island.towersCount()))
+            );
+        }
 
         cursor.restoreCursorPosition();
     }
@@ -78,7 +80,7 @@ public class IslandView extends BaseView {
                 .fgBlack()
                 .bg(Palette.ISLAND_BACKGROUND)
                 .bold()
-                .a(String.format("I%d ", index)));
+                .a(String.format("%d ", index)));
 
         //1 character
         if(motherNature)
