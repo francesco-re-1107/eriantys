@@ -7,6 +7,7 @@ import it.polimi.ingsw.client.cli.views.DashoardView;
 import it.polimi.ingsw.client.cli.views.IslandsLayoutView;
 import it.polimi.ingsw.client.cli.views.TitleView;
 import it.polimi.ingsw.common.reducedmodel.ReducedGame;
+import it.polimi.ingsw.server.model.Stage;
 
 public class CLIGameController implements ScreenController, Client.GameUpdateListener {
 
@@ -31,8 +32,13 @@ public class CLIGameController implements ScreenController, Client.GameUpdateLis
     private void processGameState(ReducedGame game) {
         switch (game.currentState()) {
             case STARTED -> {
-                new IslandsLayoutView(game.islands(), game.motherNaturePosition()).draw();
-                new DashoardView(game).draw();
+                if (game.currentRound().stage() == Stage.Plan.PLAN) {
+                    processPlanStage(game);
+                }
+                else {
+                    new IslandsLayoutView(game.islands(), game.motherNaturePosition()).draw();
+                    new DashoardView(game).draw();
+                }
             }
             case PAUSED -> new TitleView(TitleView.Title.PAUSED,
                     "Giocatori offline: " + game.getOfflinePlayersList())
@@ -50,6 +56,16 @@ public class CLIGameController implements ScreenController, Client.GameUpdateLis
                     new TitleView(TitleView.Title.LOSE, winner + " ha vinto").draw();
 
             }
+        }
+    }
+
+    private void processPlanStage(ReducedGame game){
+        final String playerNickname = Client.getInstance().getNickname();
+        if (game.currentRound().currentPlayer() == playerNickname) {
+            // todo
+        }
+        else{
+            // todo
         }
     }
 }
