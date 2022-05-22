@@ -211,7 +211,7 @@ public class GUIGameController implements ScreenController, Client.GameUpdateLis
      */
     private void gameUpdate(ReducedGame game) {
         currentGame = game;
-        myPlayer = findMyPlayer(game);
+        myPlayer = game.findMyPlayer(myNickname);
         otherPlayers = game.players().stream()
                 .filter(p -> !p.nickname().equals(myNickname))
                 .sorted(Comparator.comparing(ReducedPlayer::nickname))
@@ -530,18 +530,6 @@ public class GUIGameController implements ScreenController, Client.GameUpdateLis
                 ));
     }
 
-    /**
-     * Find my player in the given game
-     * @param game
-     * @return my player
-     */
-    private ReducedPlayer findMyPlayer(ReducedGame game) {
-        return game.players()
-                .stream()
-                .filter(p -> p.nickname().equals(myNickname))
-                .findFirst()
-                .orElse(null);
-    }
 
     /**
      * This method hide temporarily the assistant card deck to show the game

@@ -226,6 +226,10 @@ public class Cursor {
         print(string, x, row);
     }
 
+    public void printCentered(Ansi ansi, int row) {
+        printCentered(ansi.toString(), row);
+    }
+
     public int realLength(Ansi s) {
         return realLength(s.toString());
     }

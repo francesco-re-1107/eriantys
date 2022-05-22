@@ -80,4 +80,18 @@ public record ReducedGame(
                 .map(ReducedPlayer::nickname)
                 .collect(Collectors.joining(", "));
     }
+
+    /**
+     * Find my player in the given game
+     * @param game
+     * @return my player
+     */
+    public ReducedPlayer findMyPlayer(String myNickname) {
+        return players()
+                .stream()
+                .filter(p -> p.nickname().equals(myNickname))
+                .findFirst()
+                .orElse(null);
+    }
+
 }
