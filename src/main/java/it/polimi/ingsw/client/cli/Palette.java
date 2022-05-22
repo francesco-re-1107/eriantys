@@ -15,6 +15,8 @@ public class Palette {
     public static final int ISLAND_BACKGROUND = 117;
     public static final int DASHBOARD_BACKGROUND = 236;
 
+    public static final int CLOUD_BACKGROUD = 15;
+
     public static final int TOWER_CONTRAST_BACKGROUND = 237;
 
     public static final int RED_TEXT = 31;

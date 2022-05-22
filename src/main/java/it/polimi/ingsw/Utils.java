@@ -2,6 +2,7 @@ package it.polimi.ingsw;
 
 import java.io.InputStream;
 import java.security.SecureRandom;
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Properties;
@@ -9,7 +10,6 @@ import java.util.logging.ConsoleHandler;
 import java.util.logging.Level;
 import java.util.logging.LogManager;
 import java.util.logging.Logger;
-import java.util.stream.Collectors;
 
 /**
  * This class offers several methods useful across the project
@@ -96,10 +96,12 @@ public class Utils {
     }
 
     public static <T> List<List<T>> partition(List<T> list, int elementsPerPartition) {
-        return list.stream()
-                .collect(Collectors.groupingBy(e -> list.indexOf(e) / elementsPerPartition))
-                .values()
-                .stream()
-                .toList();
+        var partitions = new ArrayList<List<T>>();
+
+        for (int i = 0; i < list.size(); i += elementsPerPartition) {
+            partitions.add(list.subList(i, Math.min(i + elementsPerPartition, list.size())));
+        }
+
+        return partitions;
     }
 }

@@ -78,7 +78,7 @@ public class IslandView extends BaseView {
                 .fgBlack()
                 .bg(Palette.ISLAND_BACKGROUND)
                 .bold()
-                .a(String.format("I%d ", index))); //4 characters
+                .a(String.format("I%d ", index)));
 
         //1 character
         if(motherNature)
@@ -91,12 +91,22 @@ public class IslandView extends BaseView {
                     .bg(Palette.ISLAND_BACKGROUND)
                     .a(DrawingCharacters.EMPTY));
 
-        //move to last char of the first line
-        cursor.moveRelative(ISLAND_WIDTH - 7 , 0);
-        if(island.noEntry())
-            cursor.print(DrawingCharacters.NO_ENTRY);
-
         cursor.restoreCursorPosition();
+
+        cursor.saveCursorPosition();
+        cursor.moveRelative(1, 1);
+
+        //move to last 2 chars of the first line
+        cursor.moveRelative(ISLAND_WIDTH - 4 , 0);
+        if(island.noEntry()) {
+            cursor.print(ansi()
+                    .bg(Palette.ISLAND_BACKGROUND)
+                    .a(DrawingCharacters.NO_ENTRY)
+            );
+            cursor.moveRelative(-ISLAND_WIDTH + 1, -1);
+        } else {
+            cursor.restoreCursorPosition();
+        }
     }
 
     private void drawBorders() {
