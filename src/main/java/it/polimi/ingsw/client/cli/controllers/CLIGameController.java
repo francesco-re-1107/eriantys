@@ -3,6 +3,7 @@ package it.polimi.ingsw.client.cli.controllers;
 import it.polimi.ingsw.client.Client;
 import it.polimi.ingsw.client.ScreenController;
 import it.polimi.ingsw.client.cli.Cursor;
+import it.polimi.ingsw.client.cli.views.CloudsLayoutView;
 import it.polimi.ingsw.client.cli.views.DashoardView;
 import it.polimi.ingsw.client.cli.views.IslandsLayoutView;
 import it.polimi.ingsw.client.cli.views.TitleView;
@@ -33,6 +34,8 @@ public class CLIGameController implements ScreenController, Client.GameUpdateLis
             case STARTED -> {
                 new IslandsLayoutView(game.islands(), game.motherNaturePosition()).draw();
                 new DashoardView(game).draw();
+                new CloudsLayoutView(game.currentRound().clouds()).draw();
+                Cursor.getInstance().moveToXY(1, 22);
             }
             case PAUSED -> new TitleView(TitleView.Title.PAUSED,
                     "Giocatori offline: " + game.getOfflinePlayersList())

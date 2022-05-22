@@ -255,12 +255,19 @@ public class Cursor {
         moveRelative(-x, -y);
     }
 
-    public void paintBackground(int color, int xMin, int yMin, int xMax, int yMax) {
-        for (int i = yMin; i <= yMax; i++) {
+    public void paintBackground(int color, int width, int height) {
+        for (int i = 0; i < height; i++) {
             print(ansi()
                     .bg(color)
-                    .a(DrawingCharacters.EMPTY.repeat(xMax - xMin + 1))
-                    .reset(), xMin, i);
+                    .a(DrawingCharacters.EMPTY.repeat(width))
+                    .reset()
+            );
+            moveRelative(-width, 1);
         }
+    }
+
+    public void paintBackground(int color, int xMin, int yMin, int xMax, int yMax) {
+        moveToXY(xMin, yMin);
+        paintBackground(color, xMax-xMin+1, yMax-yMin+1);
     }
 }
