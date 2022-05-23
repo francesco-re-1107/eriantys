@@ -57,6 +57,11 @@ public class Client implements CommunicatorListener {
     private String nickname;
 
     /**
+     * Whether the client is in a game or not
+     */
+    private boolean inGame;
+
+    /**
      * Instantiates a new CLI Client.
      */
     private Client() {
@@ -114,13 +119,16 @@ public class Client implements CommunicatorListener {
                     .forEach(l -> l.onGameUpdate(gu.getGame()));
 
             //if there was a game played, go to the game screen
-            var currScreen = navigationManager.getCurrentScreen();
-            if (currScreen == Screen.SERVER_CONNECTION_MENU || currScreen == Screen.MAIN_MENU) {
-                var currState = lastGameUpdate.currentState();
-                if (currState == Game.State.STARTED || currState == Game.State.PAUSED) {
+            var currState = lastGameUpdate.currentState();
+            if (currState == Game.State.STARTED || currState == Game.State.PAUSED) {
+                inGame = true;
+                var currScreen = navigationManager.getCurrentScreen();
+                if (currScreen == Screen.SERVER_CONNECTION_MENU || currScreen == Screen.MAIN_MENU) {
                     navigationManager.clearBackStack();
                     navigationManager.navigateTo(Screen.GAME, false);
                 }
+            } else {
+                inGame = false;
             }
         }
 
@@ -178,14 +186,16 @@ public class Client implements CommunicatorListener {
      */
     public void registerNickname(String nickname, Consumer<Throwable> errorListener) {
         final var newNickname = nickname.isBlank() ? Utils.generateRandomNickname() : nickname;
+        this.nickname = newNickname;
 
         communicator.send(new RegisterNicknameRequest(newNickname),
                 r -> {
                     if (r.isSuccessful()) {
-                        this.nickname = newNickname;
-                        navigationManager.navigateTo(Screen.MAIN_MENU);
-                    } else
+                        if (!inGame)
+                            navigationManager.navigateTo(Screen.MAIN_MENU);
+                    } else {
                         errorListener.accept(r.getThrowable());
+                    }
                 },
                 errorListener::accept
         );

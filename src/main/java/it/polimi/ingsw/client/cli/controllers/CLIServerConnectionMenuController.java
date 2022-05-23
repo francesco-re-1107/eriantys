@@ -70,7 +70,6 @@ public class CLIServerConnectionMenuController implements ScreenController {
     @Override
     public void onHide() {
         //nothing to do
-        System.out.println("CLIServerConnectionMenuController.onHide");
     }
 
 }

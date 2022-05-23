@@ -9,13 +9,19 @@ import static org.fusesource.jansi.Ansi.ansi;
 
 public class CommandInputView extends BaseView {
 
+    private final String message;
+
+    public CommandInputView(String message) {
+        this.message = message;
+    }
+
     private final Map<Command, CommandListener> listeners = new HashMap<>(); // keyword -> listener
 
     @Override
     public void draw() {
         cursor.clearRow(22);
         cursor.clearRow(23);
-        cursor.print("Scegli opzione [", 1, 22);
+        cursor.print(message + " [", 1, 22);
 
         var first = false;
         for (var c : listeners.keySet()) {

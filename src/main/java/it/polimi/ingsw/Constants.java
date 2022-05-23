@@ -145,7 +145,7 @@ public final class Constants {
             Map.entry(Character.FARMER, "Prendi il controllo dei professori anche se hai lo stesso numero di studenti di altri giocatori."),
             Map.entry(Character.KNIGHT, "Ricevi 2 punti addizionali nel calcolo dell'influenza."),
             Map.entry(Character.GRANDMA, "Puoi porre un divieto su un'isola a tua scelta."),
-            Map.entry(Character.POSTMAN, "Madre nature potrà spostarsi di 2 punti addizionali."),
+            Map.entry(Character.POSTMAN, "Madre natura potrà spostarsi di 2 punti addizionali."),
             Map.entry(Character.HERALD, "Puoi calcolare l'influenza su un'isola a tua scelta."),
             Map.entry(Character.MINSTREL, "Puoi scambiare 2 studenti della sala con 2 studenti dell'entrata."),
             Map.entry(Character.MUSHROOM_MAN, "Puoi selezionare un colore di uno studente, quest'ultimo non influirà nel calcolo dell'influenza.")

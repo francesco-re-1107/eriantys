@@ -26,15 +26,18 @@ public class AssistantCardsView extends CardsView {
                         .toList(),
 
                 card -> new Ansi()
-                        .a(String.format("[%d | ", card.turnPriority()))
+                        .a("Priorità turno: ")
+                        .a(card.turnPriority())
+                        .a(" | ")
+                        .a("Mosse madre natura:")
                         .fg(Palette.RAINBOW.get(card.motherNatureMaxMoves() - 1))
                         .a(card.motherNatureMaxMoves())
-                        .fg(Palette.WHITE)
-                        .a("]")
                         .reset(),
                 "Scegli la carta assistente",
                 "Inserisci il numero corrispondente",
-                "");
+                "Nessuna carta giocabile",
+                true,
+                2);
 
     }
 

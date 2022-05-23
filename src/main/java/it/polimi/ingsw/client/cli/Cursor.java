@@ -129,7 +129,7 @@ public class Cursor {
                 var buff = new byte[4096];
                 int n = System.in.read(buff);
                 var str = new String(buff, 0, n, StandardCharsets.UTF_8)
-                        .replaceAll("\n", "");
+                        .replace("\n", "");
 
                 threadsListeningUserInput.remove(Thread.currentThread());
 

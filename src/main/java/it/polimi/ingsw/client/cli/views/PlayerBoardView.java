@@ -31,9 +31,9 @@ public class PlayerBoardView extends BaseView {
         this.player = player;
         this.professors = professors;
         this.currentRound = currentRound;
-        this.myPlayer = player.nickname().equals(Client.getInstance().getNickname());
+        this.myPlayer = Client.getInstance().getNickname().equals(player.nickname());
         this.expertMode = expertMode;
-        this.isCurrentPlayer = player.nickname().equals(currentRound.currentPlayer());
+        this.isCurrentPlayer = currentRound.currentPlayer().equals(player.nickname());
     }
 
     @Override

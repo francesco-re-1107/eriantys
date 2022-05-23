@@ -29,6 +29,7 @@ public class CLIWaitingRoomController implements ScreenController, Client.GameUp
         else
             Cursor.getInstance().printCentered("In attesa di " + playersLeft + " giocatori...", 12);
 
+        Cursor.getInstance().moveToXY(1, Cursor.HEIGHT);
 
         //if the game is full, go to the game screen
         if(playersLeft == 0)

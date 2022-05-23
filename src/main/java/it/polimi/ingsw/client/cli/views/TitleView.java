@@ -1,5 +1,6 @@
 package it.polimi.ingsw.client.cli.views;
 
+import it.polimi.ingsw.client.cli.Cursor;
 import it.polimi.ingsw.client.cli.Palette;
 
 import static org.fusesource.jansi.Ansi.ansi;
@@ -39,6 +40,7 @@ public class TitleView extends BaseView {
 
         cursor.print(ansi().fg(color).a(titleString), 0, 0);
         cursor.printCentered(description, (int)titleString.lines().count() + 1);
+        cursor.moveToXY(1, Cursor.HEIGHT);
     }
 
     public enum Title{

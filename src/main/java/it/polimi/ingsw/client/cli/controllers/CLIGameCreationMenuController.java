@@ -53,6 +53,6 @@ public class CLIGameCreationMenuController implements ScreenController {
 
     @Override
     public void onHide() {
-
+        //nothing to do
     }
 }

@@ -40,7 +40,7 @@ public class CLIGameJoiningMenuController implements ScreenController {
                         .fgBrightYellow().a("SEMPLICE")
                         .reset();
             }
-        }, "Partite disponibili", "Seleziona una partita", "Nessuna partita disponibile");
+        }, "Partite disponibili", "Seleziona una partita", "Nessuna partita disponibile", true, 2);
 
         gamesListView.setListener((item, index) -> joinGame(item));
 

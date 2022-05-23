@@ -20,7 +20,7 @@ public class CLIMainMenuScreenController implements ScreenController {
                 "Connesso come " + Client.getInstance().getNickname());
         titleView.draw();
 
-        commandInputView = new CommandInputView();
+        commandInputView = new CommandInputView("Scegli opzione");
         commandInputView.addCommandListener(
                 "0",
                 "CREA PARTITA",
@@ -36,6 +36,6 @@ public class CLIMainMenuScreenController implements ScreenController {
 
     @Override
     public void onHide() {
-        System.out.println("CLIMainMenuScreenController.onHide()");
+        //nothing to do
     }
 }
