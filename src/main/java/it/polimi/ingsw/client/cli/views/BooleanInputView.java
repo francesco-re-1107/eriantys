@@ -4,13 +4,13 @@ import java.util.function.Consumer;
 
 import static org.fusesource.jansi.Ansi.ansi;
 
-public class SimpleInputView extends BaseView {
+public class BooleanInputView extends BaseView{
 
-    protected String message;
+    private Consumer<Boolean> listener;
 
-    protected Consumer<String> listener;
+    private String message;
 
-    public SimpleInputView(String message) {
+    public BooleanInputView(String message) {
         this.message = message;
     }
 
@@ -24,7 +24,15 @@ public class SimpleInputView extends BaseView {
 
         new Thread(() -> {
             try {
-                listener.accept(cursor.input());
+                var input = cursor.input().trim().toLowerCase();
+
+                if (input.equals("s")) {
+                    listener.accept(true);
+                } else if (input.equals("n")) {
+                    listener.accept(false);
+                } else {
+                    showError("Formato non valido");
+                }
             } catch (Exception e) {}
         }).start();
     }
@@ -40,7 +48,7 @@ public class SimpleInputView extends BaseView {
         }).start();
     }
 
-    public void setListener(Consumer<String> listener) {
+    public void setListener(Consumer<Boolean> listener) {
         this.listener = listener;
     }
 }

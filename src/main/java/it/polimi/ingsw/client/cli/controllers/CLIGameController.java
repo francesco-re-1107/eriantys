@@ -1,5 +1,6 @@
 package it.polimi.ingsw.client.cli.controllers;
 
+import it.polimi.ingsw.Constants;
 import it.polimi.ingsw.client.Client;
 import it.polimi.ingsw.client.InfoString;
 import it.polimi.ingsw.client.ScreenController;
@@ -9,10 +10,14 @@ import it.polimi.ingsw.common.reducedmodel.ReducedGame;
 import it.polimi.ingsw.common.requests.MoveMotherNatureRequest;
 import it.polimi.ingsw.common.requests.PlaceStudentsRequest;
 import it.polimi.ingsw.common.requests.SelectCloudRequest;
+import it.polimi.ingsw.server.model.Character;
 import it.polimi.ingsw.server.model.RandomizedStudentsContainer;
 import it.polimi.ingsw.server.model.Stage;
 
 import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 public class CLIGameController implements ScreenController, Client.GameUpdateListener {
     private String myNickname;
@@ -73,36 +78,71 @@ public class CLIGameController implements ScreenController, Client.GameUpdateLis
 
     private void processMyTurn(ReducedGame game) {
         var stage = game.currentRound().stage();
+
         if (stage == Stage.Plan.PLAN) {
             new AssistantCardsView(game.getMyPlayer(myNickname).deck(), null)
                     .draw();
         } else {
             switch ((Stage.Attack) stage) {
                 case STARTED -> processPlaceStudents(game);
-                case STUDENTS_PLACED -> processMoveMotherNature(game); //TODO: check if user wants to play a character card
+                case STUDENTS_PLACED -> {
+                    var playableCards =
+                            game.getOrderedCharacterCards().stream()
+                                    .filter(e -> game.getMyPlayer(myNickname).coins() >= e.getKey().getCost(e.getValue()))
+                                    .toList();
+
+                    if(playableCards.isEmpty())
+                        processMoveMotherNature(game);
+                    else
+                        askForPlayingCharacterCard(game, playableCards);
+                }
                 case CARD_PLAYED -> processMoveMotherNature(game);
                 case MOTHER_NATURE_MOVED -> processSelectCloud(game);
             }
         }
     }
 
-    private void processMoveMotherNature(ReducedGame game) {
-        var input = new SimpleInputView("Di quanti passi vuoi far muovere madre natura (max " + game.calculateMaxMotherNatureSteps() + " passi)?");
-        input.setListener(pos -> {
-            try {
-                var choice = Integer.parseInt(pos);
-                if(choice <= 0 || choice > game.calculateMaxMotherNatureSteps()) {
-                    input.showError("Isola non valida");
-                    return;
-                }
-                Client.getInstance().forwardGameRequest(
-                        new MoveMotherNatureRequest(choice),
-                        e -> input.showError(e.getMessage())
-                );
-            } catch (NumberFormatException e) {
-                input.showError("Formato non valido");
-            }
+    private void askForPlayingCharacterCard(ReducedGame game, List<Map.Entry<Character, Integer>> playableCards) {
+        var simpleList = playableCards.stream()
+                .map(Map.Entry::getKey)
+                .map(Constants.CHARACTER_NAMES::get)
+                .collect(Collectors.joining(", "));
+
+        var input = new BooleanInputView("Vuoi giocare un personaggio? [s/n] (" + simpleList + ")");
+        input.setListener(r -> {
+            if (Boolean.TRUE.equals(r))
+                processPlayCharacterCard(game, playableCards);
+            else
+                processMoveMotherNature(game);
         });
+        input.draw();
+    }
+
+    /**
+     * Ask user what character card to play
+     */
+    private void processPlayCharacterCard(ReducedGame game, List<Map.Entry<Character, Integer>> playableCards) {
+        var characterCardsView = new CharacterCardsView(playableCards);
+        //characterCardsView.setListener(r -> {});
+        characterCardsView.draw();
+    }
+
+    /**
+     * Ask user where to vove mother nature
+     * @param game
+     */
+    private void processMoveMotherNature(ReducedGame game) {
+        var maxSteps = game.calculateMaxMotherNatureSteps();
+        var input = new IntegerInputView(
+                "Di quanti passi vuoi far muovere madre natura (max " + maxSteps + " passi)?",
+                0,
+                maxSteps
+        );
+
+        input.setListener(pos -> Client.getInstance().forwardGameRequest(
+                new MoveMotherNatureRequest(pos),
+                e -> input.showError(e.getMessage())
+        ));
         input.draw();
     }
 
@@ -122,22 +162,11 @@ public class CLIGameController implements ScreenController, Client.GameUpdateLis
     }
 
     private void processSelectCloud(ReducedGame game) {
-        var input = new SimpleInputView("Seleziona una nuvola");
-        input.setListener(cloud -> {
-            try {
-                var choice = Integer.parseInt(cloud);
-                if(choice < 0 || choice >= game.currentRound().clouds().size()) {
-                    input.showError("Nuvola non valida");
-                    return;
-                }
-                Client.getInstance().forwardGameRequest(
-                        new SelectCloudRequest(game.currentRound().clouds().get(choice)),
-                        e -> input.showError(e.getMessage())
-                );
-            } catch (NumberFormatException e) {
-                input.showError("Formato non valido");
-            }
-        });
+        var input = new IntegerInputView("Seleziona una nuvola", 0, game.currentRound().clouds().size() - 1);
+        input.setListener(cloud -> Client.getInstance().forwardGameRequest(
+                new SelectCloudRequest(game.currentRound().clouds().get(cloud)),
+                e -> input.showError(e.getMessage())
+        ));
         input.draw();
     }
 }

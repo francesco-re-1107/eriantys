@@ -1,19 +1,25 @@
 package it.polimi.ingsw.client.cli;
 
+import it.polimi.ingsw.Constants;
 import org.fusesource.jansi.Ansi;
 import org.fusesource.jansi.AnsiConsole;
 
-import java.util.Scanner;
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.util.HashSet;
+import java.util.Set;
 
 import static org.fusesource.jansi.Ansi.ansi;
 
 public class Cursor {
-    public static Cursor instance = null;
+    private static Cursor instance = null;
 
     public static final int WIDTH = 80;
     public static final int HEIGHT = 24;
     private int relativeX = 0;
     private int relativeY = 0;
+
+    private Set<Thread> threadsListeningUserInput = new HashSet<>();
 
     public static Cursor getInstance() {
         if (instance == null) {
@@ -36,49 +42,7 @@ public class Cursor {
             clearRow(i);
     }
 
-    // unused
-    /*public void drawEdges() {
-        moveToXY(0, 1);
-        System.out.print('╔');
-        System.out.print("═".repeat(WIDTH - 2));
-        System.out.print('╗');
-        for (int i = 2; i < HEIGHT - 1; i++) {
-            moveToXY(i, 1);
-            System.out.print("║");
-            moveToXY(i, WIDTH);
-            System.out.print("║");
-        }
-        moveToXY(1, HEIGHT - 1);
-        System.out.print('╚');
-    }
-
-
-    // draws a list of islands
-    public void drawIslands(Collection<ReducedIsland> islandList) {
-        int incremental_y = 2;
-        int count = islandList.size(); // TODO: rearrange island based on count
-        var iterator = islandList.iterator();
-
-        ReducedIsland island = iterator.next();
-        for (int i = 0; i < 5; i++) {
-            drawIsland(BOARD_DELIMITER + ((ISLAND_WIDTH + 1) * i), incremental_y, island, String.valueOf(i));
-            island = iterator.next();
-        }
-        incremental_y += ISLAND_HEIGHT + 1;
-
-        drawIsland(BOARD_DELIMITER + 4 * (ISLAND_WIDTH + 1), incremental_y, island, String.valueOf(5));
-        island = iterator.next();
-
-        // TODO: fix
-        incremental_y += ISLAND_HEIGHT + 1;
-        for (int i = 6; i < count - 1; i++) {
-            drawIsland(BOARD_DELIMITER + ((ISLAND_WIDTH + 1) * (count - 2 - i)), incremental_y, island, String.valueOf(i));
-            island = iterator.next();
-        }
-        incremental_y -= ISLAND_HEIGHT + 1;
-        drawIsland(BOARD_DELIMITER, incremental_y, island, String.valueOf(11));
-    }
-
+    /*
     private void drawWithBg(String content) {
         System.out.print(ansi().bg(Palette.ISLAND_BACKGROUND).a(content).reset());
     }
@@ -91,52 +55,6 @@ public class Cursor {
         print(ansi().fg(color).a(s).reset());
     }
 
-    public void drawBoard(List<ReducedPlayer> players, ReducedRound round, ReducedGame game){
-        //ReducedRound round = game.currentRound();
-        int incremental_y = 2;
-        for (var p : players) {  
-            //name
-            moveToXY(LEFT_MARGIN, incremental_y);
-            printBold(p.nickname());
-            if (round.currentPlayer().equals(p.nickname())) {
-                moveToXY(LEFT_MARGIN - 2, incremental_y);
-                printBold("➤");
-            }
-            //board
-            incremental_y++;
-            for (Student color : Student.values()) {
-                if (game.currentProfessors().containsKey(color)){
-                    if (game.currentProfessors().get(color).equals(p.nickname())) {
-                        moveToXY(LEFT_MARGIN - 1, incremental_y);
-                        System.out.print(ansi().fg(STUDENT_COLOR_MAP.get(color)).a("⬣").reset());  
-                    }
-                }
-                moveToXY(LEFT_MARGIN, incremental_y);
-                System.out.print(ansi().fg(STUDENT_COLOR_MAP.get(color)).a("●").reset());
-                System.out.print("%d(%d)".formatted(
-                    p.school().getCountForStudent(color),
-                    p.entrance().getCountForStudent(color)));
-                incremental_y++;
-            }
-            //current card
-            moveToXY(LEFT_MARGIN + 8, incremental_y - 5);
-            System.out.print("<%d|%d>".formatted(5,3)); //TODO
-            //towers
-            moveToXY(LEFT_MARGIN + 8, incremental_y - 3);
-            System.out.print(ansi()
-                .bg(getTowerAnsiColor(p.towerColor()))
-                .fg(Palette.TOWER_CONTRAST_BACKGROUND)
-                .a("♜").reset().a("%d/%d".formatted(5,3))); //TODO
-            //coins
-            if (game.expertMode()) {  
-                moveToXY(LEFT_MARGIN + 8, incremental_y - 1);
-                System.out.print("$%d".formatted(2)); //TODO
-            }
-
-            incremental_y++;
-        }
-
-    }
 
     private int getTowerAnsiColor(Tower color) {
         return switch (color) {
@@ -189,11 +107,40 @@ public class Cursor {
         AnsiConsole.systemUninstall();
     }
 
-    public String input() {
-        return new Scanner(System.in).nextLine();
+    /**
+     * This method listen for user input.
+     * Only one thread can listen at a time. If a thread is already listening, it will be interrupted.
+     *
+     * @return the string entered by the user
+     * @throws InterruptedException
+     * @throws IOException
+     */
+    public String input() throws InterruptedException, IOException {
+        //stops all threads listening to input
+        threadsListeningUserInput.forEach(Thread::interrupt);
+
+        //clear system in before reading
+        System.in.read(new byte[System.in.available()]);
+
+        threadsListeningUserInput.add(Thread.currentThread());
+        while(true){
+            if(System.in.available() > 0)
+            {
+                var buff = new byte[4096];
+                int n = System.in.read(buff);
+                var str = new String(buff, 0, n, StandardCharsets.UTF_8)
+                        .replaceAll("\n", "");
+
+                threadsListeningUserInput.remove(Thread.currentThread());
+
+                return str;
+            } else {
+                Thread.sleep(Constants.CLI_READ_POLLING_INTERVAL);
+            }
+        }
     }
 
-    public String input(int x, int y) {
+    public String input(int x, int y) throws InterruptedException, IOException {
         moveToXY(x, y);
         return input();
     }

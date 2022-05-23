@@ -1,5 +1,6 @@
 package it.polimi.ingsw.client.gui;
 
+import it.polimi.ingsw.Constants;
 import it.polimi.ingsw.server.model.Character;
 import javafx.geometry.Pos;
 import javafx.scene.control.ContextMenu;
@@ -9,48 +10,15 @@ import javafx.scene.image.ImageView;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 
-import java.util.EnumMap;
-import java.util.Map;
-
 public class CharacterCardInformationPopup extends ContextMenu {
-
-    private static final Map<Character, String> characterNames = new EnumMap<>(Character.class);
-
-    private static final Map<Character, String> characterDescriptions = new EnumMap<>(Character.class);
-
-    static {
-        characterNames.put(Character.CENTAUR, "Centauro");
-        characterDescriptions.put(Character.CENTAUR, "Le torri non vengono considerate nel calcolo dell'influenza.");
-
-        characterNames.put(Character.FARMER, "Contadino");
-        characterDescriptions.put(Character.FARMER, "Prendi il controllo dei professori anche se hai lo stesso numero di studenti di altri giocatori.");
-
-        characterNames.put(Character.KNIGHT, "Cavaliere");
-        characterDescriptions.put(Character.KNIGHT, "Ricevi 2 punti addizionali nel calcolo dell'influenza.");
-
-        characterNames.put(Character.GRANDMA, "Nonna");
-        characterDescriptions.put(Character.GRANDMA, "Puoi porre un divieto su un'isola a tua scelta.");
-
-        characterNames.put(Character.POSTMAN, "Postino");
-        characterDescriptions.put(Character.POSTMAN, "Madre nature potrà spostarsi di 2 punti addizionali.");
-
-        characterNames.put(Character.HERALD, "Araldo");
-        characterDescriptions.put(Character.HERALD, "Puoi calcolare l'influenza su un'isola a tua scelta.");
-
-        characterNames.put(Character.MINSTREL, "Menestrello");
-        characterDescriptions.put(Character.MINSTREL, "Puoi scambiare 2 studenti della sala con 2 studenti dell'entrata.");
-
-        characterNames.put(Character.MUSHROOM_MAN, "Fungaro");
-        characterDescriptions.put(Character.MUSHROOM_MAN, "Puoi selezionare un colore di uno studente, quest'ultimo non influirà nel calcolo dell'influenza.");
-    }
 
     public CharacterCardInformationPopup(Character character, int usedTimes) {
         super();
 
-        var titleLabel = new Label(characterNames.get(character).toUpperCase());
+        var titleLabel = new Label(Constants.CHARACTER_NAMES.get(character).toUpperCase());
         titleLabel.setStyle("-fx-font-size: 24px;");
 
-        var descriptionLabel = new Label(characterDescriptions.get(character));
+        var descriptionLabel = new Label(Constants.CHARACTER_DESCRIPTIONS.get(character));
         descriptionLabel.setWrapText(true);
         descriptionLabel.setMaxWidth(450);
         descriptionLabel.setStyle("-fx-font-size: 18px;");

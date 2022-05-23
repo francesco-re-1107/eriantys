@@ -1,6 +1,9 @@
 package it.polimi.ingsw;
 
+import it.polimi.ingsw.server.model.Character;
+
 import java.util.List;
+import java.util.Map;
 
 /**
  * This class holds all the constants across the project
@@ -126,10 +129,40 @@ public final class Constants {
             "Zebra"
     );
 
+    public static final Map<Character, String> CHARACTER_NAMES = Map.ofEntries(
+            Map.entry(Character.CENTAUR, "Centauro"),
+            Map.entry(Character.FARMER, "Contadino"),
+            Map.entry(Character.KNIGHT, "Cavaliere"),
+            Map.entry(Character.GRANDMA, "Nonna"),
+            Map.entry(Character.POSTMAN, "Postino"),
+            Map.entry(Character.HERALD, "Araldo"),
+            Map.entry(Character.MINSTREL, "Menestrello"),
+            Map.entry(Character.MUSHROOM_MAN, "Fungaro")
+    );
+
+    public static final Map<Character, String> CHARACTER_DESCRIPTIONS = Map.ofEntries(
+            Map.entry(Character.CENTAUR, "Le torri non vengono considerate nel calcolo dell'influenza."),
+            Map.entry(Character.FARMER, "Prendi il controllo dei professori anche se hai lo stesso numero di studenti di altri giocatori."),
+            Map.entry(Character.KNIGHT, "Ricevi 2 punti addizionali nel calcolo dell'influenza."),
+            Map.entry(Character.GRANDMA, "Puoi porre un divieto su un'isola a tua scelta."),
+            Map.entry(Character.POSTMAN, "Madre nature potrà spostarsi di 2 punti addizionali."),
+            Map.entry(Character.HERALD, "Puoi calcolare l'influenza su un'isola a tua scelta."),
+            Map.entry(Character.MINSTREL, "Puoi scambiare 2 studenti della sala con 2 studenti dell'entrata."),
+            Map.entry(Character.MUSHROOM_MAN, "Puoi selezionare un colore di uno studente, quest'ultimo non influirà nel calcolo dell'influenza.")
+    );
+
     /**
      * Default folder used by the server to store backups
      */
     public static final String DEFAULT_BACKUP_FOLDER = "";
+
+    /**
+     * Polling interval used to check if there's something to read from input.
+     * DISCLAIMER: Reading from input with polling is the only way to be able to interrupt the reading process.
+     * e.g. if an update from the server is received (for example the game is gone into PAUSED state) while the user is
+     * writing to input, then the input could be interrupted.
+     */
+    public static final long CLI_READ_POLLING_INTERVAL = 100;
 
     /**
      * These constants are used in a game with 2 players (commented only once)

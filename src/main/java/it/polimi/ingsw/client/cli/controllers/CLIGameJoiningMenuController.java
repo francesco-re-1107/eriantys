@@ -49,9 +49,7 @@ public class CLIGameJoiningMenuController implements ScreenController {
     }
 
     private void joinGame(GameListItem item) {
-        Client.getInstance().joinGame(item.uuid(), e -> {
-            //showError("Impossibile unirsi al gioco");
-        });
+        Client.getInstance().joinGame(item.uuid(), e -> gamesListView.showError("Impossibile unirsi alla partita"));
     }
 
     /**

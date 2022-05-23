@@ -107,10 +107,25 @@ public record ReducedGame(
                 .toList();
     }
 
+    /**
+     * Calculate the number of steps that mother nature can move in the current round for the current player
+     * @return steps
+     */
     public int calculateMaxMotherNatureSteps() {
         var card = currentRound.playedAssistantCards().get(currentRound.currentPlayer());
 
         return card.motherNatureMaxMoves() +
                 currentRound().additionalMotherNatureMoves();
+    }
+
+    /**
+     * Order character cards by their initial cost
+     * @return ordered character cards
+     */
+    public List<Map.Entry<Character, Integer>> getOrderedCharacterCards() {
+        return characterCards().entrySet()
+                .stream()
+                .sorted(Comparator.comparingInt(e -> e.getKey().getCost()))
+                .toList();
     }
 }

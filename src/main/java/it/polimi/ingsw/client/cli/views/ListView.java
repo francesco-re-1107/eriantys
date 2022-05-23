@@ -14,9 +14,10 @@ public class ListView<T> extends BaseView{
 
     private List<T> listItems;
     private BiConsumer<T, Integer> listener;
-    private SimpleInputView inputView;
+    private IntegerInputView inputView;
     private String title;
-    private String listEmpty;    
+    private final String prompt;
+    private String listEmpty;
     private final Function<T, Ansi> customRenderer;
 
     public ListView(Function<T, Ansi> customRenderer) {
@@ -26,16 +27,18 @@ public class ListView<T> extends BaseView{
     public ListView(List<T> listItems, Function<T, Ansi> customRenderer, String title, String prompt, String listEmpty){
         super();
         this.title = title;
+        this.prompt = prompt;
         this.listEmpty = listEmpty;
         this.listItems = listItems;
-        this.inputView = new SimpleInputView(prompt);
         this.customRenderer = customRenderer;
+        this.inputView = new IntegerInputView(prompt, 1, listItems.size());
     }
 
     @Override
     public void draw() {
         cursor.clearScreen();
         cursor.printCentered(title, 1);
+
         if(listItems.isEmpty()){
             cursor.printCentered(listEmpty, 10);
             cursor.moveToXY(1, 23);
@@ -43,18 +46,10 @@ public class ListView<T> extends BaseView{
             this.inputView.setListener(input -> {
                 if(listener == null) return;
 
-                try {
-                    int index = Integer.parseInt(input) - 1;
-
-                    if (!(index >= 0 && index <= listItems.size()))
-                        inputView.showError("Selezione non valida");
-
-                    listener.accept(listItems.get(index), index);
-                } catch (NumberFormatException e) {
-                    inputView.showError("Selezione non valida");
-                }
+                listener.accept(listItems.get(input - 1), input - 1);
             });
 
+            //print elements
             for (int i = 0; i < Math.min(listItems.size(), 10); i++) {
                 cursor.printCentered(ansi()
                                 .a("[")
@@ -75,6 +70,8 @@ public class ListView<T> extends BaseView{
 
     public void setListItems(List<T> listItems) {
         this.listItems = listItems;
+
+        this.inputView = new IntegerInputView(prompt, 1, listItems.size());
         draw();
     }
 

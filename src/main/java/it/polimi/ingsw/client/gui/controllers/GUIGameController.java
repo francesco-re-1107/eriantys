@@ -20,7 +20,6 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -251,11 +250,7 @@ public class GUIGameController implements ScreenController, Client.GameUpdateLis
      */
     private void setCharacterCards() {
         int i = 0;
-        var orderedCharacterCards =
-                currentGame.characterCards().entrySet()
-                        .stream()
-                        .sorted(Comparator.comparingInt(e -> e.getKey().getCost()))
-                        .toList();
+        var orderedCharacterCards = currentGame.getOrderedCharacterCards();
 
         for(var e : orderedCharacterCards) {
             var ccv = (CharacterCardView) characterCards.getChildren().get(i);
@@ -373,10 +368,6 @@ public class GUIGameController implements ScreenController, Client.GameUpdateLis
      */
     private void processMyTurn() {
         if (currentGame.currentRound().stage() instanceof Stage.Attack s) { //attack
-            var cardPlayed = currentGame.currentRound()
-                    .playedAssistantCards()
-                    .get(myPlayer.nickname());
-
             var maxMotherNatureSteps = currentGame.calculateMaxMotherNatureSteps();
 
             switch (s) {

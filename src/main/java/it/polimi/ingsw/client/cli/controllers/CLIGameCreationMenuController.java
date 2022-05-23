@@ -3,14 +3,15 @@ package it.polimi.ingsw.client.cli.controllers;
 import it.polimi.ingsw.client.Client;
 import it.polimi.ingsw.client.ScreenController;
 import it.polimi.ingsw.client.cli.Cursor;
-import it.polimi.ingsw.client.cli.views.SimpleInputView;
+import it.polimi.ingsw.client.cli.views.BooleanInputView;
+import it.polimi.ingsw.client.cli.views.IntegerInputView;
 import it.polimi.ingsw.client.cli.views.TitleView;
 
 public class CLIGameCreationMenuController implements ScreenController {
 
-    private SimpleInputView numberOfPlayersView;
+    private IntegerInputView numberOfPlayersView;
 
-    private SimpleInputView expertModeView;
+    private BooleanInputView expertModeView;
 
     private int numberOfPlayers;
 
@@ -23,32 +24,15 @@ public class CLIGameCreationMenuController implements ScreenController {
         new TitleView(TitleView.Title.ERIANTYS, "Connesso come " + Client.getInstance().getNickname())
                 .draw();
 
-        numberOfPlayersView = new SimpleInputView("Inserisci numero di giocatori (2-3): ");
+        numberOfPlayersView = new IntegerInputView("Inserisci numero di giocatori [2-3]: ", 2, 3);
         numberOfPlayersView.setListener(n -> {
-            try {
-                int numberOfPlayers = Integer.parseInt(n);
-                if (numberOfPlayers < 2 || numberOfPlayers > 3) {
-                    numberOfPlayersView.showError("Numero di giocatori non valido");
-                } else {
-                    this.numberOfPlayers = numberOfPlayers;
-                    askForExpertMode();
-                }
-            } catch (NumberFormatException e) {
-                numberOfPlayersView.showError("Formato non valido");
-            }
+            numberOfPlayers = n;
+            askForExpertMode();
         });
-        expertModeView = new SimpleInputView("Inserisci modalità esperti (s/n): ");
-        expertModeView.setListener(e -> {
-            var improved = e.trim().toLowerCase();
-            if (improved.equals("s")) {
-                expertMode = true;
-            } else if (improved.equals("n")) {
-                expertMode = false;
-            } else {
-                expertModeView.showError("Formato non valido");
-                return;
-            }
 
+        expertModeView = new BooleanInputView("Inserisci modalità esperti [s/n]: ");
+        expertModeView.setListener(e -> {
+            expertMode = e;
             sendCreationRequest();
         });
         numberOfPlayersView.draw();
