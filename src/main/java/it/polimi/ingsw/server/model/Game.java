@@ -518,6 +518,8 @@ public class Game implements Serializable {
 
         //adjust motherNatureIndex
         this.motherNaturePosition = islands.indexOf(curr);
+
+        notifyUpdate();
     }
 
     /**
@@ -763,10 +765,14 @@ public class Game implements Serializable {
     public synchronized void setPlayerDisconnected(Player player){
         checkIfValidPlayer(player);
 
-        player.setConnected(false);
+        if(gameState == State.CREATED) {
+            players.remove(player);
+        } else {
+            player.setConnected(false);
 
-        //pause game
-        this.gameState = State.PAUSED;
+            //pause game
+            this.gameState = State.PAUSED;
+        }
 
         notifyUpdate();
     }
