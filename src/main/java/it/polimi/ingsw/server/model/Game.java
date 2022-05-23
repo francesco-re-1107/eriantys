@@ -123,7 +123,7 @@ public class Game implements Serializable {
 
         CharacterCard.generateRandomDeck(Constants.NUMBER_OF_CHARACTER_CARD)
                 .forEach(s -> characterCards.put(s, 0));
-        logger.log(Level.FINER, "Character cards -> {0}", characterCards.keySet());
+        logger.log(Level.INFO, "Character cards -> " + characterCards.keySet());
 
         initializeIslands();
     }
@@ -190,8 +190,13 @@ public class Game implements Serializable {
      */
     private void newRound() {
         logger.info("round started");
+
         //if the bag is empty the game is finished
-        if (studentsBag.getSize() <= 0) {
+        var requiredStudents = numberOfPlayers == 2 ?
+                Constants.TwoPlayers.STUDENTS_PER_CLOUD * 2 :
+                Constants.ThreePlayers.STUDENTS_PER_CLOUD * 3;
+
+        if (studentsBag.getSize() < requiredStudents) {
             logger.info("StudentsBag is empty, game finished");
             setGameFinished(calculateCurrentWinner());
             return;
@@ -207,12 +212,14 @@ public class Game implements Serializable {
 
         //generate clouds
         List<StudentsContainer> clouds = new ArrayList<>();
-        for (int i = 0; i < numberOfPlayers; i++)
+        for (int i = 0; i < numberOfPlayers; i++) {
+
             clouds.add(studentsBag.pickManyRandom(
                     numberOfPlayers == 2 ?
                             Constants.TwoPlayers.STUDENTS_PER_CLOUD :
                             Constants.ThreePlayers.STUDENTS_PER_CLOUD)
             );
+        }
 
         logger.log(Level.FINE, "generated clouds: {0}", clouds);
         List<Player> tmpPlayers;

@@ -1,5 +1,6 @@
 package it.polimi.ingsw.server.model;
 
+import it.polimi.ingsw.Constants;
 import it.polimi.ingsw.Utils;
 import it.polimi.ingsw.common.exceptions.InvalidOperationException;
 import it.polimi.ingsw.server.model.charactercards.*;
@@ -351,7 +352,9 @@ class GameTest {
         }
 
         //students bag finished
-        var end1 = g.getStudentsBag().getSize() <= 0;
+        var end1 = g.getStudentsBag().getSize() < (g.getNumberOfPlayers() == 2 ?
+                Constants.TwoPlayers.STUDENTS_PER_CLOUD * 2 :
+                Constants.ThreePlayers.STUDENTS_PER_CLOUD * 3);
         //less than 4 islands
         var end2 = g.getIslands().size() <= 3;
         //cards finished

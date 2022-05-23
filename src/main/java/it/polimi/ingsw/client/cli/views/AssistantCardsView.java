@@ -29,7 +29,7 @@ public class AssistantCardsView extends CardsView {
                         .a("Priorità turno: ")
                         .a(card.turnPriority())
                         .a(" | ")
-                        .a("Mosse madre natura:")
+                        .a("Mosse madre natura: ")
                         .fg(Palette.RAINBOW.get(card.motherNatureMaxMoves() - 1))
                         .a(card.motherNatureMaxMoves())
                         .reset(),

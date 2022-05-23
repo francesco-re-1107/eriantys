@@ -9,6 +9,7 @@ import it.polimi.ingsw.client.cli.views.ListView;
 import it.polimi.ingsw.common.reducedmodel.GameListItem;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -19,12 +20,14 @@ public class CLIGameJoiningMenuController implements ScreenController {
     private ListView<GameListItem> gamesListView;
 
     private Timer refreshTimer;
+    private List<GameListItem> currentGamesList;
 
     @Override
     public void onShow() {
         Cursor.getInstance().clearScreen();
 
-        gamesListView = new ListView<>(new ArrayList<>(), item -> {
+        currentGamesList = new ArrayList<>();
+        gamesListView = new ListView<>(currentGamesList, item -> {
             if(item.expertMode()){
                 return ansi()
                         .a("GIOCATORI: ")
@@ -43,6 +46,7 @@ public class CLIGameJoiningMenuController implements ScreenController {
         }, "Partite disponibili", "Seleziona una partita", "Nessuna partita disponibile", true, 2);
 
         gamesListView.setListener((item, index) -> joinGame(item));
+        gamesListView.draw();
 
         //start list refresh when the screen is displayed
         startRefreshTimer();
@@ -62,11 +66,18 @@ public class CLIGameJoiningMenuController implements ScreenController {
             @Override
             public void run() {
                 Client.getInstance().getGameList(
-                        list -> gamesListView.setListItems(list),
+                        CLIGameJoiningMenuController.this::updateGamesList,
                         e -> Utils.LOGGER.info(e.getMessage())
                 );
             }
         }, 0, Constants.GAMES_LIST_REFRESH_INTERVAL);
+    }
+
+    private void updateGamesList(List<GameListItem> list) {
+        if(Utils.isSameList(list, currentGamesList)) return;
+
+        currentGamesList = list;
+        gamesListView.setListItems(list);
     }
 
     /**

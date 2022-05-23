@@ -181,7 +181,7 @@ public class CLIGameController implements ScreenController, Client.GameUpdateLis
                 CommandInputView.CommandListener listener = (cmd, args) -> {
                     var stud = Student.YELLOW;
                     for(var s : Student.values())
-                        if(s.name().startsWith(cmd))
+                        if(s.name().toLowerCase().startsWith(cmd))
                             stud = s;
                     client.forwardGameRequest(new PlayCharacterCardRequest(new ReducedMushroomManCharacterCard(stud)));
                 };
@@ -210,7 +210,7 @@ public class CLIGameController implements ScreenController, Client.GameUpdateLis
         var maxSteps = game.calculateMaxMotherNatureSteps();
         var input = new IntegerInputView(
                 "Di quanti passi vuoi far muovere madre natura (max " + maxSteps + " passi)?",
-                0,
+                1,
                 maxSteps
         );
 
@@ -296,7 +296,9 @@ public class CLIGameController implements ScreenController, Client.GameUpdateLis
 
         /*client.forwardGameRequest(
                 new PlaceStudentsRequest(
-                        new RandomizedStudentsContainer(game.getMyPlayer(client.getNickname()).entrance()).pickManyRandom(3),
+                        new RandomizedStudentsContainer(game.getMyPlayer(client.getNickname()).entrance()).pickManyRandom(
+                                game.numberOfPlayers() == 2 ? 3 : 4
+                        ),
                         new HashMap<>()
                 ),
                 e -> {  }

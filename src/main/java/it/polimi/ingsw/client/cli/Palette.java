@@ -28,7 +28,7 @@ public class Palette {
 
     public static final int MOTHER_NATURE = 130;
 
-    public static final int ERIANTYS = 86;
+    public static final int ERIANTYS = 99;
 
     public static final int WHITE = 15;
 
