@@ -1,6 +1,7 @@
 package it.polimi.ingsw.client.cli.controllers;
 
 import it.polimi.ingsw.Constants;
+import it.polimi.ingsw.Utils;
 import it.polimi.ingsw.client.Client;
 import it.polimi.ingsw.client.InfoString;
 import it.polimi.ingsw.client.ScreenController;
@@ -24,6 +25,9 @@ import java.util.stream.Collectors;
 public class CLIGameController implements ScreenController, Client.GameUpdateListener {
     private Client client;
     private Cursor cursor;
+
+    private StudentsContainer studentsPlacedInSchool;
+    private Map<Integer, StudentsContainer> studentsPlacedInIslands;
 
     @Override
     public void onShow() {
@@ -217,19 +221,87 @@ public class CLIGameController implements ScreenController, Client.GameUpdateLis
         input.draw();
     }
 
+
+    /**
+     * Check if all students were placed in the placing students phase
+     */
+    private int checkIfAllStudentsPlaced(ReducedGame currentGame){
+        var count = 0;
+        count += studentsPlacedInSchool.getSize();
+        for(StudentsContainer sc : studentsPlacedInIslands.values())
+            count += sc.getSize();
+
+        var studentsToMove = currentGame.numberOfPlayers() == 2 ?
+                Constants.TwoPlayers.STUDENTS_TO_MOVE : Constants.ThreePlayers.STUDENTS_TO_MOVE;
+
+        if(count == studentsToMove) {
+            client
+                    .forwardGameRequest(
+                            new PlaceStudentsRequest(
+                                    studentsPlacedInSchool,
+                                    studentsPlacedInIslands
+                            ),
+                            err -> Utils.LOGGER.info("Error placing students: " + err)
+                    );
+        }
+
+        return count;
+    }
+
     private void processPlaceStudents(ReducedGame game) {
-        /*var placeStudents = new CommandInputView();
-        placeStudents.addCommandListener("sala", "Sala B (blu in sala)", ((command, args) -> {
+        studentsPlacedInSchool = new StudentsContainer();
+        studentsPlacedInIslands = new HashMap<>();
+        int studentsToMove = game.numberOfPlayers() == 2 ?
+                Constants.TwoPlayers.STUDENTS_TO_MOVE : Constants.ThreePlayers.STUDENTS_TO_MOVE;
+        var placeStudents = new CommandInputView("Muovi studenti (0/%d)".formatted(studentsToMove));
+        placeStudents.addCommandListener("sala", "Sala x B (sposta x studenti blu in sala)", ((command, args) -> {
+            if (args.size() != 2) {
+                placeStudents.showError("Inserisci 2 argomenti");
+                return;
+            }
+            int n = 0;
+            try { 
+                n = Integer.parseInt(args.get(0));
+            } catch (Exception e) {
+                placeStudents.showError("Inserisci un numero valido");
+                return;
+            }
+            String color = args.get(1).toLowerCase().strip();
+            switch (color) {
+                case "b":
+                    studentsPlacedInSchool.addStudents(Student.BLUE, n);
+                    break;
+                case "g":
+                    studentsPlacedInSchool.addStudents(Student.YELLOW, n);
+                    break;
+                case "v":
+                    studentsPlacedInSchool.addStudents(Student.GREEN, n);
+                    break;
+                case "p":
+                    studentsPlacedInSchool.addStudents(Student.PINK, n);
+                    break;
+                case "r":
+                    studentsPlacedInSchool.addStudents(Student.RED, n);
+                    break;
+                default:
+                    placeStudents.showError("Inserisci un colore valido");
+                    return;
+            }
 
-        }));*/
+            int remaining = checkIfAllStudentsPlaced(game);
+            placeStudents.setMessage("Muovi studenti (%d/%d)".formatted(remaining, studentsToMove));
+        }));
 
-        client.forwardGameRequest(
+        placeStudents.draw();
+
+        /*client.forwardGameRequest(
                 new PlaceStudentsRequest(
                         new RandomizedStudentsContainer(game.getMyPlayer(client.getNickname()).entrance()).pickManyRandom(3),
                         new HashMap<>()
                 ),
                 e -> {  }
         );
+        */
     }
 
     private void processSelectCloud(ReducedGame game) {

@@ -9,13 +9,18 @@ import static org.fusesource.jansi.Ansi.ansi;
 
 public class CommandInputView extends BaseView {
 
-    private final String message;
+    private String message;
 
     public CommandInputView(String message) {
         this.message = message;
     }
 
     private final Map<Command, CommandListener> listeners = new HashMap<>(); // keyword -> listener
+
+    public void setMessage(String message){
+        this.message = message;
+        draw();
+    }
 
     @Override
     public void draw() {
