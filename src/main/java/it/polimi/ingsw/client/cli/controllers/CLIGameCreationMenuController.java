@@ -43,7 +43,7 @@ public class CLIGameCreationMenuController implements ScreenController {
             if (improved.equals("s")) {
                 expertMode = true;
             } else if (improved.equals("n")) {
-                expertMode = true;
+                expertMode = false;
             } else {
                 expertModeView.showError("Formato non valido");
                 return;
