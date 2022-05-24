@@ -1,6 +1,5 @@
 package it.polimi.ingsw.client.cli.views;
 
-import it.polimi.ingsw.client.cli.Palette;
 import org.fusesource.jansi.Ansi;
 
 import java.util.ArrayList;
@@ -59,7 +58,7 @@ public class ListView<T> extends BaseView{
                 var itemView = ansi().a("[")
                         .fgBrightYellow()
                         .a(i + 1)
-                        .fg(Palette.WHITE)
+                        .fgDefault()
                         .a("] ")
                         .a(customRenderer.apply(listItems.get(i)))
                         .reset();

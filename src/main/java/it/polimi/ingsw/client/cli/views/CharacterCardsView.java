@@ -1,7 +1,6 @@
 package it.polimi.ingsw.client.cli.views;
 
 import it.polimi.ingsw.Constants;
-import it.polimi.ingsw.client.cli.Palette;
 import it.polimi.ingsw.server.model.Character;
 import org.fusesource.jansi.Ansi;
 
@@ -45,11 +44,11 @@ public class CharacterCardsView extends BaseView {
                     .bold()
                     .fgBrightMagenta()
                     .a(title)
-                    .fg(Palette.WHITE)
+                    .fgDefault()
                     .bold()
                     .a(" (" + entry.getKey().getCost(entry.getValue()) + "$)")
                     .reset()
-                    .fg(Palette.WHITE)
+                    .fgDefault()
                     .a("\n        ") //inset description
                     .a(description.replaceAll("(.{65})", "$1\n        ")) //put a new line every 65 chars
                     .reset();
