@@ -104,4 +104,26 @@ public class Utils {
 
         return partitions;
     }
+
+    public static boolean isInteger(String string) {
+        try {
+            Integer.parseInt(string);
+            return true;
+        } catch (NumberFormatException e) {
+            return false;
+        }
+    }
+
+    /**
+     * Parse integer without exceptions
+     * @param string
+     * @return parsed integer or 0 if the string is not an integer
+     */
+    public static int parseInteger(String string) {
+        try {
+            return Integer.parseInt(string);
+        } catch (NumberFormatException e) {
+            return 0;
+        }
+    }
 }

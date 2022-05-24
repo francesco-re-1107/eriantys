@@ -10,9 +10,15 @@ import static org.fusesource.jansi.Ansi.ansi;
 public class CommandInputView extends BaseView {
 
     private String message;
+    private final boolean printCommands;
 
     public CommandInputView(String message) {
+        this(message, true);
+    }
+
+    public CommandInputView(String message, boolean printCommands) {
         this.message = message;
+        this.printCommands = printCommands;
     }
 
     private final Map<Command, CommandListener> listeners = new HashMap<>(); // keyword -> listener
@@ -26,19 +32,23 @@ public class CommandInputView extends BaseView {
     public void draw() {
         cursor.clearRow(22);
         cursor.clearRow(23);
-        cursor.print(message + " [", 1, 22);
 
-        var first = false;
-        for (var c : listeners.keySet()) {
-            if(first)
-                cursor.print(" | ");
-            cursor.print(ansi().fgBrightYellow().a(c.triggerWord).reset());
-            cursor.print(": ");
-            cursor.print(c.description);
-            first = true;
+        if(printCommands){
+            cursor.print(message + " [", 1, 22);
+            var first = false;
+            for (var c : listeners.keySet()) {
+                if(first)
+                    cursor.print(" | ");
+                cursor.print(ansi().fgBrightYellow().a(c.triggerWord).reset());
+                cursor.print(": ");
+                cursor.print(c.description);
+                first = true;
+            }
+            cursor.print("]");
+        } else {
+            cursor.print(message, 1 ,22);
         }
 
-        cursor.print("]");
         cursor.moveToXY(1, 23);
 
         new Thread(() -> {

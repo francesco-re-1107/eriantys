@@ -62,9 +62,13 @@ public class CLIGameController implements ScreenController, Client.GameUpdateLis
                             .draw();
                 }
             }
-            case PAUSED -> new TitleView(TitleView.Title.PAUSED,
-                    "Giocatori offline: " + game.getOfflinePlayersList())
-                    .draw();
+            case PAUSED -> {
+                new TitleView(TitleView.Title.PAUSED,
+                        "Giocatori offline: " + game.getOfflinePlayersList()).draw();
+                var input = new SimpleInputView("Premi invio per abbandonare la partita");
+                input.setListener(r -> client.leaveGame());
+                input.draw();
+            }
             case TERMINATED -> new TitleView(TitleView.Title.TERMINATED,
                     "Giocatori che hanno abbandonato: " + game.getOfflinePlayersList())
                     .draw();
@@ -174,7 +178,7 @@ public class CLIGameController implements ScreenController, Client.GameUpdateLis
                 input.draw();
             }
             case MINSTREL -> {
-
+                //TODO
             }
             case MUSHROOM_MAN -> {
                 var input = new CommandInputView("Seleziona studente");
@@ -225,13 +229,13 @@ public class CLIGameController implements ScreenController, Client.GameUpdateLis
     /**
      * Check if all students were placed in the placing students phase
      */
-    private int checkIfAllStudentsPlaced(ReducedGame currentGame){
+    private int checkIfAllStudentsPlaced(ReducedGame game){
         var count = 0;
         count += studentsPlacedInSchool.getSize();
         for(StudentsContainer sc : studentsPlacedInIslands.values())
             count += sc.getSize();
 
-        var studentsToMove = currentGame.numberOfPlayers() == 2 ?
+        var studentsToMove = game.numberOfPlayers() == 2 ?
                 Constants.TwoPlayers.STUDENTS_TO_MOVE : Constants.ThreePlayers.STUDENTS_TO_MOVE;
 
         if(count == studentsToMove) {
@@ -243,7 +247,10 @@ public class CLIGameController implements ScreenController, Client.GameUpdateLis
                             ),
                             err -> Utils.LOGGER.info("Error placing students: " + err)
                     );
+        } else {
+            drawGameView(game);
         }
+
 
         return count;
     }
@@ -253,73 +260,88 @@ public class CLIGameController implements ScreenController, Client.GameUpdateLis
         studentsPlacedInIslands = new HashMap<>();
         int studentsToMove = game.numberOfPlayers() == 2 ?
                 Constants.TwoPlayers.STUDENTS_TO_MOVE : Constants.ThreePlayers.STUDENTS_TO_MOVE;
-        var placeStudents = new CommandInputView("Muovi studenti (0/%d)".formatted(studentsToMove));
-        placeStudents.addCommandListener("sala", "Sala x B (sposta x studenti blu in sala)", ((command, args) -> {
-            if (args.size() != 2) {
-                placeStudents.showError("Inserisci 2 argomenti");
+
+        var placeStudentsInput = new CommandInputView("Posiziona studenti (0/%d) [esempi 'y 6', 'r sala', 'b 0']".formatted(studentsToMove), false);
+        CommandInputView.CommandListener listener = (cmd, args) -> {
+            var stud = Student.YELLOW;
+            for(var s : Student.values())
+                if(s.name().toLowerCase().startsWith(cmd))
+                    stud = s;
+
+            if(game.getMyPlayer(client.getNickname()).entrance().getCountForStudent(stud) <= 0) {
+                placeStudentsInput.showError("Non hai questo studente");
                 return;
             }
-            int n = 0;
-            try { 
-                n = Integer.parseInt(args.get(0));
-            } catch (Exception e) {
-                placeStudents.showError("Inserisci un numero valido");
+
+            if(args.size() != 1) {
+                placeStudentsInput.showError("Devi specificare la posizione (e.g. y sala oppure b 10)");
                 return;
             }
-            String color = args.get(1).toLowerCase().strip();
-            switch (color) {
-                case "b":
-                    studentsPlacedInSchool.addStudents(Student.BLUE, n);
-                    break;
-                case "g":
-                    studentsPlacedInSchool.addStudents(Student.YELLOW, n);
-                    break;
-                case "v":
-                    studentsPlacedInSchool.addStudents(Student.GREEN, n);
-                    break;
-                case "p":
-                    studentsPlacedInSchool.addStudents(Student.PINK, n);
-                    break;
-                case "r":
-                    studentsPlacedInSchool.addStudents(Student.RED, n);
-                    break;
-                default:
-                    placeStudents.showError("Inserisci un colore valido");
+
+            int remaining = 0;
+
+            if(args.get(0).equalsIgnoreCase("sala")) {
+                remaining = placeStudentInSchool(game, stud);
+                placeStudentsInput.draw();
+            } else if (Utils.isInteger(args.get(0))) {
+                var island = Integer.parseInt(args.get(0));
+
+                if(island < 0 || island >= game.islands().size()) {
+                    placeStudentsInput.showError("L'isola specificata non esiste");
                     return;
+                }
+
+                remaining = placeStudentOnIsland(game, stud, island);
+                placeStudentsInput.draw();
+            } else {
+                placeStudentsInput.showError("Comando errato (e.g. y sala oppure b 10)");
             }
 
-            int remaining = checkIfAllStudentsPlaced(game);
-            placeStudents.setMessage("Muovi studenti (%d/%d)".formatted(remaining, studentsToMove));
-        }));
+            placeStudentsInput.setMessage("Posiziona studenti (%d/%d) [esempi 'y 6', 'r sala', 'b 0']".formatted(remaining, studentsToMove));
+        };
 
-        placeStudents.draw();
+        placeStudentsInput.addCommandListener("y", "Giallo", listener);
+        placeStudentsInput.addCommandListener("b", "Blu", listener);
+        placeStudentsInput.addCommandListener("g", "Verde", listener);
+        placeStudentsInput.addCommandListener("r", "Rosso", listener);
+        placeStudentsInput.addCommandListener("p", "Rosa", listener);
 
-        /*client.forwardGameRequest(
-                new PlaceStudentsRequest(
-                        new RandomizedStudentsContainer(game.getMyPlayer(client.getNickname()).entrance()).pickManyRandom(
-                                game.numberOfPlayers() == 2 ? 3 : 4
-                        ),
-                        new HashMap<>()
-                ),
-                e -> {  }
-        );
-        */
+        placeStudentsInput.draw();
+    }
+
+    private int placeStudentOnIsland(ReducedGame game, Student stud, int island) {
+        if(studentsPlacedInIslands.containsKey(island))
+            studentsPlacedInIslands.get(island).addStudent(stud);
+        else
+            studentsPlacedInIslands.put(island, new StudentsContainer().addStudent(stud));
+
+        game.islands().get(island).students().addStudent(stud);
+        game.getMyPlayer(client.getNickname()).entrance().removeStudent(stud);
+
+        return checkIfAllStudentsPlaced(game);
+    }
+
+    private int placeStudentInSchool(ReducedGame game, Student stud) {
+        studentsPlacedInSchool.addStudent(stud);
+        game.getMyPlayer(client.getNickname()).entrance().removeStudent(stud);
+        game.getMyPlayer(client.getNickname()).school().addStudent(stud);
+
+        return checkIfAllStudentsPlaced(game);
     }
 
     private void processSelectCloud(ReducedGame game) {
         // if only 1 cloud is available, select it
-        if(game.currentRound().clouds().size() == 1){
+        /*if(game.currentRound().clouds().size() == 1){
             client.forwardGameRequest(
                     new SelectCloudRequest(game.currentRound().clouds().get(0)),
                     e -> cursor.print(e.getMessage(), 1, 23) //should never be called
             );
-        } else {
-            var input = new IntegerInputView("Seleziona una nuvola", 0, game.currentRound().clouds().size() - 1);
-            input.setListener(cloud -> client.forwardGameRequest(
-                    new SelectCloudRequest(game.currentRound().clouds().get(cloud)),
-                    e -> input.showError(e.getMessage())
-            ));
-            input.draw();
-        }
+        } else {*/
+        var input = new IntegerInputView("Seleziona una nuvola", 0, game.currentRound().clouds().size() - 1);
+        input.setListener(cloud -> client.forwardGameRequest(
+                new SelectCloudRequest(game.currentRound().clouds().get(cloud)),
+                e -> input.showError(e.getMessage())
+        ));
+        input.draw();
     }
 }
