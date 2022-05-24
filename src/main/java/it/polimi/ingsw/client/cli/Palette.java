@@ -14,11 +14,11 @@ public class Palette {
     public static final int STUDENT_PINK = Utils.isWindows() ? 13 : 169;
     public static final int STUDENT_BLUE = Utils.isWindows() ? 12 : 39;
 
-    public static final int ISLAND_BORDER = 22;
+    public static final int ISLAND_BORDER = 28;
     public static final int ISLAND_BACKGROUND = Utils.isWindows() ? 121 : 117;
     public static final int DASHBOARD_BACKGROUND = 236;
 
-    public static final int CLOUD_BACKGROUD = 15;
+    public static final int CLOUD_BACKGROUND = 15;
 
     public static final int TOWER_CONTRAST_BACKGROUND_WIN = 110;
     public static final int TOWER_BLACK = 0;
@@ -55,4 +55,5 @@ public class Palette {
 
     public static final List<Integer> RAINBOW = List.of(196, 214, 226, 46, 39);
 
+    private Palette() {}
 }

@@ -114,20 +114,26 @@ public class IslandView extends BaseView {
     private void drawBorders() {
         cursor.saveCursorPosition();
 
+        var borderColor = motherNature ? Palette.MOTHER_NATURE : Palette.ISLAND_BORDER;
+
         //upper border
         cursor.print(ansi()
-                .fg(Palette.ISLAND_BORDER)
+                .fg(borderColor)
                 .bg(Palette.ISLAND_BACKGROUND)
-                .a("╭" + "─".repeat(ISLAND_WIDTH - 2) + "╮")
+                .a(DrawingCharacters.ISLAND_CORNER_TOP_LEFT)
+                .a(DrawingCharacters.ISLAND_BORDER_HORIZONTAL.repeat(ISLAND_WIDTH - 2))
+                .a(DrawingCharacters.ISLAND_CORNER_TOP_RIGHT)
+                .reset()
         );
 
         //right border
         for(int i = 0; i < ISLAND_HEIGHT - 2; i++) {
             cursor.moveRelative(-1, 1);
             cursor.print(ansi()
-                    .fg(Palette.ISLAND_BORDER)
+                    .fg(borderColor)
                     .bg(Palette.ISLAND_BACKGROUND)
-                    .a("│")
+                    .a(DrawingCharacters.ISLAND_BORDER_VERTICAL)
+                    .reset()
             );
         }
 
@@ -135,9 +141,12 @@ public class IslandView extends BaseView {
 
         //lower border
         cursor.print(ansi()
-                .fg(Palette.ISLAND_BORDER)
+                .fg(borderColor)
                 .bg(Palette.ISLAND_BACKGROUND)
-                .a("╰" + "─".repeat(ISLAND_WIDTH - 2) + "╯")
+                .a(DrawingCharacters.ISLAND_CORNER_BOTTOM_LEFT)
+                .a(DrawingCharacters.ISLAND_BORDER_HORIZONTAL.repeat(ISLAND_WIDTH - 2))
+                .a(DrawingCharacters.ISLAND_CORNER_BOTTOM_RIGHT)
+                .reset()
         );
 
         cursor.moveRelative(-ISLAND_WIDTH + 1, 0);
@@ -146,9 +155,10 @@ public class IslandView extends BaseView {
         for(int i = 0; i < ISLAND_HEIGHT - 2; i++) {
             cursor.moveRelative(-1, -1);
             cursor.print(ansi()
-                    .fg(Palette.ISLAND_BORDER)
+                    .fg(borderColor)
                     .bg(Palette.ISLAND_BACKGROUND)
-                    .a("│")
+                    .a(DrawingCharacters.ISLAND_BORDER_VERTICAL)
+                    .reset()
             );
         }
 

@@ -84,6 +84,7 @@ public class ListView<T> extends BaseView{
 
     public void showError(String error) {
         inputView.showError(error);
+        draw();
     }
 
     public void setListener(BiConsumer<T, Integer> listener) {

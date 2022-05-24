@@ -16,5 +16,17 @@ public class DrawingCharacters {
 
     public static final String COIN = "$";
 
+    public static final String ISLAND_CORNER_TOP_LEFT = "╭";
+
+    public static final String ISLAND_CORNER_TOP_RIGHT = "╮";
+
+    public static final String ISLAND_CORNER_BOTTOM_LEFT = "╰";
+
+    public static final String ISLAND_CORNER_BOTTOM_RIGHT = "╯";
+
+    public static final String ISLAND_BORDER_HORIZONTAL = "─";
+
+    public static final String ISLAND_BORDER_VERTICAL = "│";
+
     private DrawingCharacters() {}
 }

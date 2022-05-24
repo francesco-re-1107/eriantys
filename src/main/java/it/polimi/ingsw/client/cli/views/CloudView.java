@@ -25,7 +25,7 @@ public class CloudView extends BaseView{
     @Override
     public void draw() {
         cursor.saveCursorPosition();
-        cursor.paintBackground(Palette.CLOUD_BACKGROUD, CLOUD_WIDTH, CLOUD_HEIGHT);
+        cursor.paintBackground(Palette.CLOUD_BACKGROUND, CLOUD_WIDTH, CLOUD_HEIGHT);
         cursor.restoreCursorPosition();
 
         paintEdges();
@@ -64,7 +64,7 @@ public class CloudView extends BaseView{
             if(row.size() == 1) {
                 cursor.moveRelative(1, 0);
                 cursor.print(ansi()
-                        .bg(Palette.CLOUD_BACKGROUD)
+                        .bg(Palette.CLOUD_BACKGROUND)
                         .fg(Palette.STUDENTS_COLOR_MAP.get(row.get(0)))
                         .a(DrawingCharacters.STUDENT)
                         .reset());
@@ -72,7 +72,7 @@ public class CloudView extends BaseView{
                 cursor.moveRelative(-2, 1);
             } else {
                 cursor.print(ansi()
-                        .bg(Palette.CLOUD_BACKGROUD)
+                        .bg(Palette.CLOUD_BACKGROUND)
                         .fg(Palette.STUDENTS_COLOR_MAP.get(row.get(0)))
                         .a(DrawingCharacters.STUDENT)
                         .a(" ")
@@ -91,7 +91,7 @@ public class CloudView extends BaseView{
 
         cursor.moveRelative(4, 1);
         cursor.print(ansi()
-                .bg(Palette.CLOUD_BACKGROUD)
+                .bg(Palette.CLOUD_BACKGROUND)
                 .fg(Ansi.Color.BLACK)
                 .bold()
                 .a(index)
