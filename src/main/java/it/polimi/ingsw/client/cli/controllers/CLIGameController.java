@@ -46,6 +46,7 @@ public class CLIGameController implements ScreenController, Client.GameUpdateLis
     @Override
     public void onGameUpdate(ReducedGame game) {
         cursor.clearScreen();
+        cursor.clearInput();
 
         processGameState(game);
     }
@@ -178,7 +179,16 @@ public class CLIGameController implements ScreenController, Client.GameUpdateLis
                 input.draw();
             }
             case MINSTREL -> {
-                //TODO
+                new MinstrelInputView(
+                        toRemove -> drawGameView(game),
+                        (toRemove, toAdd) -> {
+                            client.forwardGameRequest(new PlayCharacterCardRequest(
+                                    new ReducedMinstrelCharacterCard(toAdd, toRemove))
+                            );
+                        },
+                    game.getMyPlayer(client.getNickname()).entrance(),
+                    game.getMyPlayer(client.getNickname()).school()
+                ).draw();
             }
             case MUSHROOM_MAN -> {
                 var input = new CommandInputView("Seleziona studente");
@@ -274,7 +284,7 @@ public class CLIGameController implements ScreenController, Client.GameUpdateLis
             }
 
             if(args.size() != 1) {
-                placeStudentsInput.showError("Devi specificare la posizione (e.g. y sala oppure b 10)");
+                placeStudentsInput.showError("Comando errato (e.g. 'y sala' oppure 'b 10')");
                 return;
             }
 
@@ -294,7 +304,7 @@ public class CLIGameController implements ScreenController, Client.GameUpdateLis
                 remaining = placeStudentOnIsland(game, stud, island);
                 placeStudentsInput.draw();
             } else {
-                placeStudentsInput.showError("Comando errato (e.g. y sala oppure b 10)");
+                placeStudentsInput.showError("Comando errato (e.g. 'y sala' oppure 'b 10')");
             }
 
             placeStudentsInput.setMessage("Posiziona studenti (%d/%d) [esempi 'y 6', 'r sala', 'b 0']".formatted(remaining, studentsToMove));
@@ -330,13 +340,6 @@ public class CLIGameController implements ScreenController, Client.GameUpdateLis
     }
 
     private void processSelectCloud(ReducedGame game) {
-        // if only 1 cloud is available, select it
-        /*if(game.currentRound().clouds().size() == 1){
-            client.forwardGameRequest(
-                    new SelectCloudRequest(game.currentRound().clouds().get(0)),
-                    e -> cursor.print(e.getMessage(), 1, 23) //should never be called
-            );
-        } else {*/
         var input = new IntegerInputView("Seleziona una nuvola", 0, game.currentRound().clouds().size() - 1);
         input.setListener(cloud -> client.forwardGameRequest(
                 new SelectCloudRequest(game.currentRound().clouds().get(cloud)),

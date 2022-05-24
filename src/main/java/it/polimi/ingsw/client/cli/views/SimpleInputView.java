@@ -43,4 +43,8 @@ public class SimpleInputView extends BaseView {
     public void setListener(Consumer<String> listener) {
         this.listener = listener;
     }
+
+    public void setMessage(String message) {
+        this.message = message;
+    }
 }

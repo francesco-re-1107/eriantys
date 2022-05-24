@@ -6,8 +6,6 @@ import org.fusesource.jansi.AnsiConsole;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
-import java.util.HashSet;
-import java.util.Set;
 
 import static org.fusesource.jansi.Ansi.ansi;
 
@@ -19,7 +17,7 @@ public class Cursor {
     private int relativeX = 0;
     private int relativeY = 0;
 
-    private Set<Thread> threadsListeningUserInput = new HashSet<>();
+    private Thread threadListeningUserInput;
 
     public static Cursor getInstance() {
         if (instance == null) {
@@ -60,13 +58,15 @@ public class Cursor {
      */
     public String input() throws InterruptedException, IOException {
         //stops all threads listening to input
-        threadsListeningUserInput.forEach(Thread::interrupt);
+        try{
+            threadListeningUserInput.interrupt();
+        } catch (Exception e){ }
 
         //clear system in before reading
         //System.in.read(new byte[4096]);
         System.in.read(new byte[System.in.available()]);
 
-        threadsListeningUserInput.add(Thread.currentThread());
+        threadListeningUserInput = Thread.currentThread();
         while(true){
             if(System.in.available() > 0)
             {
@@ -76,13 +76,24 @@ public class Cursor {
                         .replace("\n", "")
                         .replace("\r", "");
 
-                threadsListeningUserInput.remove(Thread.currentThread());
+                threadListeningUserInput = null;
 
                 return str;
             } else {
                 Thread.sleep(Constants.CLI_READ_POLLING_INTERVAL);
             }
         }
+    }
+
+
+    /**
+     * This method stops any thread listening to user input.
+     */
+    public void clearInput() {
+        try{
+            threadListeningUserInput.interrupt();
+        } catch (Exception e){ }
+        threadListeningUserInput = null;
     }
 
     public String input(int x, int y) throws InterruptedException, IOException {
