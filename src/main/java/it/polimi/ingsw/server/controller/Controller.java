@@ -81,7 +81,7 @@ public class Controller implements Game.GameUpdateListener {
      * @param foundGame The game that the player is playing.
      * @return the player with the given nickname, or null if not found.
      */
-    private Player findPlayerInGame(String nickname, Game foundGame) {
+    private synchronized Player findPlayerInGame(String nickname, Game foundGame) {
         return foundGame.getPlayers()
                 .stream()
                 .filter(p -> p.getNickname().equals(nickname))
@@ -95,7 +95,7 @@ public class Controller implements Game.GameUpdateListener {
      * @param nickname the nickname of the player
      * @return the game played by the player, null if the player is not in a game
      */
-    private Game findGameByNickname(String nickname) {
+    private synchronized Game findGameByNickname(String nickname) {
         for (var g : games) {
             for (var p : g.getPlayers())
                 if (Objects.equals(p.getNickname(), nickname))
@@ -110,7 +110,7 @@ public class Controller implements Game.GameUpdateListener {
      *
      * @return the list of games
      */
-    public List<GameListItem> listGames() {
+    public synchronized List<GameListItem> listGames() {
         return games.stream()
                 .filter(g -> g.getGameState() == Game.State.CREATED &&
                         g.getCurrentNumberOfPlayers() < g.getNumberOfPlayers())
@@ -182,7 +182,7 @@ public class Controller implements Game.GameUpdateListener {
      * @param game
      */
     @Override
-    public void onGameUpdate(Game game) {
+    public synchronized void onGameUpdate(Game game) {
         var state = game.getGameState();
 
         //if no one is connected to the game when it is not started yet, remove it
@@ -205,14 +205,14 @@ public class Controller implements Game.GameUpdateListener {
      * @param nickname the client nickname
      * @return true if the virtual view is registered, false otherwise
      */
-    public boolean isRegistered(String nickname) {
+    public synchronized boolean isRegistered(String nickname) {
         return registeredNicknames.contains(nickname);
     }
 
     /**
      * Start the scheduling of games auto-save
      */
-    private void startAutoSaveTimer() {
+    private synchronized void startAutoSaveTimer() {
         new Timer().schedule(new TimerTask() {
             @Override
             public void run() {
@@ -225,7 +225,7 @@ public class Controller implements Game.GameUpdateListener {
      * Load backup from file, if it exists
      */
     @SuppressWarnings("unchecked")
-    private void loadBackupIfPresent() {
+    private synchronized void loadBackupIfPresent() {
         var backupFile = new File(Utils.getServerConfig().backupFolder() + "/games.bak");
 
         if(!backupFile.isFile()) return;
@@ -244,8 +244,7 @@ public class Controller implements Game.GameUpdateListener {
 
             Utils.LOGGER.info(games.size() + " games loaded from backup");
         } catch (Exception e) {
-            Utils.LOGGER.warning("Error loading games backup");
-            e.printStackTrace();
+            Utils.LOGGER.warning("Error loading games backup, probably corrupted file");
         }
     }
 
@@ -268,7 +267,7 @@ public class Controller implements Game.GameUpdateListener {
      * Called when a registered client disconnects
      * @param nickname
      */
-    public void disconnect(String nickname) {
+    public synchronized void disconnect(String nickname) {
         registeredNicknames.remove(nickname);
     }
 }
