@@ -71,7 +71,7 @@ public class PlayerBoardView extends BaseView {
         cursor.moveRelative(14, 3);
 
         cursor.print(ansi()
-                .bg(Utils.isWindows() && player.towerColor() == Tower.BLACK ? Palette.TOWER_CONTRAST_BACKGROUND_WIN : Palette.DASHBOARD_BACKGROUND)
+                .bg(Utils.isWindows() && player.towerColor() == Tower.BLACK ? Palette.BLACK_TOWER_CONTRAST_BACKGROUND_WIN : Palette.DASHBOARD_BACKGROUND)
                 .fg(Palette.TOWERS_COLOR_MAP.get(player.towerColor()))
                 .a(DrawingCharacters.TOWER)
                 .bg(Palette.DASHBOARD_BACKGROUND)
