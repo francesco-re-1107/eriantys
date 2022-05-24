@@ -1,11 +1,13 @@
 package it.polimi.ingsw.client.cli.views;
 
+import it.polimi.ingsw.Utils;
 import it.polimi.ingsw.client.Client;
 import it.polimi.ingsw.client.cli.DrawingCharacters;
 import it.polimi.ingsw.client.cli.Palette;
 import it.polimi.ingsw.common.reducedmodel.ReducedPlayer;
 import it.polimi.ingsw.common.reducedmodel.ReducedRound;
 import it.polimi.ingsw.server.model.Student;
+import it.polimi.ingsw.server.model.Tower;
 
 import java.util.Map;
 
@@ -69,9 +71,10 @@ public class PlayerBoardView extends BaseView {
         cursor.moveRelative(14, 3);
 
         cursor.print(ansi()
-                .bg(Palette.DASHBOARD_BACKGROUND)
+                .bg(Utils.isWindows() && player.towerColor() == Tower.BLACK ? Palette.TOWER_CONTRAST_BACKGROUND_WIN : Palette.DASHBOARD_BACKGROUND)
                 .fg(Palette.TOWERS_COLOR_MAP.get(player.towerColor()))
                 .a(DrawingCharacters.TOWER)
+                .bg(Palette.DASHBOARD_BACKGROUND)
                 .fg(Palette.WHITE)
                 .bold()
                 .a(" " + player.towersCount())

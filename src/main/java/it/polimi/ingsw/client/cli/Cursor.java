@@ -42,63 +42,6 @@ public class Cursor {
             clearRow(i);
     }
 
-    /*
-    private void drawWithBg(String content) {
-        System.out.print(ansi().bg(Palette.ISLAND_BACKGROUND).a(content).reset());
-    }
-
-    private void drawWithBgAndContrast(String content) {
-        System.out.print(ansi().fgBlack().bg(Palette.ISLAND_BACKGROUND).a(content).reset());
-    }
-
-    public void printWithFgColor(String s, int color) {
-        print(ansi().fg(color).a(s).reset());
-    }
-
-
-    private int getTowerAnsiColor(Tower color) {
-        return switch (color) {
-            case BLACK -> Palette.TOWER_BLACK;
-            case WHITE -> Palette.TOWER_WHITE;
-            case GREY -> Palette.TOWER_GREY;
-        };
-    }
-
-    public void printPrompt(String prompt) {
-        printPrompt(prompt, "");
-    }
-
-    public void printPrompt(String prompt, String default_resp) {
-        moveToXY(1, HEIGHT - 1);
-        Ansi s = ansi().bold().a("%s".formatted(prompt)).boldOff();
-        if (!default_resp.isEmpty()) {
-            s = s.a(" (default %s)".formatted(default_resp));
-        }
-        s = s.a(": ").reset();
-        System.out.println(s);
-        System.out.print("> ");
-    }
-
-    public void printBold(String s) {
-        System.out.println(ansi().bold().a(s).reset());
-    }
-
-    public int intInput() {
-        while (true){
-            var s = new Scanner(System.in).nextLine();
-            try {
-                return Integer.parseInt(s);
-            }catch (Exception e){
-                showError("Expected a number");
-            }
-        }
-    }
-
-    public void showError(String err) {
-        printWithFgColor(err, Palette.RED_TEXT);
-    }
-    */
-
     public void moveToXY(int x, int y) {
         print(ansi().cursor(y, x).reset());
     }
@@ -120,6 +63,7 @@ public class Cursor {
         threadsListeningUserInput.forEach(Thread::interrupt);
 
         //clear system in before reading
+        //System.in.read(new byte[4096]);
         System.in.read(new byte[System.in.available()]);
 
         threadsListeningUserInput.add(Thread.currentThread());
@@ -129,7 +73,8 @@ public class Cursor {
                 var buff = new byte[4096];
                 int n = System.in.read(buff);
                 var str = new String(buff, 0, n, StandardCharsets.UTF_8)
-                        .replace("\n", "");
+                        .replace("\n", "")
+                        .replace("\r", "");
 
                 threadsListeningUserInput.remove(Thread.currentThread());
 
