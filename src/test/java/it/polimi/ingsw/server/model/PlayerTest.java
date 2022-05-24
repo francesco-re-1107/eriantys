@@ -154,6 +154,24 @@ class PlayerTest {
                 )
         );
 
+        //swap students not owned by the player
+        //school
+        assertThrows(
+                InvalidOperationException.class,
+                () -> p1.swapStudents(
+                        new StudentsContainer().addStudents(Student.YELLOW, 2),
+                        new StudentsContainer().addStudents(Student.BLUE, 2)
+                )
+        );
+        //entrance
+        assertThrows(
+                InvalidOperationException.class,
+                () -> p1.swapStudents(
+                        new StudentsContainer().addStudents(Student.BLUE, 2),
+                        new StudentsContainer().addStudents(Student.YELLOW, 2)
+                )
+        );
+
         p1.swapStudents(
                 new StudentsContainer()
                         .addStudents(Student.BLUE,1)

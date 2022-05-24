@@ -28,9 +28,14 @@ class GameTest {
      */
     @Test
     void testStaticGameTwoPlayers() {
+        //game with wrong number of players
         assertThrows(
                 InvalidOperationException.class,
                 () -> new Game(4, true)
+        );
+        assertThrows(
+                InvalidOperationException.class,
+                () -> new Game(1, true)
         );
 
         Game g = new Game(2, true);

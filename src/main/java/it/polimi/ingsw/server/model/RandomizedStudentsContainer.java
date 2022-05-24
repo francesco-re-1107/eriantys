@@ -3,7 +3,6 @@ package it.polimi.ingsw.server.model;
 import it.polimi.ingsw.common.exceptions.StudentNotFoundException;
 
 import java.security.SecureRandom;
-import java.util.Objects;
 import java.util.Random;
 
 /**
@@ -80,15 +79,11 @@ public class RandomizedStudentsContainer extends AStudentsContainer{
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        if (!super.equals(o)) return false;
-        RandomizedStudentsContainer that = (RandomizedStudentsContainer) o;
-        return Objects.equals(random, that.random);
+        return super.equals(o);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(super.hashCode(), random);
+        return super.hashCode();
     }
 }

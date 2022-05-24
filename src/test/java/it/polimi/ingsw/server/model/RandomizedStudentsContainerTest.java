@@ -4,7 +4,8 @@ import it.polimi.ingsw.common.exceptions.StudentNotFoundException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class RandomizedStudentsContainerTest {
 
@@ -51,5 +52,12 @@ class RandomizedStudentsContainerTest {
         picked = container.pickManyRandom(5);
         assertEquals(2, picked.getSize());
         assertEquals(0, container.getSize());
+    }
+
+    @Test
+    void equals() {
+        var container2 = new RandomizedStudentsContainer(1);
+        assertEquals(container, container2);
+        assertEquals(container.hashCode(), container2.hashCode());
     }
 }

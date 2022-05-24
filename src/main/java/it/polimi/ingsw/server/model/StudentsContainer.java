@@ -199,6 +199,16 @@ public class StudentsContainer extends AStudentsContainer {
         triggerListeners.remove(new Trigger(student, count));
     }
 
+    @Override
+    public boolean equals(Object o) {
+        return super.equals(o);
+    }
+
+    @Override
+    public int hashCode() {
+        return super.hashCode();
+    }
+
     /**
      * Listener for specific student and count
      */

@@ -19,7 +19,13 @@ public interface Stage extends Serializable {
         SELECTED_CLOUD
     }
 
-    static boolean isEqualOrPost(Stage st1, Stage st2) {
+    /**
+     * This method is used to check if the given stage (st1) is equal or post than the given stage (st2)
+     * @param st1
+     * @param st2
+     * @return true if st1 comes after st2, false otherwise
+     */
+    public static boolean isEqualOrPost(Stage st1, Stage st2) {
         if (st2 instanceof Stage.Plan)
             return true;
         return ((Attack) st1).ordinal() >= ((Attack) st2).ordinal();
