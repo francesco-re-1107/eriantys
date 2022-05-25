@@ -129,6 +129,9 @@ public final class Constants {
             "Zebra"
     );
 
+    /**
+     * Localized names of every character card
+     */
     public static final Map<Character, String> CHARACTER_NAMES = Map.ofEntries(
             Map.entry(Character.CENTAUR, "Centauro"),
             Map.entry(Character.FARMER, "Contadino"),
@@ -140,6 +143,9 @@ public final class Constants {
             Map.entry(Character.MUSHROOM_MAN, "Fungaro")
     );
 
+    /**
+     * Localized descriptions of every character card
+     */
     public static final Map<Character, String> CHARACTER_DESCRIPTIONS = Map.ofEntries(
             Map.entry(Character.CENTAUR, "Le torri non vengono considerate nel calcolo dell'influenza."),
             Map.entry(Character.FARMER, "Prendi il controllo dei professori anche se hai lo stesso numero di studenti di altri giocatori."),

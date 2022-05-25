@@ -23,8 +23,8 @@ public class IslandsLayoutView extends BaseView{
         cursor.paintBackground(Palette.ISLAND_BACKGROUND, DIVIDER_X, 1, Cursor.WIDTH, Cursor.HEIGHT-3);
 
         for(int i = 0; i < islands.size(); i++) {
-            int x = IslandsLayouts.getPointForIsland(islands.size(), i).x() + DIVIDER_X;
-            int y = IslandsLayouts.getPointForIsland(islands.size(), i).y();
+            int x = IslandsLayouts.getPointForIsland(islands.size(), i).x() + DIVIDER_X + 1;
+            int y = IslandsLayouts.getPointForIsland(islands.size(), i).y() + 1;
             cursor.moveToXY(x, y);
             new IslandView(islands.get(i), i, i == motherNaturePosition).draw();
         }
