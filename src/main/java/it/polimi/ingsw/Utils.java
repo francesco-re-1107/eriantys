@@ -57,7 +57,7 @@ public class Utils {
             InputStream is = Utils.class.getClassLoader().getResourceAsStream(Constants.SERVER_CONFIG_FILE_NAME);
             prop.load(is);
         } catch (Exception e) {
-            LOGGER.severe(e.toString());
+            LOGGER.info("Server config file not found, using default values");
             return new ServerConfig(
                     Constants.DEFAULT_SERVER_PORT,
                     Constants.DEFAULT_BACKUP_FOLDER
