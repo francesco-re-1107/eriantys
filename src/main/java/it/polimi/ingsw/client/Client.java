@@ -81,7 +81,7 @@ public class Client implements CommunicatorListener {
      * Initializes a CLI client
      * This method must be called before any other method
      */
-    public static void init() {
+    public static void initCLI() {
         instance = new Client();
 
         Client.getInstance().getNavigationManager().navigateTo(Screen.SERVER_CONNECTION_MENU);
@@ -91,7 +91,7 @@ public class Client implements CommunicatorListener {
      * Initializes a GUI client
      * This method must be called before any other method
      */
-    public static void init(Stage stage) {
+    public static void initGUI(Stage stage) {
         instance = new Client(stage);
 
         Client.getInstance().getNavigationManager().navigateTo(Screen.SERVER_CONNECTION_MENU);

@@ -25,12 +25,17 @@ public class Utils {
      * Called when the program is started
      */
     private static void setupLogger(){
+        //default level is INFO
         LOGGER.setLevel(Level.INFO);
         LogManager.getLogManager().reset();
         ConsoleHandler handler = new ConsoleHandler();
         handler.setLevel(Level.INFO);
         handler.setFormatter(new PrettyLogFormatter());
         LOGGER.addHandler(handler);
+    }
+
+    static {
+        setupLogger();
     }
 
     /**
@@ -42,12 +47,10 @@ public class Utils {
         return !nickname.isBlank() && nickname.length() <= Constants.MAX_NICKNAME_LENGTH;
     }
 
-    static {
-        setupLogger();
-    }
-
-    private Utils() {}
-
+    /**
+     * Loads server config properties from file if present, otherwise loads default values
+     * @return ServerConfig object read from file
+     */
     public static ServerConfig getServerConfig(){
         Properties prop = new Properties();
         try {
@@ -86,6 +89,10 @@ public class Utils {
         return System.getProperty("os.name").toLowerCase().contains("win");
     }
 
+    /**
+     * Generate a random valid nickname.
+     * @return the random nickname generated
+     */
     public static String generateRandomNickname() {
         var r = new SecureRandom();
         var part1 = Constants.NICKNAMES_PART_1.get(r.nextInt(Constants.NICKNAMES_PART_1.size()));
@@ -95,6 +102,14 @@ public class Utils {
         return part1 + part2 + r.nextInt(10);
     }
 
+    /**
+     * Partition a list into n partitions (sublists) of equal size (elementsPerPartition).
+     * The last list may be smaller than elementsPerPartition.
+     * @param list the list to partition
+     * @param elementsPerPartition number of elements per partition
+     * @return a list of partitions
+     * @param <T> the type of the list
+     */
     public static <T> List<List<T>> partition(List<T> list, int elementsPerPartition) {
         var partitions = new ArrayList<List<T>>();
 
@@ -105,6 +120,11 @@ public class Utils {
         return partitions;
     }
 
+    /**
+     * Check if the given string is an integer
+     * @param string the string to check
+     * @return true if the string is an integer, false otherwise
+     */
     public static boolean isInteger(String string) {
         try {
             Integer.parseInt(string);
@@ -116,7 +136,7 @@ public class Utils {
 
     /**
      * Parse integer without exceptions
-     * @param string
+     * @param string the string to parse
      * @return parsed integer or 0 if the string is not an integer
      */
     public static int parseInteger(String string) {
@@ -126,4 +146,6 @@ public class Utils {
             return 0;
         }
     }
+
+    private Utils() {}
 }

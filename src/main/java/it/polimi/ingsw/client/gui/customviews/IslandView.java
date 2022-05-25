@@ -64,6 +64,12 @@ public class IslandView extends StackPane {
 
         setMaxWidth(size);
         setMaxHeight(size);
+        setMinWidth(size);
+        setMinHeight(size);
+        setWidth(size);
+        setHeight(size);
+        setPrefWidth(size);
+        setPrefHeight(size);
 
         setupElements();
 
@@ -132,7 +138,7 @@ public class IslandView extends StackPane {
      */
     public void addStudent(Student student) {
         var sv = new StudentView(student);
-        sv.setFitWidth(Math.min(27, size/6));
+        sv.setFitWidth(Math.min(26, size/6));
 
         var students = new ArrayList<>(studentsFlowPane.getChildren());
         students.add(sv);

@@ -10,11 +10,14 @@ import java.util.Deque;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+/**
+ * This class manages the navigation for the CLI
+ */
 public class CLINavigationManager implements NavigationManager {
 
 
     /**
-     * Screens with their corresponding controller
+     * Screens with their corresponding controllers
      */
     private final Map<Screen, ScreenController> screenControllers;
 
@@ -23,10 +26,15 @@ public class CLINavigationManager implements NavigationManager {
      */
     private final Deque<Screen> backstack;
 
+    /**
+     * Currently shown screen
+     */
     private Screen currentScreen;
 
-    private Screen lastScreen;
-
+    /**
+     * Initializes the navigation manager.
+     * Creates alle the screen controllers
+     */
     public CLINavigationManager() {
         this.backstack = new ArrayDeque<>();
         this.screenControllers = new ConcurrentHashMap<>();
@@ -58,7 +66,7 @@ public class CLINavigationManager implements NavigationManager {
             backstack.push(currentScreen);
         }
 
-        lastScreen = currentScreen;
+        var lastScreen = currentScreen;
         currentScreen = destination;
 
         //call onHide on the current screen

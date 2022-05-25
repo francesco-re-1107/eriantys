@@ -6,21 +6,20 @@ import it.polimi.ingsw.client.cli.Cursor;
 import it.polimi.ingsw.client.cli.views.CommandInputView;
 import it.polimi.ingsw.client.cli.views.TitleView;
 
+/**
+ * This class is responsible for controlling the main menu screen of the CLI.
+ */
 public class CLIMainMenuScreenController implements ScreenController {
-
-    private TitleView titleView;
-
-    private CommandInputView commandInputView;
 
     @Override
     public void onShow() {
         Cursor.getInstance().clearScreen();
 
-        titleView = new TitleView(TitleView.Title.ERIANTYS,
-                "Connesso come " + Client.getInstance().getNickname());
-        titleView.draw();
+        new TitleView(TitleView.Title.ERIANTYS, "Connesso come " + Client.getInstance().getNickname())
+                .draw();
 
-        commandInputView = new CommandInputView("Scegli opzione");
+        //TODO strings
+        var commandInputView = new CommandInputView("Scegli opzione");
         commandInputView.addCommandListener(
                 "0",
                 "CREA PARTITA",

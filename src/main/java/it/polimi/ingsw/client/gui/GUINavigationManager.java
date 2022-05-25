@@ -60,6 +60,11 @@ public class GUINavigationManager implements NavigationManager {
      */
     private Screen currentScreen;
 
+    /**
+     * Initializes the navigation manager.
+     * Loads the first screen synchronously, while the rest are loaded asynchronously in a different thread.
+     * @param stage the main stage
+     */
     public GUINavigationManager(Stage stage) {
         this.stage = stage;
         this.backstack = new ArrayDeque<>();

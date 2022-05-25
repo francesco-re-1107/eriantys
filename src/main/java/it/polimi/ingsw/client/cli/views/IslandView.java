@@ -4,21 +4,49 @@ import it.polimi.ingsw.Utils;
 import it.polimi.ingsw.client.cli.DrawingCharacters;
 import it.polimi.ingsw.client.cli.Palette;
 import it.polimi.ingsw.common.reducedmodel.ReducedIsland;
+import it.polimi.ingsw.server.model.Student;
+
+import java.util.List;
 
 import static org.fusesource.jansi.Ansi.ansi;
 
+/**
+ * This view is used to show an island.
+ */
 public class IslandView extends BaseView {
 
-    public static final int ISLAND_WIDTH = 11;
-
-    public static final int ISLAND_HEIGHT = 7;
-
+    /**
+     * The reduced island to display.
+     */
     private final ReducedIsland island;
 
+    /**
+     * Whether mother nature is present on this island.
+     */
     private final boolean motherNature;
 
+    /**
+     * Index of the island.
+     * Used to display the island number.
+     */
     private final int index;
 
+    /**
+     * WIDTH of the island.
+     */
+    public static final int ISLAND_WIDTH = 11;
+
+    /**
+     * HEIGHT of the island.
+     */
+    public static final int ISLAND_HEIGHT = 7;
+
+    /**
+     * Create a new IslandView with the given parameters.
+     * @param island the reduced island to display.
+     * @param index the index of the island.
+     * @param motherNature whether mother nature is present on this island.
+     */
     public IslandView(ReducedIsland island, int index, boolean motherNature) {
         this.island = island;
         this.index = index;
@@ -33,6 +61,9 @@ public class IslandView extends BaseView {
         drawTowers();
     }
 
+    /**
+     * Draw towers on the island.
+     */
     private void drawTowers() {
         cursor.saveCursorPosition();
         cursor.moveRelative(1, ISLAND_HEIGHT - 2);
@@ -48,30 +79,70 @@ public class IslandView extends BaseView {
         cursor.restoreCursorPosition();
     }
 
+    /**
+     * Draw students on the island.
+     */
     private void drawStudents() {
         cursor.saveCursorPosition();
         cursor.moveRelative(1, 2);
 
-        if(island.students().getSize() > 24) { //max students an island can hold
-            //do something
-        } else {
-
-            var rows = Utils.partition(island.students().toList(), ISLAND_WIDTH - 2);
-
-            for (var row : rows) {
-                for (var s : row)
-                    cursor.print(ansi()
-                            .fg(Palette.STUDENTS_COLOR_MAP.get(s))
-                            .bg(Palette.ISLAND_BACKGROUND)
-                            .a(DrawingCharacters.STUDENT)
-                    );
-                cursor.moveRelative(-(ISLAND_WIDTH - 2), 1);
-            }
-        }
+        if(island.students().getSize() > 24)
+            drawCompactStudents();
+        else
+            drawExtendedStudents();
 
         cursor.restoreCursorPosition();
     }
 
+    /**
+     * Draw students on the island in an extended view.
+     * Used if there are less than 24 students on the island.
+     */
+    private void drawExtendedStudents() {
+        var rows = Utils.partition(island.students().toList(), ISLAND_WIDTH - 2);
+
+        for (var row : rows) {
+            for (var s : row)
+                cursor.print(ansi()
+                        .fg(Palette.STUDENTS_COLOR_MAP.get(s))
+                        .bg(Palette.ISLAND_BACKGROUND)
+                        .a(DrawingCharacters.STUDENT)
+                );
+            cursor.moveRelative(-(ISLAND_WIDTH - 2), 1);
+        }
+    }
+
+    /**
+     * Draw students on the island in a compact view.
+     * Used if there are more than 24 students on the island.
+     */
+    private void drawCompactStudents() {
+        var rows = Utils.partition(List.of(Student.values()), 2);
+
+        for (var row : rows) {
+            var rowLength = 0;
+            for (var s : row) {
+                var studString = ansi()
+                        .fg(Palette.STUDENTS_COLOR_MAP.get(s))
+                        .bg(Palette.ISLAND_BACKGROUND)
+                        .a(DrawingCharacters.STUDENT)
+                        .a(" ")
+                        .fgBlack()
+                        .bold()
+                        .a(island.students().getCountForStudent(s))
+                        .a(" ")
+                        .reset();
+
+                cursor.print(studString);
+                rowLength += cursor.realLength(studString);
+            }
+            cursor.moveRelative(-rowLength, 1);
+        }
+    }
+
+    /**
+     * Draw island index, mother nature (if present) and no entry.
+     */
     private void drawIslandInfo() {
         cursor.saveCursorPosition();
 
@@ -111,6 +182,9 @@ public class IslandView extends BaseView {
         }
     }
 
+    /**
+     * Draw borders of the island.
+     */
     private void drawBorders() {
         cursor.saveCursorPosition();
 
@@ -161,8 +235,6 @@ public class IslandView extends BaseView {
                     .reset()
             );
         }
-
-        cursor.moveRelative(-1, -1);
 
         cursor.restoreCursorPosition();
     }

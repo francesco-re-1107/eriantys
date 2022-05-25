@@ -22,11 +22,31 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+/**
+ * This class is responsible for controlling the game screen of the CLI.
+ */
 public class CLIGameController implements ScreenController, Client.GameUpdateListener {
+
+    /**
+     * Reference to the client class
+     */
     private Client client;
+
+    /**
+     * Reference to the cursor
+     */
     private Cursor cursor;
 
+    /**
+     * Students placed in school
+     * Used for students placement
+     */
     private StudentsContainer studentsPlacedInSchool;
+
+    /**
+     * Students placed on islands
+     * Used for students placement
+     */
     private Map<Integer, StudentsContainer> studentsPlacedInIslands;
 
     @Override
@@ -45,25 +65,36 @@ public class CLIGameController implements ScreenController, Client.GameUpdateLis
 
     @Override
     public void onGameUpdate(ReducedGame game) {
+        //when a game update is received clear screen and input
         cursor.clearScreen();
         cursor.clearInput();
 
         processGameState(game);
     }
 
+    /**
+     * Processes the game update just received based on the game state
+     * @param game
+     */
     private void processGameState(ReducedGame game) {
         switch (game.currentState()) {
+            case CREATED -> { /*do nothing*/ }
             case STARTED -> {
+                //draw the game
                 drawGameView(game);
+
+                //check if it's my turn
                 var currentPlayer = game.currentRound().currentPlayer();
                 if (currentPlayer.equals(client.getNickname())) {
                     processMyTurn(game);
                 } else {
+                    //not my turn
                     new InfoLabelView(InfoString.OTHER_PLAYER_WAIT_FOR_HIS_TURN, currentPlayer)
                             .draw();
                 }
             }
             case PAUSED -> {
+                //show paused title
                 new TitleView(TitleView.Title.PAUSED,
                         "Giocatori offline: " + game.getOfflinePlayersList()).draw();
                 var input = new SimpleInputView("Premi invio per abbandonare la partita");
@@ -74,6 +105,7 @@ public class CLIGameController implements ScreenController, Client.GameUpdateLis
                     "Giocatori che hanno abbandonato: " + game.getOfflinePlayersList())
                     .draw();
             case FINISHED -> {
+                //show finished title
                 var winner = game.winner();
                 if (winner == null)
                     new TitleView(TitleView.Title.TIE).draw();
@@ -99,16 +131,23 @@ public class CLIGameController implements ScreenController, Client.GameUpdateLis
         }
     }
 
+    /**
+     * If my turn than check current stage
+     * @param game the game update
+     */
     private void processMyTurn(ReducedGame game) {
         var stage = game.currentRound().stage();
 
         if (stage == Stage.Plan.PLAN) {
-            new AssistantCardsView(game.getMyPlayer(client.getNickname()).deck(), null)
+            //if plan stage then ask user which assistant card to play
+            new AssistantCardsView(game.getMyPlayer(client.getNickname()).deck())
                     .draw();
         } else {
+            //attack stage
             switch ((Stage.Attack) stage) {
                 case STARTED -> processPlaceStudents(game);
                 case STUDENTS_PLACED -> {
+                    //check if there are character cards to play
                     var myPlayer = game.getMyPlayer(client.getNickname());
                     var myCoins = myPlayer.coins();
 
@@ -119,6 +158,7 @@ public class CLIGameController implements ScreenController, Client.GameUpdateLis
                                             (e.getKey() != Character.MINSTREL || myPlayer.school().getSize() >= 2))
                                     .toList();
 
+                    //if there aren't any playable cards or the game is not with expert mode
                     if(playableCards.isEmpty() || !game.expertMode())
                         processMoveMotherNature(game);
                     else
@@ -130,6 +170,12 @@ public class CLIGameController implements ScreenController, Client.GameUpdateLis
         }
     }
 
+    /**
+     * Ask user if he wants to play a character card
+     * If true, ask user which card to play and play it, otherwise move mother nature
+     * @param game the game update
+     * @param playableCards the list of playable character cards
+     */
     private void askForPlayingCharacterCard(ReducedGame game, List<Map.Entry<Character, Integer>> playableCards) {
         var simpleList = playableCards.stream()
                 .map(Map.Entry::getKey)
@@ -154,6 +200,7 @@ public class CLIGameController implements ScreenController, Client.GameUpdateLis
         characterCardsView.setListener(c -> {
             drawGameView(game);
 
+            //simple cards are played immediately, otherwise process it in another method
             ReducedCharacterCard card = null;
             switch (c) {
                 case CENTAUR -> card = new ReducedCentaurCharacterCard();
@@ -169,16 +216,22 @@ public class CLIGameController implements ScreenController, Client.GameUpdateLis
         characterCardsView.draw();
     }
 
+    /**
+     * This method handles complex character cards, aka character cards that need input from the user.
+     * @param game the game update
+     * @param c the character to play
+     */
     private void processComplexCharacterCard(ReducedGame game, Character c) {
+
         switch (c) {
-            case GRANDMA, HERALD -> {
+            case GRANDMA, HERALD -> { //ask island
                 var input = new IntegerInputView("Su quale isola vuoi applicare la carta:", 0, game.islands().size() - 1);
                 input.setListener(r -> client.forwardGameRequest(new PlayCharacterCardRequest(c == Character.GRANDMA ?
                         new ReducedGrandmaCharacterCard(r) : new ReducedHeraldCharacterCard(r))
                 ));
                 input.draw();
             }
-            case MINSTREL -> {
+            case MINSTREL -> { //swap two students from entrance to school
                 new MinstrelInputView(
                         toRemove -> drawGameView(game),
                         (toRemove, toAdd) -> {
@@ -190,7 +243,7 @@ public class CLIGameController implements ScreenController, Client.GameUpdateLis
                     game.getMyPlayer(client.getNickname()).school()
                 ).draw();
             }
-            case MUSHROOM_MAN -> {
+            case MUSHROOM_MAN -> { //select a student color not influencing
                 var input = new CommandInputView("Seleziona studente");
                 CommandInputView.CommandListener listener = (cmd, args) -> {
                     var stud = Student.YELLOW;
@@ -209,9 +262,13 @@ public class CLIGameController implements ScreenController, Client.GameUpdateLis
         }
     }
 
+    /**
+     * Draw islands, clouds and dashboard of the given game update
+     * @param game the game update
+     */
     private void drawGameView(ReducedGame game) {
         new IslandsLayoutView(game.islands(), game.motherNaturePosition()).draw();
-        new DashoardView(game).draw();
+        new DashboardView(game).draw();
         new CloudsLayoutView(game.currentRound().clouds()).draw();
         cursor.moveToXY(1, 22);
     }
@@ -237,7 +294,7 @@ public class CLIGameController implements ScreenController, Client.GameUpdateLis
 
 
     /**
-     * Check if all students were placed in the placing students phase
+     * Check if all students were placed in the students' placement phase
      */
     private int checkIfAllStudentsPlaced(ReducedGame game){
         var count = 0;
@@ -265,6 +322,10 @@ public class CLIGameController implements ScreenController, Client.GameUpdateLis
         return count;
     }
 
+    /**
+     * Ask user where to place students
+     * @param game the game update
+     */
     private void processPlaceStudents(ReducedGame game) {
         studentsPlacedInSchool = new StudentsContainer();
         studentsPlacedInIslands = new HashMap<>();
@@ -319,6 +380,13 @@ public class CLIGameController implements ScreenController, Client.GameUpdateLis
         placeStudentsInput.draw();
     }
 
+    /**
+     * This method is called when the user wants to place a student on a specific island
+     * @param game the game update
+     * @param stud the student to place
+     * @param island the island to place the student on
+     * @return the number of remaining students to place
+     */
     private int placeStudentOnIsland(ReducedGame game, Student stud, int island) {
         if(studentsPlacedInIslands.containsKey(island))
             studentsPlacedInIslands.get(island).addStudent(stud);
@@ -331,6 +399,12 @@ public class CLIGameController implements ScreenController, Client.GameUpdateLis
         return checkIfAllStudentsPlaced(game);
     }
 
+    /**
+     * This method is called when the user wants to place a student in the school
+     * @param game the game update
+     * @param stud the student to place
+     * @return the number of remaining students to place
+     */
     private int placeStudentInSchool(ReducedGame game, Student stud) {
         studentsPlacedInSchool.addStudent(stud);
         game.getMyPlayer(client.getNickname()).entrance().removeStudent(stud);
@@ -339,6 +413,10 @@ public class CLIGameController implements ScreenController, Client.GameUpdateLis
         return checkIfAllStudentsPlaced(game);
     }
 
+    /**
+     * Ask user which cloud to select
+     * @param game the game update
+     */
     private void processSelectCloud(ReducedGame game) {
         var input = new IntegerInputView("Seleziona una nuvola", 0, game.currentRound().clouds().size() - 1);
         input.setListener(cloud -> client.forwardGameRequest(

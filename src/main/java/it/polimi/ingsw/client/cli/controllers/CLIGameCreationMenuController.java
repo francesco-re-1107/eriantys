@@ -7,14 +7,29 @@ import it.polimi.ingsw.client.cli.views.BooleanInputView;
 import it.polimi.ingsw.client.cli.views.IntegerInputView;
 import it.polimi.ingsw.client.cli.views.TitleView;
 
+/**
+ * This class is responsible for controlling the game creation menu screen of the CLI.
+ */
 public class CLIGameCreationMenuController implements ScreenController {
 
+    /**
+     * Input view for the number of players.
+     */
     private IntegerInputView numberOfPlayersView;
 
+    /**
+     * Input view for the expert mode.
+     */
     private BooleanInputView expertModeView;
 
+    /**
+     * Number of players chosen by the user.
+     */
     private int numberOfPlayers;
 
+    /**
+     * Expert mode chosen by the user.
+     */
     private boolean expertMode;
 
     @Override
@@ -38,6 +53,9 @@ public class CLIGameCreationMenuController implements ScreenController {
         numberOfPlayersView.draw();
     }
 
+    /**
+     * Sends the game creation request to the server.
+     */
     private void sendCreationRequest() {
         Client.getInstance().createGame(
                 numberOfPlayers,
@@ -46,6 +64,9 @@ public class CLIGameCreationMenuController implements ScreenController {
         );
     }
 
+    /**
+     * Asks user for expert mode.
+     */
     private void askForExpertMode() {
         expertModeView.draw();
 

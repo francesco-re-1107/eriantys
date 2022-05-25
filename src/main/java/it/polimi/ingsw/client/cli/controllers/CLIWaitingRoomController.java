@@ -6,6 +6,9 @@ import it.polimi.ingsw.client.cli.Cursor;
 import it.polimi.ingsw.client.cli.views.SimpleInputView;
 import it.polimi.ingsw.common.reducedmodel.ReducedGame;
 
+/**
+ * This class is responsible for controlling the waiting room screen of the CLI.
+ */
 public class CLIWaitingRoomController implements ScreenController, Client.GameUpdateListener {
 
     @Override

@@ -10,6 +10,9 @@ import javafx.scene.image.ImageView;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 
+/**
+ * This class represents the popup that shows the information of a character card.
+ */
 public class CharacterCardInformationPopup extends ContextMenu {
 
     public CharacterCardInformationPopup(Character character, int usedTimes) {

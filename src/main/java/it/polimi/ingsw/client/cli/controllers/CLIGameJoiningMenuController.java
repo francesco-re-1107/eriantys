@@ -15,11 +15,24 @@ import java.util.TimerTask;
 
 import static org.fusesource.jansi.Ansi.ansi;
 
+/**
+ * This class is responsible for controlling the game joining menu of the CLI.
+ */
 public class CLIGameJoiningMenuController implements ScreenController {
 
+    /**
+     * ListView for the games.
+     */
     private ListView<GameListItem> gamesListView;
 
+    /**
+     * Timer for refreshing the list of games.
+     */
     private Timer refreshTimer;
+
+    /**
+     * Current list of games to display.
+     */
     private List<GameListItem> currentGamesList;
 
     @Override
@@ -27,31 +40,43 @@ public class CLIGameJoiningMenuController implements ScreenController {
         Cursor.getInstance().clearScreen();
 
         currentGamesList = new ArrayList<>();
-        gamesListView = new ListView<>(currentGamesList, item -> {
-            if(item.expertMode()){
-                return ansi()
-                        .a("GIOCATORI: ")
-                        .a(item.currentNumberOfPlayers() + "/" + item.numberOfPlayers())
-                        .a("  ")
-                        .fgBrightRed().a("ESPERTI ")
-                        .reset();
-            } else {
-                return ansi()
-                        .a("GIOCATORI: ")
-                        .a(item.currentNumberOfPlayers() + "/" + item.numberOfPlayers()).reset()
-                        .a("  ")
-                        .fgBrightYellow().a("SEMPLICE")
-                        .reset();
-            }
-        }, "Partite disponibili", "Seleziona una partita", "Nessuna partita disponibile", true, 2);
+        gamesListView = new ListView<>(
+                currentGamesList,
+                item -> {
+                    if(item.expertMode()){
+                        return ansi()
+                                .a("GIOCATORI: ")
+                                .a(item.currentNumberOfPlayers() + "/" + item.numberOfPlayers())
+                                .a("  ")
+                                .fgBrightRed().a("ESPERTI ")
+                                .reset();
+                    } else {
+                        return ansi()
+                                .a("GIOCATORI: ")
+                                .a(item.currentNumberOfPlayers() + "/" + item.numberOfPlayers()).reset()
+                                .a("  ")
+                                .fgBrightYellow().a("SEMPLICE")
+                                .reset();
+                    }
+                },
+                "Partite disponibili",
+                "Seleziona una partita",
+                "Nessuna partita disponibile",
+                true,
+                2
+        );
 
-        gamesListView.setListener((item, index) -> joinGame(item));
+        gamesListView.setOnSelectionListener((item, index) -> joinGame(item));
         gamesListView.draw();
 
         //start list refresh when the screen is displayed
         startRefreshTimer();
     }
 
+    /**
+     * Called when the user selects a game from the list.
+     * @param item the selected game item
+     */
     private void joinGame(GameListItem item) {
         Client.getInstance().joinGame(item.uuid(), e -> gamesListView.showError("Impossibile unirsi alla partita"));
     }

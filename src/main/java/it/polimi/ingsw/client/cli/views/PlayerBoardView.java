@@ -13,19 +13,48 @@ import java.util.Map;
 
 import static org.fusesource.jansi.Ansi.ansi;
 
+/**
+ * This view shows a generic player board
+ */
 public class PlayerBoardView extends BaseView {
 
+    /**
+     * The player to show
+     */
     private final ReducedPlayer player;
 
+    /**
+     * Current professors
+     */
     private final Map<Student, String> professors;
 
+    /**
+     * If the given player is the current player
+     */
     private final boolean isCurrentPlayer;
 
-    private final boolean myPlayer;
+    /**
+     * If the given player is my player
+     */
+    private final boolean isMyPlayer;
 
+    /**
+     * If game is expert mode then show coins, otherwise hide them
+     */
     private final boolean expertMode;
+
+    /**
+     * Current round, used to show the played assistant cards
+     */
     private final ReducedRound currentRound;
 
+    /**
+     * Create a board view for the given player
+     * @param player the player to show
+     * @param currentRound the current round
+     * @param professors the current professors
+     * @param expertMode if the game is expert mode or not
+     */
     public PlayerBoardView(ReducedPlayer player,
                            ReducedRound currentRound,
                            Map<Student, String> professors,
@@ -33,7 +62,7 @@ public class PlayerBoardView extends BaseView {
         this.player = player;
         this.professors = professors;
         this.currentRound = currentRound;
-        this.myPlayer = Client.getInstance().getNickname().equals(player.nickname());
+        this.isMyPlayer = Client.getInstance().getNickname().equals(player.nickname());
         this.expertMode = expertMode;
         this.isCurrentPlayer = currentRound.currentPlayer().equals(player.nickname());
     }
@@ -48,6 +77,9 @@ public class PlayerBoardView extends BaseView {
             drawCoins();
     }
 
+    /**
+     * Draw coins view
+     */
     private void drawCoins() {
         cursor.saveCursorPosition();
 
@@ -65,6 +97,9 @@ public class PlayerBoardView extends BaseView {
         cursor.restoreCursorPosition();
     }
 
+    /**
+     * Draw towers view
+     */
     private void drawTowers() {
         cursor.saveCursorPosition();
 
@@ -84,6 +119,9 @@ public class PlayerBoardView extends BaseView {
         cursor.restoreCursorPosition();
     }
 
+    /**
+     * Draw played card
+     */
     private void drawCard() {
         cursor.saveCursorPosition();
 
@@ -107,6 +145,9 @@ public class PlayerBoardView extends BaseView {
         cursor.restoreCursorPosition();
     }
 
+    /**
+     * Draw students owned by the player
+     */
     private void drawStudents() {
         cursor.saveCursorPosition();
 
@@ -140,6 +181,11 @@ public class PlayerBoardView extends BaseView {
         cursor.restoreCursorPosition();
     }
 
+    /**
+     * Draw the nickname of the player.
+     * If the player is the current player, an indicator is shown.
+     * If the given player is my player, it's shown "Tu" instead of the nickname.
+     */
     private void drawNickname() {
         cursor.saveCursorPosition();
 
@@ -155,7 +201,7 @@ public class PlayerBoardView extends BaseView {
         cursor.print(ansi()
                 .fg(Palette.WHITE)
                 .bg(Palette.DASHBOARD_BACKGROUND)
-                .a(myPlayer ? "Tu" : player.nickname())
+                .a(isMyPlayer ? "Tu" : player.nickname())
                 .reset());
 
         cursor.restoreCursorPosition();

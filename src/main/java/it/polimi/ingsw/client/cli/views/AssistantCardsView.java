@@ -7,24 +7,26 @@ import it.polimi.ingsw.server.model.AssistantCard;
 import org.fusesource.jansi.Ansi;
 
 import java.util.Comparator;
-import java.util.List;
 import java.util.Map;
 
-public class AssistantCardsView extends CardsView {
-    private Map<AssistantCard, Boolean> playerDeck;
-    private List<Map<AssistantCard, Boolean>> otherDecks;
-    private ListView<AssistantCard> listView;
+/**
+ * This view shows a list of assistant cards playable by the user
+ */
+public class AssistantCardsView extends BaseView {
 
-    public AssistantCardsView(Map<AssistantCard, Boolean> playerDeck, List<Map<AssistantCard, Boolean>> otherDecks) {
-        this.playerDeck = playerDeck;
-        this.otherDecks = otherDecks;
+    private final ListView<AssistantCard> listView;
+
+    /**
+     * Create a new AssistantCardsView with the given deck
+     * @param playerDeck the deck of the player
+     */
+    public AssistantCardsView(Map<AssistantCard, Boolean> playerDeck) {
         this.listView = new ListView<>(
                 playerDeck.entrySet().stream()
                         .filter(e -> !e.getValue())
                         .sorted(Comparator.comparingInt(e -> e.getKey().turnPriority()))
                         .map(Map.Entry::getKey)
                         .toList(),
-
                 card -> new Ansi()
                         .a("Priorità turno: ")
                         .a(card.turnPriority())
@@ -37,18 +39,20 @@ public class AssistantCardsView extends CardsView {
                 "Inserisci il numero corrispondente",
                 "Nessuna carta giocabile",
                 true,
-                2);
+                2
+        );
 
     }
 
     @Override
     public void draw() {
-        listView.setListener(
-                (card, input) -> {
-                    Client.getInstance()
-                            .forwardGameRequest(new PlayAssistantCardRequest(card),
-                            (e) ->listView.showError("Carta non giocabile"));
-                });
+        listView.setOnSelectionListener(
+                (card, input) ->
+                        Client.getInstance().forwardGameRequest(
+                                new PlayAssistantCardRequest(card),
+                                e -> listView.showError("Carta non giocabile")
+                        )
+        );
         listView.draw();
     }
 }

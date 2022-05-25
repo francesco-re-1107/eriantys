@@ -11,14 +11,44 @@ import java.util.function.Function;
 
 import static org.fusesource.jansi.Ansi.ansi;
 
+/**
+ * This view shows a list of character cards that the player can buy.
+ */
 public class CharacterCardsView extends BaseView {
 
+    /**
+     * ListView used internally to show the list of character cards.
+     */
     private final ListView<Map.Entry<Character, Integer>> listView;
 
+    /**
+     * Character card renderer
+     */
+    Function<Map.Entry<Character, Integer>, Ansi> renderer = entry -> {
+        var title = Constants.CHARACTER_NAMES.get(entry.getKey());
+        var description = Constants.CHARACTER_DESCRIPTIONS.get(entry.getKey());
+        return ansi()
+                .bold()
+                .fgBrightMagenta()
+                .a(title)
+                .fgDefault()
+                .bold()
+                .a(" (" + entry.getKey().getCost(entry.getValue()) + "$)")
+                .reset()
+                .fgDefault()
+                .a("\n        ") //inset description
+                .a(description.replaceAll("(.{65})", "$1\n        ")) //put a new line every 65 chars
+                .reset();
+    };
+
+    /**
+     * Create a new CharacterCardsView with the given list of playable character cards.
+     * @param playableCards the list of playable character cards.
+     */
     public CharacterCardsView(List<Map.Entry<Character, Integer>> playableCards) {
         this.listView = new ListView<>(
                 playableCards,
-                getRenderer(),
+                renderer,
                 "Carte personaggio acquistabili",
                 "Seleziona carta",
                 "Nessuna carta giocabile",
@@ -32,26 +62,11 @@ public class CharacterCardsView extends BaseView {
         listView.draw();
     }
 
+    /**
+     * Set the listener called when the user selects a character card.
+     * @param listener the listener called when the user selects a character card.
+     */
     public void setListener(Consumer<Character> listener) {
-        listView.setListener((e, index) -> listener.accept(e.getKey()));
-    }
-
-    private Function<Map.Entry<Character, Integer>, Ansi> getRenderer() {
-        return entry -> {
-            var title = Constants.CHARACTER_NAMES.get(entry.getKey());
-            var description = Constants.CHARACTER_DESCRIPTIONS.get(entry.getKey());
-            return ansi()
-                    .bold()
-                    .fgBrightMagenta()
-                    .a(title)
-                    .fgDefault()
-                    .bold()
-                    .a(" (" + entry.getKey().getCost(entry.getValue()) + "$)")
-                    .reset()
-                    .fgDefault()
-                    .a("\n        ") //inset description
-                    .a(description.replaceAll("(.{65})", "$1\n        ")) //put a new line every 65 chars
-                    .reset();
-        };
+        listView.setOnSelectionListener((e, index) -> listener.accept(e.getKey()));
     }
 }

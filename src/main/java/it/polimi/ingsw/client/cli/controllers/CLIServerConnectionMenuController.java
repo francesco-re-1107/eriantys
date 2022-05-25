@@ -7,20 +7,26 @@ import it.polimi.ingsw.client.cli.views.SimpleInputView;
 import it.polimi.ingsw.client.cli.views.TitleView;
 import it.polimi.ingsw.common.exceptions.DuplicatedNicknameException;
 
+/**
+ * This class is responsible for controlling the server connection menu of the CLI.
+ */
 public class CLIServerConnectionMenuController implements ScreenController {
 
-    private TitleView titleView;
-
+    /**
+     * Input view for the connection params aka the server address and port.
+     */
     private SimpleInputView connectionParamsView;
 
+    /**
+     * Input view for the nickname.
+     */
     private SimpleInputView nicknameView;
 
     @Override
     public void onShow() {
         Cursor.getInstance().clearScreen();
 
-        titleView = new TitleView(TitleView.Title.ERIANTYS);
-        titleView.draw();
+        new TitleView(TitleView.Title.ERIANTYS).draw();
 
         connectionParamsView = new SimpleInputView("Inserisci hostname:port [default localhost:6001]:");
         connectionParamsView.setListener(this::processConnectionParams);
@@ -30,6 +36,10 @@ public class CLIServerConnectionMenuController implements ScreenController {
         nicknameView.setListener(this::processNickname);
     }
 
+    /**
+     * Called when the user inputs the connection params.
+     * @param conf the connection params string
+     */
     private void processConnectionParams(String conf) {
         var ip = "";
         var port = "";
@@ -51,6 +61,10 @@ public class CLIServerConnectionMenuController implements ScreenController {
         );
     }
 
+    /**
+     * Called when the user inputs the nickname.
+     * @param nickname the nickname string
+     */
     private void processNickname(String nickname) {
         Client.getInstance().registerNickname(
                 nickname,
@@ -63,6 +77,9 @@ public class CLIServerConnectionMenuController implements ScreenController {
         );
     }
 
+    /**
+     * Called after the client connects to the server.
+     */
     private void askNickname() {
         nicknameView.draw();
     }

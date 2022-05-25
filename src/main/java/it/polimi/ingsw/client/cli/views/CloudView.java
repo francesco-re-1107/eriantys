@@ -8,15 +8,36 @@ import org.fusesource.jansi.Ansi;
 
 import static org.fusesource.jansi.Ansi.ansi;
 
+/**
+ * This view shows a cloud of students
+ */
 public class CloudView extends BaseView{
 
-    private static final int CLOUD_WIDTH = 9;
-
-    private static final int CLOUD_HEIGHT = 5;
-
+    /**
+     * Cloud to be displayed
+     */
     private final StudentsContainer cloud;
+
+    /**
+     * Cloud index, printed in the cloud
+     */
     private final int index;
 
+    /**
+     * Cloud WIDTH
+     */
+    private static final int CLOUD_WIDTH = 9;
+
+    /**
+     * Cloud HEIGHT
+     */
+    private static final int CLOUD_HEIGHT = 5;
+
+    /**
+     * Create a CloudView with the given cloud and index
+     * @param cloud cloud to be displayed
+     * @param index cloud index in the round
+     */
     public CloudView(StudentsContainer cloud, int index) {
         this.cloud = cloud;
         this.index = index;
@@ -28,12 +49,15 @@ public class CloudView extends BaseView{
         cursor.paintBackground(Palette.CLOUD_BACKGROUND, CLOUD_WIDTH, CLOUD_HEIGHT);
         cursor.restoreCursorPosition();
 
-        paintEdges();
+        paintVertices();
         drawCloudInfo();
         drawStudents();
     }
 
-    private void paintEdges() {
+    /**
+     * Paint the vertices of the cloud with the island background color to obtain a more rounded shape
+     */
+    private void paintVertices() {
         cursor.saveCursorPosition();
         cursor.paintBackground(Palette.ISLAND_BACKGROUND, 1, 1);
         cursor.restoreCursorPosition();
@@ -55,6 +79,9 @@ public class CloudView extends BaseView{
 
     }
 
+    /**
+     * Draw the students in the cloud
+     */
     private void drawStudents() {
         cursor.saveCursorPosition();
 
@@ -86,6 +113,9 @@ public class CloudView extends BaseView{
         cursor.restoreCursorPosition();
     }
 
+    /**
+     * Draw the cloud index
+     */
     private void drawCloudInfo() {
         cursor.saveCursorPosition();
 
