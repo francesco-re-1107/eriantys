@@ -8,49 +8,61 @@ import javafx.application.Application;
 import java.util.logging.Level;
 
 public class App {
+
+    /**
+     * Whether to start the client or the server
+     */
+    private static boolean client;
+
+    /**
+     * Whether to start the GUI or the CLI (only if client)
+     */
+    private static boolean gui;
+
     public static void main(String[] args) {
-        var client = false;
-        var gui = false;
-
-        //rough arguments parsing to determine if server or client must be started
-        try {
-            client = args[0].equals("client");
-
-            if (client)
-                gui = args[1].equals("--gui");
-
-        } catch (Exception e) {
-            Utils.LOGGER.severe("Arguments error");
-            System.exit(0);
-        }
+        parseArguments(args);
 
         if (client) {
-            startClient(gui);
+            if (gui) {
+                Utils.LOGGER.info("Starting client with GUI");
+                Application.launch(GUI.class);
+            } else {
+                Utils.LOGGER.setLevel(Level.SEVERE);
+                CLI.start();
+            }
         } else {
-            startServer();
+            new Server(Utils.getServerConfig().port())
+                    .startListening();
         }
     }
 
     /**
-     * Start the server
+     * Parses the arguments passed to the program and sets the corresponding flags
+     * @param args the arguments passed to the program
      */
-    public static void startServer() {
-        new Server(Utils.getServerConfig().port())
-                .startListening();
-    }
+    private static void parseArguments(String[] args) {
+        try {
+            if(args[0].equalsIgnoreCase("client"))
+                client = true;
+            else if(args[0].equalsIgnoreCase("server"))
+                client = false;
+            else
+                throw new IllegalArgumentException("First argument must be either 'client' or 'server'");
 
-    /**
-     * Start the client with cli or gui respectively
-     *
-     * @param gui whether the client must be started with gui or not.
-     */
-    public static void startClient(boolean gui) {
-        if (gui) {
-            Utils.LOGGER.info("Starting client with GUI");
-            Application.launch(GUI.class);
-        } else {
-            Utils.LOGGER.setLevel(Level.SEVERE);
-            CLI.start();
+            if(client) {
+                if (args[1].equalsIgnoreCase("--cli"))
+                    gui = false;
+                else if (args[1].equalsIgnoreCase("--gui"))
+                    gui = true;
+                else
+                    throw new IllegalArgumentException("Second argument must be either '--cli' or '--gui'");
+            }
+        } catch (IllegalArgumentException e) {
+            Utils.LOGGER.severe(e.getMessage());
+            System.exit(0);
+        } catch (ArrayIndexOutOfBoundsException e) {
+            Utils.LOGGER.severe("Missing arguments");
+            System.exit(0);
         }
     }
 }
