@@ -163,14 +163,6 @@ public final class Constants {
     public static final String DEFAULT_BACKUP_FOLDER = "";
 
     /**
-     * Polling interval used to check if there's something to read from input.
-     * DISCLAIMER: Reading from input with polling is the only way to be able to interrupt the reading process.
-     * e.g. if an update from the server is received (for example the game is gone into PAUSED state) while the user is
-     * writing to input, then the input could be interrupted.
-     */
-    public static final long CLI_READ_POLLING_INTERVAL = 100;
-
-    /**
      * These constants are used in a game with 2 players (commented only once)
      */
     public static final class TwoPlayers {

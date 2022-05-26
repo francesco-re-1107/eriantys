@@ -1,11 +1,11 @@
 package it.polimi.ingsw.client.cli;
 
-import it.polimi.ingsw.Constants;
 import org.fusesource.jansi.Ansi;
 import org.fusesource.jansi.AnsiConsole;
 
+import java.io.BufferedReader;
 import java.io.IOException;
-import java.nio.charset.StandardCharsets;
+import java.io.InputStreamReader;
 
 import static org.fusesource.jansi.Ansi.ansi;
 
@@ -30,6 +30,11 @@ public class Cursor {
     public static final int HEIGHT = 24;
 
     /**
+     * Last user input string
+     */
+    private String inputString;
+
+    /**
      * Used to keep track of the cursor movements, used by saveCursorPosition() and restoreCursorPosition().
      */
     private int relativeX = 0;
@@ -50,6 +55,20 @@ public class Cursor {
     private Cursor() {
         AnsiConsole.systemInstall();
         System.setProperty("jansi.passthrough", "true");
+
+        //start listening to user input on a new thread
+        new Thread(() -> {
+            while (true) {
+                try {
+                    inputString = new BufferedReader(new InputStreamReader(System.in)).readLine();
+                } catch (IOException e) {}
+
+                //when user input is received, notify all the waiting threads
+                synchronized (this){
+                    notifyAll();
+                }
+            }
+        }).start();
     }
 
     /**
@@ -97,53 +116,42 @@ public class Cursor {
 
     /**
      * This method listen for user input.
-     * Only one thread can listen at a time. If a thread is already listening, it will be interrupted.
-     *
-     * DISCLAIMER: Reading from input with polling is the only way to be able to interrupt the reading process.
-     * e.g. if an update from the server is received (for example the game is gone into PAUSED state) while the user is
-     * writing to input, then the input could be interrupted.
+     * Only one thread can listen at a time.
+     * If a new thread start listening to user input, the previous thread will be interrupted.
      *
      * @return the string entered by the user
      * @throws InterruptedException if the thread is interrupted because another thread is listening to user input
-     * @throws IOException error listening to user input
      */
-    public String input() throws InterruptedException, IOException {
-        //stop previous thread listening to input
-        try{
-            threadListeningUserInput.interrupt();
-        } catch (Exception e){ }
-
-        //clear System.in before reading
-        System.in.read(new byte[System.in.available()]);
-
+    public String input() throws InterruptedException {
         threadListeningUserInput = Thread.currentThread();
 
-        //read with polling
-        while(true){
-            if(System.in.available() > 0)
-            {
-                var buff = new byte[4096];
-                int n = System.in.read(buff);
-                var str = new String(buff, 0, n, StandardCharsets.UTF_8)
-                        .replace("\n", "")
-                        .replace("\r", "");
-
-                threadListeningUserInput = null;
-
-                return str;
-            } else {
-                Thread.sleep(Constants.CLI_READ_POLLING_INTERVAL);
-            }
+        synchronized (this) {
+            // notify all the waiting threads that a new thread is listening to user input
+            // (only 1 thread at a time can listen to input)
+            notifyAll();
         }
+
+        // when a new thread is listening reset the input string
+        inputString = "";
+
+        synchronized (this) {
+            // wait for the user to enter a string OR for another thread started listening to user input
+            // therefore this thread will be interrupted
+            wait();
+        }
+
+        // on wakeup, if the thread listening to input is this thread, then return the input string
+        // otherwise, the thread was interrupted by another thread, so throw an exception
+        if(threadListeningUserInput != Thread.currentThread())
+            throw new InterruptedException();
+        else
+            return inputString;
     }
 
     /**
      * This method stops any thread listening to user input.
      */
     public void clearInput() {
-        try{
-            threadListeningUserInput.interrupt();
-        } catch (Exception e){ }
         threadListeningUserInput = null;
     }
 
