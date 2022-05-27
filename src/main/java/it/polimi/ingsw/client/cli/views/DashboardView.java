@@ -18,7 +18,7 @@ public class DashboardView extends BaseView{
     /**
      * x coordinate of the ending point of the rectangle where the dashboard is displayed
      */
-    private static final int DIVIDER_X = 25;
+    private static final int DIVIDER_X = 24;
 
     /**
      * Create a DashboardView for the given game update

@@ -25,7 +25,7 @@ public class IslandsLayoutView extends BaseView{
     /**
      * x coordinate of the starting point of the rectangle where islands are displayed
      */
-    private static final int DIVIDER_X = 25;
+    private static final int DIVIDER_X = 24;
 
     /**
      * Create a new IslandsLayoutView
@@ -39,7 +39,7 @@ public class IslandsLayoutView extends BaseView{
 
     @Override
     public void draw() {
-        cursor.paintBackground(Palette.ISLAND_BACKGROUND, DIVIDER_X, 1, Cursor.WIDTH, Cursor.HEIGHT-3);
+        cursor.paintBackground(Palette.ISLAND_BACKGROUND, DIVIDER_X, 1, Cursor.WIDTH - 1, Cursor.HEIGHT-3);
 
         //print every island using the IslandsLayouts data
         for(int i = 0; i < islands.size(); i++) {

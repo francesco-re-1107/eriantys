@@ -280,6 +280,8 @@ public class Cursor {
     public void restoreCursorPosition() {
         int x = this.relativeX;
         int y = this.relativeY;
+        this.relativeX = 0;
+        this.relativeY = 0;
         moveRelative(-x, -y);
     }
 
@@ -304,10 +306,10 @@ public class Cursor {
     /**
      * Paint a portion of the background of the terminal with the given color.
      * @param color the color to paint
-     * @param xMin the x coordinate of the top left corner of the area to paint
-     * @param yMin the y coordinate of the top left corner of the area to paint
-     * @param xMax the x coordinate of the bottom right corner of the area to paint
-     * @param yMax the y coordinate of the bottom right corner of the area to paint
+     * @param xMin the x coordinate of the top left corner of the area to paint (inclusive)
+     * @param yMin the y coordinate of the top left corner of the area to paint (inclusive)
+     * @param xMax the x coordinate of the bottom right corner of the area to paint (inclusive)
+     * @param yMax the y coordinate of the bottom right corner of the area to paint (inclusive)
      */
     public void paintBackground(int color, int xMin, int yMin, int xMax, int yMax) {
         moveToXY(xMin, yMin);
