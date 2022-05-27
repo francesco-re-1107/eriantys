@@ -4,14 +4,14 @@ Progetto di Ingegneria del Software A.A. 2021-2022
 
 ## Features
 
-|     Feature      | Implemented                    |
-|:----------------:|--------------------------------|
-| Regole Complete  | ✅                              |
-|       CLI        | ✅                              |
-|       GUI        | ✅                              |
-|       FA 1       | ✅ Persistence                  |
-|       FA 2       | ✅ Resilience to disconnections |
-|       FA 3       | ✅ Multiple games               |
+| Feature                            | Implemented  |
+|------------------------------------|:------------:|
+| Regole Complete                    |      ✅       |
+| CLI                                |      ✅       |
+| GUI                                |      ✅       |
+| Multiple games (FA1)               |      ✅       |
+| Persistence (FA2)                  |      ✅       |
+| Resilience to disconnections (FA3) |      ✅       |
 
 ## Testing
 
