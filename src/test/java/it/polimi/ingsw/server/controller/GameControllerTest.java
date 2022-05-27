@@ -1,5 +1,7 @@
 package it.polimi.ingsw.server.controller;
 
+import it.polimi.ingsw.common.exceptions.InvalidOperationException;
+import it.polimi.ingsw.common.reducedmodel.charactercards.ReducedCentaurCharacterCard;
 import it.polimi.ingsw.server.model.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -65,13 +67,16 @@ class GameControllerTest {
         gc1.placeStudents(new StudentsContainer(), inIsland);
         assertEquals(4, game.getIslands().get(2).getStudents().getSize());
 
-        //play character card
-        //...
-
         //move mother nature
         int prevPos = game.getMotherNaturePosition();
         gc1.moveMotherNature(1);
         assertEquals(prevPos + 1, game.getMotherNaturePosition());
+
+        //play character card
+        assertThrows(
+                InvalidOperationException.class,
+                () -> gc1.playCharacterCard(new ReducedCentaurCharacterCard())
+        );
 
         //select cloud
         gc1.selectCloud(game.getCurrentRound().getClouds().get(0));
