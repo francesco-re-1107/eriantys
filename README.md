@@ -48,9 +48,9 @@ Change OS [/s](https://www.urbandictionary.com/define.php?term=%2FS). For the be
 ## Screenshots
 
 ### CLI
-![cli1](https://imgur.com/MUGCGzI)
-![cli2](https://imgur.com/Wrhd1wp)
+![cli1](https://i.imgur.com/MUGCGzI.png)
+![cli2](https://i.imgur.com/Wrhd1wp.png)
 
 ### GUI
-![gui1](https://imgur.com/wfoYgga)
-![gui2](https://imgur.com/cxGxkpy)
+![gui1](https://i.imgur.com/wfoYgga.png)
+![gui2](https://i.imgur.com/cxGxkpy.png)
