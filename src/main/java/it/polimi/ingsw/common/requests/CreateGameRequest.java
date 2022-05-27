@@ -1,6 +1,6 @@
 package it.polimi.ingsw.common.requests;
 
-import it.polimi.ingsw.common.exceptions.InvalidOperationException;
+import it.polimi.ingsw.common.exceptions.InvalidOperationError;
 import it.polimi.ingsw.common.responses.Reply;
 import it.polimi.ingsw.common.responses.replies.AckReply;
 import it.polimi.ingsw.server.VirtualView;
@@ -25,7 +25,7 @@ public class CreateGameRequest extends Request{
     @Override
     public Reply handleRequest(VirtualView vw, Controller c, GameController gc) {
         if(gc != null) //already in game
-            throw new InvalidOperationException("Client already in game");
+            throw new InvalidOperationError("Client already in game");
 
         //game created -> new game controller
         vw.setGameController(c.createGame(vw.getNickname(), numberOfPlayers, expertMode));

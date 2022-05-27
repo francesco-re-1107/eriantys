@@ -1,6 +1,6 @@
 package it.polimi.ingsw.server.controller;
 
-import it.polimi.ingsw.common.exceptions.InvalidOperationException;
+import it.polimi.ingsw.common.exceptions.InvalidOperationError;
 import it.polimi.ingsw.common.reducedmodel.charactercards.ReducedCentaurCharacterCard;
 import it.polimi.ingsw.server.model.*;
 import org.junit.jupiter.api.BeforeEach;
@@ -74,7 +74,7 @@ class GameControllerTest {
 
         //play character card
         assertThrows(
-                InvalidOperationException.class,
+                InvalidOperationError.class,
                 () -> gc1.playCharacterCard(new ReducedCentaurCharacterCard())
         );
 

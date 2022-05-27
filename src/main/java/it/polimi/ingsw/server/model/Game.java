@@ -2,7 +2,7 @@ package it.polimi.ingsw.server.model;
 
 import it.polimi.ingsw.Constants;
 import it.polimi.ingsw.Utils;
-import it.polimi.ingsw.common.exceptions.InvalidOperationException;
+import it.polimi.ingsw.common.exceptions.InvalidOperationError;
 import it.polimi.ingsw.server.model.influencecalculators.DefaultInfluenceCalculator;
 
 import java.io.Serial;
@@ -110,7 +110,7 @@ public class Game implements Serializable {
     public Game(int numberOfPlayers, boolean expertMode) {
 
         if(numberOfPlayers < 2 || numberOfPlayers > 3)
-            throw new InvalidOperationException("NumberOfPlayers must be 2 or 3");
+            throw new InvalidOperationError("NumberOfPlayers must be 2 or 3");
 
         logger.log(Level.INFO, "Creating game with {0} players and expert = {1}", new Object[]{numberOfPlayers, expertMode});
         this.numberOfPlayers = numberOfPlayers;
@@ -169,10 +169,10 @@ public class Game implements Serializable {
      */
     public synchronized void startGame() {
         if (players.size() != numberOfPlayers)
-            throw new InvalidOperationException("Number of players not reached yet");
+            throw new InvalidOperationError("Number of players not reached yet");
 
         if (gameState != State.CREATED)
-            throw new InvalidOperationException(
+            throw new InvalidOperationError(
                     MessageFormat.format("Game already started (gameState is {0})", gameState)
             );
 
@@ -247,7 +247,7 @@ public class Game implements Serializable {
         checkIfCurrentPlayer(player);
 
         if (!currentRound.getClouds().contains(cloud))
-            throw new InvalidOperationException("Cannot find selected cloud");
+            throw new InvalidOperationError("Cannot find selected cloud");
 
         player.addCloudToEntrance(cloud);
         currentRound.removeCloud(cloud);
@@ -269,7 +269,7 @@ public class Game implements Serializable {
         checkIfValidPlayer(player);
 
         if (!currentRound.getCurrentPlayer().equals(player))
-            throw new InvalidOperationException("This player cannot play at this time");
+            throw new InvalidOperationError("This player cannot play at this time");
     }
 
     /**
@@ -280,7 +280,7 @@ public class Game implements Serializable {
      */
     public synchronized Player addPlayer(String nickname) {
         if (players.size() >= numberOfPlayers)
-            throw new InvalidOperationException("Players lobby is already full");
+            throw new InvalidOperationError("Players lobby is already full");
 
         int entranceSize = numberOfPlayers == 2 ?
                 Constants.TwoPlayers.ENTRANCE_SIZE :
@@ -315,17 +315,17 @@ public class Game implements Serializable {
         checkIfCurrentPlayer(player);
 
         if(steps < 1)
-            throw new InvalidOperationException("Cannot move mother nature for less than 1 step");
+            throw new InvalidOperationError("Cannot move mother nature for less than 1 step");
 
         if ((!(currentRound.getStage() instanceof Stage.Attack)) ||
                 Stage.isEqualOrPost(currentRound.getStage(), Stage.Attack.MOTHER_NATURE_MOVED))
-            throw new InvalidOperationException("Not currently in ATTACK mode");
+            throw new InvalidOperationError("Not currently in ATTACK mode");
 
         //use get directly cause in attack stage every player has played its card
         AssistantCard card = currentRound.getCardPlayedBy(player).orElseThrow();
 
         if (steps > card.motherNatureMaxMoves() + currentRound.getAdditionalMotherNatureMoves())
-            throw new InvalidOperationException("Cannot move mother nature that far");
+            throw new InvalidOperationError("Cannot move mother nature that far");
         //reset additional moves after use
         currentRound.setAdditionalMotherNatureMoves(0);
 
@@ -414,7 +414,7 @@ public class Game implements Serializable {
         checkIfCurrentPlayer(player);
 
         if (!player.canPlayAssistantCard(card))
-            throw new InvalidOperationException();
+            throw new InvalidOperationError();
 
         logger.log(Level.INFO, MessageFormat.format("{0} played assistant card with priority {1} and max moves {2} ",
                 player.getNickname(), card.turnPriority(), card.motherNatureMaxMoves()));
@@ -430,23 +430,23 @@ public class Game implements Serializable {
      */
     public synchronized void playCharacterCard(Player player, CharacterCard card) {
         if (!expertMode)
-            throw new InvalidOperationException("Cannot play character cards in simple mode");
+            throw new InvalidOperationError("Cannot play character cards in simple mode");
 
         if (gameState != State.STARTED) return;
         checkIfCurrentPlayer(player);
 
         if ((!(currentRound.getStage() instanceof Stage.Attack)) ||
                 Stage.isEqualOrPost(currentRound.getStage(), Stage.Attack.CARD_PLAYED))
-            throw new InvalidOperationException();
+            throw new InvalidOperationError();
 
         if (!characterCards.containsKey(card.getCharacter()))
-            throw new InvalidOperationException("This card is not available in this game");
+            throw new InvalidOperationError("This card is not available in this game");
 
         int usedTimes = characterCards.get(card.getCharacter());
         int cost = card.getCharacter().getCost(usedTimes);
 
         if (player.getCoins() < cost)
-            throw new InvalidOperationException("Player cannot buy the card");
+            throw new InvalidOperationError("Player cannot buy the card");
 
         logger.log(Level.INFO,  MessageFormat.format("playing character card {0} at {1}c", card.getCharacter().name(), cost));
 
@@ -473,7 +473,7 @@ public class Game implements Serializable {
         checkIfCurrentPlayer(player);
 
         if (currentRound.getStage() != Stage.Attack.STARTED)
-            throw new InvalidOperationException();
+            throw new InvalidOperationError();
 
         int studentsMoved = inSchool.getSize() + inIsland.values().stream().mapToInt(StudentsContainer::getSize).sum();
 
@@ -482,7 +482,7 @@ public class Game implements Serializable {
                 Constants.TwoPlayers.STUDENTS_TO_MOVE;
 
         if (studentsMoved != studentsToMove)
-            throw new InvalidOperationException();
+            throw new InvalidOperationError();
 
         player.addStudentsToSchool(inSchool);
         inIsland.forEach(player::addStudentsToIsland);
@@ -814,7 +814,7 @@ public class Game implements Serializable {
             players.remove(player);
         } else if(gameState == State.FINISHED || gameState == State.TERMINATED){
             //game already in finished or terminated state
-            throw new InvalidOperationException("Game is finished or terminated, cannot leave");
+            throw new InvalidOperationError("Game is finished or terminated, cannot leave");
         } else {
             //if the player leaves the game sets it as disconnected
             player.setConnected(false);
@@ -831,7 +831,7 @@ public class Game implements Serializable {
      */
     private void checkIfValidPlayer(Player player) {
         if(!players.contains(player))
-            throw new InvalidOperationException("Not a valid player");
+            throw new InvalidOperationError("Not a valid player");
     }
 
     /**

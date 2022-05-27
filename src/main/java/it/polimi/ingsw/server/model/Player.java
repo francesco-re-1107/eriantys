@@ -1,6 +1,6 @@
 package it.polimi.ingsw.server.model;
 
-import it.polimi.ingsw.common.exceptions.InvalidOperationException;
+import it.polimi.ingsw.common.exceptions.InvalidOperationError;
 
 import java.io.Serializable;
 import java.util.HashMap;
@@ -101,7 +101,7 @@ public class Player implements StudentsContainer.StudentNumberReachedListener, S
      */
     public void playAssistantCard(AssistantCard card){
         if(Boolean.TRUE.equals(deck.get(card)))
-            throw new InvalidOperationException("Card already used by this user");
+            throw new InvalidOperationError("Card already used by this user");
 
        deck.put(card, true);
     }
@@ -222,7 +222,7 @@ public class Player implements StudentsContainer.StudentNumberReachedListener, S
      */
     public void useCoins(int howMany) {
         if(howMany > coins)
-            throw new InvalidOperationException();
+            throw new InvalidOperationError();
 
         coins -= howMany;
     }
@@ -244,10 +244,10 @@ public class Player implements StudentsContainer.StudentNumberReachedListener, S
      */
     public void swapStudents(StudentsContainer studentsToRemove, StudentsContainer studentsToAdd) {
         if(studentsToAdd.getSize() != studentsToRemove.getSize())
-            throw new InvalidOperationException("Cannot swap students containers of different size");
+            throw new InvalidOperationError("Cannot swap students containers of different size");
 
         if(!school.contains(studentsToRemove) || !entrance.contains(studentsToAdd))
-            throw new InvalidOperationException("Cannot swap students not owned by the player");
+            throw new InvalidOperationError("Cannot swap students not owned by the player");
 
         school.removeAll(studentsToRemove)
                 .addAll(studentsToAdd);

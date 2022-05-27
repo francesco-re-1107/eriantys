@@ -1,6 +1,6 @@
 package it.polimi.ingsw.server.model.charactercards;
 
-import it.polimi.ingsw.common.exceptions.InvalidOperationException;
+import it.polimi.ingsw.common.exceptions.InvalidOperationError;
 import it.polimi.ingsw.server.model.Character;
 import it.polimi.ingsw.server.model.CharacterCard;
 import it.polimi.ingsw.server.model.Game;
@@ -27,7 +27,7 @@ public class GrandmaCharacterCard extends CharacterCard {
     @Override
     public void play(Game game) {
         if (!game.getIslands().contains(island))
-            throw new InvalidOperationException("Island not present in this game");
+            throw new InvalidOperationError("Island not present in this game");
 
         island.setNoEntry(true);
     }

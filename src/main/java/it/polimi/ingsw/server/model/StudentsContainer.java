@@ -1,7 +1,7 @@
 package it.polimi.ingsw.server.model;
 
-import it.polimi.ingsw.common.exceptions.StudentNotFoundException;
-import it.polimi.ingsw.common.exceptions.StudentsMaxReachedException;
+import it.polimi.ingsw.common.exceptions.InvalidOperationError;
+import it.polimi.ingsw.common.exceptions.StudentsMaxReachedError;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -63,7 +63,7 @@ public class StudentsContainer extends AStudentsContainer {
      */
     public StudentsContainer addStudent(Student student) {
         if (getSize() + 1 > maxSize)
-            throw new StudentsMaxReachedException();
+            throw new StudentsMaxReachedError();
 
         int count = this.students.getOrDefault(student, 0) + 1;
         this.students.put(student, count);
@@ -88,7 +88,7 @@ public class StudentsContainer extends AStudentsContainer {
      */
     public StudentsContainer addStudents(Student student, int howMany) {
         if (getSize() + howMany > maxSize)
-            throw new StudentsMaxReachedException();
+            throw new StudentsMaxReachedError();
 
         int count = this.students.getOrDefault(student, 0) + howMany;
         this.students.put(student, count);
@@ -115,7 +115,7 @@ public class StudentsContainer extends AStudentsContainer {
         int count = this.students.getOrDefault(student, 0);
 
         if (count <= 0)
-            throw new StudentNotFoundException();
+            throw new InvalidOperationError("Cannot remove student, not enough students");
 
         this.students.put(student, count - 1);
 
@@ -132,7 +132,7 @@ public class StudentsContainer extends AStudentsContainer {
      */
     public StudentsContainer removeStudents(Student student, int howMany) {
         if (getCountForStudent(student) < howMany)
-            throw new StudentNotFoundException();
+            throw new InvalidOperationError("Cannot remove student, not enough students");
 
         int count = this.students.getOrDefault(student, 0);
         this.students.put(student, count - howMany);
@@ -149,7 +149,7 @@ public class StudentsContainer extends AStudentsContainer {
      */
     public StudentsContainer addAll(AStudentsContainer anotherContainer) {
         if (getSize() + anotherContainer.getSize() > maxSize)
-            throw new StudentsMaxReachedException();
+            throw new StudentsMaxReachedError();
 
         anotherContainer.students.forEach(this::addStudents);
 

@@ -1,6 +1,6 @@
 package it.polimi.ingsw.server.model;
 
-import it.polimi.ingsw.common.exceptions.StudentNotFoundException;
+import it.polimi.ingsw.common.exceptions.InvalidOperationError;
 
 import java.security.SecureRandom;
 import java.util.Random;
@@ -42,7 +42,7 @@ public class RandomizedStudentsContainer extends AStudentsContainer{
      */
     public Student pickOneRandom(){
         if(getSize() <= 0)
-            throw new StudentNotFoundException();
+            throw new InvalidOperationError("Cannot pick a random student from an empty bag");
 
         Student pickedStudent;
 

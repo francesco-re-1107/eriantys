@@ -1,6 +1,6 @@
 package it.polimi.ingsw.server.model;
 
-import it.polimi.ingsw.common.exceptions.InvalidOperationException;
+import it.polimi.ingsw.common.exceptions.InvalidOperationError;
 import it.polimi.ingsw.server.model.charactercards.CentaurCharacterCard;
 import org.junit.jupiter.api.Test;
 
@@ -18,7 +18,7 @@ class CharacterCardTest {
         assertEquals(6, d.size());
 
         assertThrows(
-                InvalidOperationException.class,
+                InvalidOperationError.class,
                 () -> CharacterCard.generateRandomDeck(16)
         );
     }

@@ -1,6 +1,6 @@
 package it.polimi.ingsw.server.model;
 
-import it.polimi.ingsw.common.exceptions.IslandNotCompatibleException;
+import it.polimi.ingsw.common.exceptions.InvalidOperationError;
 
 import java.io.Serializable;
 
@@ -101,7 +101,7 @@ public class Island implements Serializable {
      */
     public void merge(Island anotherIsland) {
         if (!isMergeCompatible(anotherIsland))
-            throw new IslandNotCompatibleException();
+            throw new InvalidOperationError("Islands not compatible, cannot merge");
 
         students.addAll(anotherIsland.students);
         towersCount += anotherIsland.towersCount;

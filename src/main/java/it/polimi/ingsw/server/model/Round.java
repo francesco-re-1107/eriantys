@@ -1,7 +1,7 @@
 package it.polimi.ingsw.server.model;
 
 import it.polimi.ingsw.Utils;
-import it.polimi.ingsw.common.exceptions.InvalidOperationException;
+import it.polimi.ingsw.common.exceptions.InvalidOperationError;
 
 import java.io.Serializable;
 import java.util.*;
@@ -83,7 +83,7 @@ public class Round implements Serializable {
 
     public void setAttackSubstage(Stage.Attack newStage){
         if(Stage.isEqualOrPost(stage, newStage))
-            throw new InvalidOperationException("newStage must be post to current stage");
+            throw new InvalidOperationError("newStage must be post to current stage");
         stage = newStage;
     }
     /**
@@ -93,7 +93,7 @@ public class Round implements Serializable {
      */
     public void playAssistantCard(Player player, AssistantCard card){
         if(stage instanceof Stage.Attack)
-            throw new InvalidOperationException("In attack mode cannot play assistantCard");
+            throw new InvalidOperationError("In attack mode cannot play assistantCard");
 
         boolean alreadyPlayed =
                 playedAssistantCards.stream().anyMatch(c -> c.equals(card));
@@ -108,7 +108,7 @@ public class Round implements Serializable {
                     .anyMatch(c -> !playedAssistantCards.contains(c));
 
             if (canPlayOtherCards)
-                throw new InvalidOperationException("Card already played by another player");
+                throw new InvalidOperationError("Card already played by another player");
         }
 
         playedAssistantCards.add(card);
@@ -125,7 +125,7 @@ public class Round implements Serializable {
      */
     public boolean nextPlayer(){
         if(stage instanceof Stage.Plan)
-            throw new InvalidOperationException();
+            throw new InvalidOperationError();
         // TODO: further checks
 
         // finished round check

@@ -1,6 +1,6 @@
 package it.polimi.ingsw.server.model.charactercards;
 
-import it.polimi.ingsw.common.exceptions.InvalidOperationException;
+import it.polimi.ingsw.common.exceptions.InvalidOperationError;
 import it.polimi.ingsw.server.model.Character;
 import it.polimi.ingsw.server.model.CharacterCard;
 import it.polimi.ingsw.server.model.Game;
@@ -36,7 +36,7 @@ public class MinstrelCharacterCard extends CharacterCard {
     @Override
     public void play(Game game) {
         if (studentsToRemove.getSize() != 2 || studentsToAdd.getSize() != 2)
-            throw new InvalidOperationException("You must swap 2 students");
+            throw new InvalidOperationError("You must swap 2 students");
 
         game.getCurrentRound().getCurrentPlayer().swapStudents(studentsToRemove, studentsToAdd);
         game.updateProfessors();

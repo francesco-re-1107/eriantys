@@ -1,6 +1,6 @@
 package it.polimi.ingsw.common.requests;
 
-import it.polimi.ingsw.common.exceptions.InvalidOperationException;
+import it.polimi.ingsw.common.exceptions.InvalidOperationError;
 import it.polimi.ingsw.common.responses.Reply;
 import it.polimi.ingsw.server.VirtualView;
 import it.polimi.ingsw.server.controller.Controller;
@@ -16,7 +16,7 @@ public abstract class GameRequest extends Request{
     @Override
     public Reply handleRequest(VirtualView vw, Controller c, GameController gc) throws Exception {
         if(gc == null)
-            throw new InvalidOperationException("Client not in game");
+            throw new InvalidOperationError("Client not in game");
 
         return handleGameRequest(vw, gc);
     }

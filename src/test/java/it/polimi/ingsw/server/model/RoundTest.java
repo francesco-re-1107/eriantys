@@ -1,6 +1,6 @@
 package it.polimi.ingsw.server.model;
 
-import it.polimi.ingsw.common.exceptions.InvalidOperationException;
+import it.polimi.ingsw.common.exceptions.InvalidOperationError;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -50,13 +50,13 @@ class RoundTest {
 
         //player that already played its card
         assertThrows(
-                InvalidOperationException.class,
+                InvalidOperationError.class,
                 () -> r.playAssistantCard(players.get(0), AssistantCard.getDefaultDeck().get(0))
         );
 
         //card already played by another player
         assertThrows(
-                InvalidOperationException.class,
+                InvalidOperationError.class,
                 () -> r.playAssistantCard(players.get(1), AssistantCard.getDefaultDeck().get(0))
         );
 
@@ -67,7 +67,7 @@ class RoundTest {
 
         //playing card in attack stage
         assertThrows(
-                InvalidOperationException.class,
+                InvalidOperationError.class,
                 () -> r.playAssistantCard(players.get(0), AssistantCard.getDefaultDeck().get(0))
         );
     }
@@ -76,7 +76,7 @@ class RoundTest {
     void nextPlayer() {
         //next player in PLAN stage
         assertThrows(
-                InvalidOperationException.class,
+                InvalidOperationError.class,
                 () -> r.nextPlayer()
         );
 

@@ -1,6 +1,6 @@
 package it.polimi.ingsw.server.model;
 
-import it.polimi.ingsw.common.exceptions.InvalidOperationException;
+import it.polimi.ingsw.common.exceptions.InvalidOperationError;
 
 import java.io.Serializable;
 import java.util.*;
@@ -19,7 +19,7 @@ public abstract class CharacterCard implements Serializable {
         var list = new ArrayList<>(Arrays.asList(Character.values()));
 
         if(howManyCards > list.size())
-            throw new InvalidOperationException("Too many cards");
+            throw new InvalidOperationError("Too many cards");
 
         Collections.shuffle(list);
 

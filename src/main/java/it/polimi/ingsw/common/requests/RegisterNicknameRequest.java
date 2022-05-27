@@ -1,6 +1,6 @@
 package it.polimi.ingsw.common.requests;
 
-import it.polimi.ingsw.common.exceptions.InvalidOperationException;
+import it.polimi.ingsw.common.exceptions.InvalidOperationError;
 import it.polimi.ingsw.common.responses.Reply;
 import it.polimi.ingsw.common.responses.replies.AckReply;
 import it.polimi.ingsw.server.VirtualView;
@@ -21,7 +21,7 @@ public class RegisterNicknameRequest extends Request{
     @Override
     public Reply handleRequest(VirtualView vw, Controller c, GameController gc) throws Exception {
         if(c.isRegistered(vw.getNickname()))
-            throw new InvalidOperationException("Client already registered");
+            throw new InvalidOperationError("Client already registered");
 
         vw.setGameController(c.registerNickname(nickname));
         vw.setNickname(nickname);

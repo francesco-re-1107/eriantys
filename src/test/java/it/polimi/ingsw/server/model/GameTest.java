@@ -2,7 +2,7 @@ package it.polimi.ingsw.server.model;
 
 import it.polimi.ingsw.Constants;
 import it.polimi.ingsw.Utils;
-import it.polimi.ingsw.common.exceptions.InvalidOperationException;
+import it.polimi.ingsw.common.exceptions.InvalidOperationError;
 import it.polimi.ingsw.server.model.charactercards.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.RepeatedTest;
@@ -30,11 +30,11 @@ class GameTest {
     void testStaticGameTwoPlayers() {
         //game with wrong number of players
         assertThrows(
-                InvalidOperationException.class,
+                InvalidOperationError.class,
                 () -> new Game(4, true)
         );
         assertThrows(
-                InvalidOperationException.class,
+                InvalidOperationError.class,
                 () -> new Game(1, true)
         );
 
@@ -48,7 +48,7 @@ class GameTest {
 
         //start the game without enough players
         assertThrows(
-                InvalidOperationException.class,
+                InvalidOperationError.class,
                 g::startGame
         );
 
@@ -59,7 +59,7 @@ class GameTest {
 
         //add another player
         assertThrows(
-                InvalidOperationException.class,
+                InvalidOperationError.class,
                 () -> g.addPlayer("_p3")
         );
 
@@ -73,7 +73,7 @@ class GameTest {
 
         //start the game again
         assertThrows(
-                InvalidOperationException.class,
+                InvalidOperationError.class,
                 g::startGame
         );
 
@@ -83,25 +83,25 @@ class GameTest {
 
         //play assistant card player 1 (it's not the current player)
         assertThrows(
-                InvalidOperationException.class,
+                InvalidOperationError.class,
                 () -> g.playAssistantCard(players.get(1), AssistantCard.getDefaultDeck().get(1))
         );
 
         //placeStudents in PLAN stage
         assertThrows(
-                InvalidOperationException.class,
+                InvalidOperationError.class,
                 () -> g.placeStudents(players.get(0), new StudentsContainer(), new HashMap<>())
         );
 
         //moveMotherNature in PLAN stage
         assertThrows(
-                InvalidOperationException.class,
+                InvalidOperationError.class,
                 () -> g.moveMotherNature(players.get(0), 1)
         );
 
         //selectCloud in PLAN stage
         assertThrows(
-                InvalidOperationException.class,
+                InvalidOperationError.class,
                 () -> g.selectCloud(players.get(0), new StudentsContainer())
         );
 
@@ -111,7 +111,7 @@ class GameTest {
 
         //play same assistant card for player 1
         assertThrows(
-                InvalidOperationException.class,
+                InvalidOperationError.class,
                 () -> g.playAssistantCard(players.get(1), AssistantCard.getDefaultDeck().get(1))
         );
 
@@ -125,7 +125,7 @@ class GameTest {
 
         //trying placing not enough students
         assertThrows(
-                InvalidOperationException.class,
+                InvalidOperationError.class,
                 () -> g.placeStudents(players.get(1), new StudentsContainer(), new HashMap<>())
         );
 
@@ -145,7 +145,7 @@ class GameTest {
 
         //placing twice
         assertThrows(
-                InvalidOperationException.class,
+                InvalidOperationError.class,
                 () -> g.placeStudents(players.get(1), new StudentsContainer(), new HashMap<>())
         );
 
@@ -167,11 +167,11 @@ class GameTest {
 
         //move mother nature
         assertThrows(
-                InvalidOperationException.class,
+                InvalidOperationError.class,
                 () -> g.moveMotherNature(players.get(1), 0)
         );
         assertThrows(
-                InvalidOperationException.class,
+                InvalidOperationError.class,
                 () -> g.moveMotherNature(players.get(1), 10)
         );
         int prevPosition = g.getMotherNaturePosition();
@@ -181,28 +181,28 @@ class GameTest {
 
         //moving twice
         assertThrows(
-                InvalidOperationException.class,
+                InvalidOperationError.class,
                 () -> g.moveMotherNature(players.get(1), 1)
         );
 
         //testing all prior stages to be invalid
         assertThrows(
-                InvalidOperationException.class,
+                InvalidOperationError.class,
                 () -> g.placeStudents(players.get(1), new StudentsContainer(), new HashMap<>())
         );
         assertThrows(
-                InvalidOperationException.class,
+                InvalidOperationError.class,
                 () -> g.playCharacterCard(players.get(1), new PostmanCharacterCard())
         );
         assertThrows(
-                InvalidOperationException.class,
+                InvalidOperationError.class,
                 () -> g.moveMotherNature(players.get(1), 1)
         );
 
         //select cloud for player 1
         //non-existing cloud
         assertThrows(
-                InvalidOperationException.class,
+                InvalidOperationError.class,
                 () -> g.selectCloud(
                         players.get(1),
                         new StudentsContainer()
@@ -236,7 +236,7 @@ class GameTest {
 
         //play two times the same card
         assertThrows(
-                InvalidOperationException.class,
+                InvalidOperationError.class,
                 () -> g.playAssistantCard(players.get(1), AssistantCard.getDefaultDeck().get(0))
         );
 
@@ -297,7 +297,7 @@ class GameTest {
                     try{
                         g.playAssistantCard(currentPlayer, card);
                         playedCard = true;
-                    }catch (InvalidOperationException e){}
+                    }catch (InvalidOperationError e){}
                 }
             }
 

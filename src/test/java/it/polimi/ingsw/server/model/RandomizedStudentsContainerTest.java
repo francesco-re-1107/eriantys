@@ -1,6 +1,6 @@
 package it.polimi.ingsw.server.model;
 
-import it.polimi.ingsw.common.exceptions.StudentNotFoundException;
+import it.polimi.ingsw.common.exceptions.InvalidOperationError;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -38,7 +38,7 @@ class RandomizedStudentsContainerTest {
         assertEquals(0, container.getSize());
 
         assertThrows(
-                StudentNotFoundException.class,
+                InvalidOperationError.class,
                 () -> container.pickOneRandom()
         );
     }

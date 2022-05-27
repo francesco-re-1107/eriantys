@@ -1,7 +1,7 @@
 package it.polimi.ingsw.server.model;
 
-import it.polimi.ingsw.common.exceptions.StudentNotFoundException;
-import it.polimi.ingsw.common.exceptions.StudentsMaxReachedException;
+import it.polimi.ingsw.common.exceptions.InvalidOperationError;
+import it.polimi.ingsw.common.exceptions.StudentsMaxReachedError;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -42,7 +42,7 @@ class StudentsContainerTest {
 
         containerWithMaxSize.addStudent(Student.BLUE);
         assertThrows(
-                StudentsMaxReachedException.class,
+                StudentsMaxReachedError.class,
                 () -> containerWithMaxSize.addStudent(Student.BLUE)
         );
     }
@@ -56,7 +56,7 @@ class StudentsContainerTest {
         assertEquals(prevSize + 10, currSize);
 
         assertThrows(
-                StudentsMaxReachedException.class,
+                StudentsMaxReachedError.class,
                 () -> containerWithMaxSize.addStudents(Student.BLUE, 10)
         );
     }
@@ -64,7 +64,7 @@ class StudentsContainerTest {
     @Test
     void removeStudent() {
         assertThrows(
-                StudentNotFoundException.class,
+                InvalidOperationError.class,
                 () -> container.removeStudent(Student.BLUE)
         );
 
@@ -79,7 +79,7 @@ class StudentsContainerTest {
     @Test
     void removeStudents() {
         assertThrows(
-                StudentNotFoundException.class,
+                InvalidOperationError.class,
                 () -> container.removeStudents(Student.BLUE, 3)
         );
 
@@ -113,7 +113,7 @@ class StudentsContainerTest {
 
 
         assertThrows(
-                StudentsMaxReachedException.class,
+                StudentsMaxReachedError.class,
                 () -> containerWithMaxSize.addAll(container)
         );
     }
@@ -137,7 +137,7 @@ class StudentsContainerTest {
         assertEquals(0, container.getCountForStudent(Student.BLUE));
 
         assertThrows(
-                StudentNotFoundException.class,
+                InvalidOperationError.class,
                 () -> container.removeAll(anotherContainer)
         );
     }

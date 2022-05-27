@@ -1,6 +1,6 @@
 package it.polimi.ingsw.server.model;
 
-import it.polimi.ingsw.common.exceptions.InvalidOperationException;
+import it.polimi.ingsw.common.exceptions.InvalidOperationError;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -32,7 +32,7 @@ class PlayerTest {
         assertTrue(p1.getDeck().get(card));
 
         assertThrows(
-                InvalidOperationException.class,
+                InvalidOperationError.class,
                 () -> p1.playAssistantCard(card)
         );
     }
@@ -121,7 +121,7 @@ class PlayerTest {
         assertEquals(0, p1.getCoins());
 
         assertThrows(
-                InvalidOperationException.class,
+                InvalidOperationError.class,
                 () -> p1.useCoins(1)
         );
     }
@@ -147,7 +147,7 @@ class PlayerTest {
 
         //different size containers
         assertThrows(
-                InvalidOperationException.class,
+                InvalidOperationError.class,
                 () -> p1.swapStudents(
                         new StudentsContainer(),
                         new StudentsContainer().addStudent(Student.BLUE)
@@ -157,7 +157,7 @@ class PlayerTest {
         //swap students not owned by the player
         //school
         assertThrows(
-                InvalidOperationException.class,
+                InvalidOperationError.class,
                 () -> p1.swapStudents(
                         new StudentsContainer().addStudents(Student.YELLOW, 2),
                         new StudentsContainer().addStudents(Student.BLUE, 2)
@@ -165,7 +165,7 @@ class PlayerTest {
         );
         //entrance
         assertThrows(
-                InvalidOperationException.class,
+                InvalidOperationError.class,
                 () -> p1.swapStudents(
                         new StudentsContainer().addStudents(Student.BLUE, 2),
                         new StudentsContainer().addStudents(Student.YELLOW, 2)

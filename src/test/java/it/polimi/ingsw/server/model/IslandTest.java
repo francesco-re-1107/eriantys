@@ -1,6 +1,6 @@
 package it.polimi.ingsw.server.model;
 
-import it.polimi.ingsw.common.exceptions.IslandNotCompatibleException;
+import it.polimi.ingsw.common.exceptions.InvalidOperationError;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -73,7 +73,7 @@ class IslandTest {
     @Test
     void merge() {
         assertThrows(
-                IslandNotCompatibleException.class,
+                InvalidOperationError.class,
                 () -> i1.merge(i2)
         );
 
