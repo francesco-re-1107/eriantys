@@ -4,6 +4,8 @@ import it.polimi.ingsw.Utils;
 import it.polimi.ingsw.client.cli.Cursor;
 import it.polimi.ingsw.client.cli.Palette;
 
+import java.nio.charset.StandardCharsets;
+
 import static org.fusesource.jansi.Ansi.ansi;
 
 /**
@@ -55,7 +57,7 @@ public class TitleView extends BaseView {
         var titleString = title.name();
 
         try (var is = getClass().getResourceAsStream("/titles/" + title.name().toLowerCase() + ".txt");) {
-            titleString = new String(is.readAllBytes());
+            titleString = new String(is.readAllBytes(), StandardCharsets.UTF_8);
         } catch (Exception e) {
             Utils.LOGGER.warning("Could not read title file: " + title.name().toLowerCase() + ".txt");
         }
