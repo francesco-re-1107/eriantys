@@ -1,6 +1,8 @@
 package it.polimi.ingsw.client.cli.views;
 
 import it.polimi.ingsw.Constants;
+import it.polimi.ingsw.Utils;
+import it.polimi.ingsw.client.cli.Cursor;
 import it.polimi.ingsw.server.model.Character;
 import org.fusesource.jansi.Ansi;
 
@@ -27,6 +29,7 @@ public class CharacterCardsView extends BaseView {
     Function<Map.Entry<Character, Integer>, Ansi> renderer = entry -> {
         var title = Constants.CHARACTER_NAMES.get(entry.getKey());
         var description = Constants.CHARACTER_DESCRIPTIONS.get(entry.getKey());
+
         return ansi()
                 .bold()
                 .fgBrightMagenta()
@@ -36,8 +39,8 @@ public class CharacterCardsView extends BaseView {
                 .a(" (" + entry.getKey().getCost(entry.getValue()) + "$)")
                 .reset()
                 .fgDefault()
-                .a("\n        ") //inset description
-                .a(description.replaceAll("(.{65})", "$1\n        ")) //put a new line every 65 chars
+                .newline()
+                .a(Utils.wrapWithSpaces(description, Cursor.WIDTH, 8))
                 .reset();
     };
 

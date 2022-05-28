@@ -147,5 +147,29 @@ public class Utils {
         }
     }
 
+    /**
+     * Wrap a long string into a new string with line breaks every maxLength characters and
+     * spacing at the beginning and a the end of each line.
+     * @param string the string to wrap
+     * @param maxLength the maximum length of each line
+     * @param spacing the spacing to add at the beginning and end of each line
+     * @return the wrapped string
+     */
+    public static String wrapWithSpaces(String string, int maxLength, int spacing) {
+        var lines = string.split("(?<=\\G.{" + (maxLength - spacing * 2) + "})");
+        var s = new StringBuilder();
+
+        for(var line : lines) {
+            var l = line.trim(); // trim spaces at the beginning and end of the line
+
+            s.append(" ".repeat(spacing));
+            s.append(l);
+            s.append(" ".repeat(maxLength - spacing - l.length()));
+            s.append("\n");
+        }
+
+        return s.toString();
+    }
+
     private Utils() {}
 }
