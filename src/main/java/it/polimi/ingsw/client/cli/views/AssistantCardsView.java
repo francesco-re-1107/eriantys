@@ -14,7 +14,30 @@ import java.util.Map;
  */
 public class AssistantCardsView extends BaseView {
 
+    /**
+     * List
+     */
     private final ListView<AssistantCard> listView;
+
+    /**
+     * Title shown on the listview
+     */
+    private static final String LISTVIEW_TITLE = "Scegli la carta assistente";
+
+    /**
+     * Prompt of the listview
+     */
+    private static final String LISTVIEW_PROMPT = "Inserisci il numero corrispondente";
+
+    /**
+     * MEssage shown when there are no cards, this state should never be reached
+     */
+    private static final String EMPTY_LIST_MESSAGE = "Nessuna carta giocabile";
+
+    /**
+     * Message shown when the selected card is not playable
+     */
+    private static final String ERROR_CARD_NOT_PLAYABLE = "Carta non giocabile";
 
     /**
      * Create a new AssistantCardsView with the given deck
@@ -35,24 +58,25 @@ public class AssistantCardsView extends BaseView {
                         .fg(Palette.RAINBOW.get(card.motherNatureMaxMoves() - 1))
                         .a(card.motherNatureMaxMoves())
                         .reset(),
-                "Scegli la carta assistente",
-                "Inserisci il numero corrispondente",
-                "Nessuna carta giocabile",
+                LISTVIEW_TITLE,
+                LISTVIEW_PROMPT,
+                EMPTY_LIST_MESSAGE,
                 true,
                 2
         );
 
+        listView.setOnSelectionListener((card, input) ->
+                Client.getInstance().forwardGameRequest(
+                        new PlayAssistantCardRequest(card),
+                        e -> listView.showError(ERROR_CARD_NOT_PLAYABLE)
+                )
+        );
     }
 
     @Override
     public void draw() {
-        listView.setOnSelectionListener(
-                (card, input) ->
-                        Client.getInstance().forwardGameRequest(
-                                new PlayAssistantCardRequest(card),
-                                e -> listView.showError("Carta non giocabile")
-                        )
-        );
-        listView.draw();
+        var inputView = new SimpleInputView("Premi invio per giocare la carta assistente");
+        inputView.setListener(s -> listView.draw());
+        inputView.draw();
     }
 }
