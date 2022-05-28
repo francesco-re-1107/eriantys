@@ -49,6 +49,8 @@ public class CLIGameController implements ScreenController, Client.GameUpdateLis
      */
     private Map<Integer, StudentsContainer> studentsPlacedInIslands;
 
+    private boolean finishedPlacingStudents;
+
     @Override
     public void onShow() {
         client = Client.getInstance();
@@ -318,26 +320,33 @@ public class CLIGameController implements ScreenController, Client.GameUpdateLis
             drawGameView(game);
         }
 
-
         return count;
     }
 
     /**
      * Ask user where to place students
      * @param game the game update
+     * TODO: maybe move in a separate view
      */
     private void processPlaceStudents(ReducedGame game) {
+        finishedPlacingStudents = false;
         studentsPlacedInSchool = new StudentsContainer();
         studentsPlacedInIslands = new HashMap<>();
+
         int studentsToMove = game.numberOfPlayers() == 2 ?
                 Constants.TwoPlayers.STUDENTS_TO_MOVE : Constants.ThreePlayers.STUDENTS_TO_MOVE;
 
         var placeStudentsInput = new CommandInputView("Posiziona studenti (0/%d) [esempi 'y 6', 'r sala', 'b 0']".formatted(studentsToMove), false);
         CommandInputView.CommandListener listener = (cmd, args) -> {
-            var stud = Student.YELLOW;
+            Student stud = null;
             for(var s : Student.values())
                 if(s.name().toLowerCase().startsWith(cmd))
                     stud = s;
+
+            if(finishedPlacingStudents){
+                placeStudentsInput.showError("Non hai più studenti da piazzare");
+                return;
+            }
 
             if(game.getMyPlayer(client.getNickname()).entrance().getCountForStudent(stud) <= 0) {
                 placeStudentsInput.showError("Non hai questo studente");
@@ -349,12 +358,14 @@ public class CLIGameController implements ScreenController, Client.GameUpdateLis
                 return;
             }
 
-            int remaining = 0;
+            var remaining = 0;
 
-            if(args.get(0).equalsIgnoreCase("sala")) {
+            if(args.get(0).equalsIgnoreCase("sala")) { //school
+
                 remaining = placeStudentInSchool(game, stud);
-                placeStudentsInput.draw();
-            } else if (Utils.isInteger(args.get(0))) {
+
+            } else if (Utils.isInteger(args.get(0))) { //island
+
                 var island = Integer.parseInt(args.get(0));
 
                 if(island < 0 || island >= game.islands().size()) {
@@ -363,12 +374,15 @@ public class CLIGameController implements ScreenController, Client.GameUpdateLis
                 }
 
                 remaining = placeStudentOnIsland(game, stud, island);
-                placeStudentsInput.draw();
             } else {
                 placeStudentsInput.showError("Comando errato (e.g. 'y sala' oppure 'b 10')");
+                return;
             }
 
-            placeStudentsInput.setMessage("Posiziona studenti (%d/%d) [esempi 'y 6', 'r sala', 'b 0']".formatted(remaining, studentsToMove));
+            if(remaining == 0)
+                finishedPlacingStudents = true;
+            else
+                placeStudentsInput.setMessageAndRedraw("Posiziona studenti (%d/%d) [esempi 'y 6', 'r sala', 'b 0']".formatted(remaining, studentsToMove));
         };
 
         placeStudentsInput.addCommandListener("y", "Giallo", listener);

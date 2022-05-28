@@ -59,7 +59,7 @@ public class CommandInputView extends BaseView {
      * Set message to show to the user and redraw the view
      * @param message the message to show to the user
      */
-    public void setMessage(String message){
+    public void setMessageAndRedraw(String message){
         this.message = message;
         draw();
     }
@@ -90,7 +90,7 @@ public class CommandInputView extends BaseView {
         //TODO improve
         new Thread(() -> {
             try {
-                var cmd = cursor.input();
+                var cmd = cursor.input().trim().toLowerCase();
                 try {
                     var elements = Arrays.asList(cmd.split(" "));
 
@@ -110,7 +110,9 @@ public class CommandInputView extends BaseView {
                 } catch (Exception e) {
                     showError(ERROR_COMMAND_NOT_RECOGNIZED);
                 }
-            }catch (Exception e) {}
+            }catch (InterruptedException e) {
+                //another thread started listening to input
+            }
         }).start();
     }
 

@@ -18,7 +18,7 @@ public class CloudsLayoutView extends BaseView{
     /**
      * Absolute x position of the clouds view
      */
-    private static final int X_POSITION = 37;
+    private static final int X_POSITION = 36;
 
     /**
      * Absolute y position of the clouds view
@@ -37,15 +37,13 @@ public class CloudsLayoutView extends BaseView{
     public void draw() {
         cursor.saveCursorPosition();
 
-        for(var c : clouds) {
-            var i = clouds.indexOf(c);
-
+        for(int i = 0; i < clouds.size(); i++) {
             // remap each cloud to the right position
-            var x = CloudsLayouts.getPointForCloud(clouds.size(), i).x();
-            var y = CloudsLayouts.getPointForCloud(clouds.size(), i).y();
-            cursor.moveToXY(X_POSITION + x, Y_POSITION + y);
+            var point = CloudsLayouts.getPointForCloud(clouds.size(), i);
 
-            new CloudView(c, i).draw();
+            cursor.moveToXY(X_POSITION + point.x(), Y_POSITION + point.y());
+
+            new CloudView(clouds.get(i), i).draw();
         }
 
         cursor.restoreCursorPosition();
