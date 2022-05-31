@@ -78,11 +78,11 @@ public class Controller implements Game.GameUpdateListener {
      * Find the player in the game with the given nickname.
      *
      * @param nickname  The nickname of the player to find.
-     * @param foundGame The game that the player is playing.
+     * @param game The game that the player is playing.
      * @return the player with the given nickname, or null if not found.
      */
-    private synchronized Player findPlayerInGame(String nickname, Game foundGame) {
-        return foundGame.getPlayers()
+    private synchronized Player findPlayerInGame(String nickname, Game game) {
+        return game.getPlayers()
                 .stream()
                 .filter(p -> p.getNickname().equals(nickname))
                 .findFirst()

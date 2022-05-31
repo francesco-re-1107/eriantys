@@ -16,7 +16,6 @@ class Game {
     -expertMode : boolean
     -islands : List<Island>
     -studentsBag : RandomizedStudentsContainer
-    'relative to islands index, or alternatively we can link directly the island'
     -motherNaturePosition : int
     -round : Round
     -characterCards : Map<String, Integer> //3 cards selected for this game and counter
@@ -47,6 +46,7 @@ class Game {
     +getCharacterCards() : List<CharacterCard>
     +getProfessors() : Map<Student, Player>
     +updateProfessors()
+    +setTemporaryInfluenceCalculator(influenceCalculator : InfluenceCalculator)
     +putStudents(inSchool : StudentsContainer, inIslands : Map<Island, StudentsContainer>)
     +addGameUpdateListener(...)
     -notifyUpdate()
@@ -166,6 +166,7 @@ class Island {
 }
 
 interface InfluenceCalculator {
+    // Strategy pattern
     +calculateInfluence(island : Island, player : Player, professors : Map<Student, Player>)
 }
 
@@ -198,91 +199,77 @@ class ProfessorsControlInfluenceCalculator{
     +calculateStudentsInfluence() : int
 }
 
-abstract CharacterCard {
-    cost : Int
-
-    +getCost() : Int
-    +getCost(int usedTimes) : Int
+interface CharacterCard {
+    // Command pattern
+    +getCharacter() : Character
+    +play(game : Game)
 }
 
-abstract InfluenceCharacterCard {
-    +getInfluenceCalculator() : InfluenceCalculator
+abstract class InfluenceCharacterCard {
+    +play(game : Game)
+    +getInfluenceCalculator(cardPlayer : Player) : InfluenceCalculator
 }
 
 class FarmerCharacterCard {
     //take control of the professors of a color if players
     //have the same number of students for that color
-    'redefine cost'
-    cost : Int = 2
-    player : Player
 
-    {method}@override
-    +getInfluenceCalculator() : InfluenceCalculator
+    +getCharacter() : Character
+    +getInfluenceCalculator(cardPlayer : Player) : InfluenceCalculator
 }
 
 class HeraldCharacterCard {
     //choose an island and calculate influence on that island
     -island : Island
-    'redefine cost'
-    cost : Int = 3
 
-    +getIsland() : Island
+    +getCharacter() : Character
+    +play(game : Game)
 }
 
 class PostmanCharacterCard {
     //2 additional moves for mother nature
-    'redefine cost'
-    cost : Int = 1
 
-    +getAdditionalMotherNatureMoves() : int
+    +getCharacter() : Character
+    +play(game : Game)
 }
 
 class GrandmaCharacterCard {
     //no entry on the selected island
     -island : Island
-    'redefine cost'
-    cost : Int = 2
-    +getIsland() : Island
+
+    +getCharacter() : Character
+    +play(game : Game)
 }
 
 class CentaurCharacterCard {
     //no towers in influence
-    'redefine cost'
-    cost : Int = 3
 
-    {method}@override
-    +getInfluenceCalculator() : InfluenceCalculator
+    +getCharacter() : Character
+    +getInfluenceCalculator(cardPlayer : Player) : InfluenceCalculator
 }
 
 class MinstrelCharacterCard {
     //swap two students between school and entrance
     -studentsToRemove : StudentsContainer
     -studentsToAdd : StudentsContainer
-    'redefine cost'
-    cost : Int = 1
 
-    +getStudentsToRemove() : StudentsContainer
-    +getStudentsToAdd() : StudentsContainer
+    +getCharacter() : Character
+    +play(game : Game)
 }
 
 class KnightCharacterCard {
     //2 additional points in influence
-    'redefine cost'
-    cost : Int = 2
-    player : Player
 
-    {method}@override
-    +getInfluenceCalculator() : InfluenceCalculator
+    +getCharacter() : Character
+    +getInfluenceCalculator(cardPlayer : Player) : InfluenceCalculator
 }
 
 class MushroomManCharacterCard {
     //no color in influence
-    'redefine cost'
-    cost : Int = 3
-    studentColorNotInfluencing: Student
+    -studentColorNotInfluencing: Student
 
-    {method}@override
-    +getInfluenceCalculator() : InfluenceCalculator
+    +getCharacter() : Character
+    +getInfluenceCalculator(cardPlayer : Player) : InfluenceCalculator
 }
 
 enum Tower {
@@ -299,61 +286,20 @@ enum Student {
     PINK
 }
 
-class Error {}
-class InvalidOperationError {
-    +InvalidOperationError()
-    +InvalidOperationError(message : String)
+enum Character {
+    CENTAUR(3)
+    FARMER(2)
+    GRANDMA(2)
+    HERALD(3)
+    KNIGHT(2)
+    MINSTREL(1)
+    MUSHROOM_MAN(3)
+    POSTMAN(1)
+
+    +Character(cost : int)
+
+    +getCost(usedTimes : int)
 }
-
-class Exception {}
-class DuplicateException {}
-class IslandNotCompatibleException {}
-class StudentNotFoundException {}
-class StudentsMaxReachedException {}
-
-InvalidOperationError --|> Error
-DuplicateException --|> Exception
-IslandNotCompatibleException --|> Exception
-StudentNotFoundException --|> Exception
-StudentsMaxReachedException --|> Exception
-
-/'
-class Client {
-    clientSocket : Socket
-
-    +sendMessage(message : Message)
-    +addMessageReceivedObserver()
-}
-
-interface MessageReceivedObserver {
-    onMessageReceived(message : Message)
-}
-
-class Server {
-    serverSocket : Socket
-    activeGames : ArrayList<Game>
-
-    +getInstance() : Server
-    +startServer()
-}
-
-class App {
-    +{static} main
-}
-
-interface Serializable {
-    ...
-}
-
-abstract Message {
-    parse()
-}
-
-interface Exportable {
-    exportToJson() : String
-    importFromJson(json : String)
-}
-'/
 
 Game "2..4" *-- Player
 Game "1" *-- RandomizedStudentsContainer
@@ -363,17 +309,16 @@ Game "3" *-- CharacterCard
 Game "1" *-- Game.State
 
 Player "10" *-- AssistantCard
-'Player --> Tower'
 Player "2" *-- StudentsContainer
 
 StudentsContainer --|> AStudentsContainer
 RandomizedStudentsContainer --|> AStudentsContainer
 
-'Student --> AStudentsContainer'
-
 Island "1" *-- StudentsContainer
 
 Round "1" *-- Round.Stage
+
+CharacterCard --> Character
 
 InfluenceCharacterCard --> InfluenceCalculator
 InfluenceCharacterCard --|> CharacterCard

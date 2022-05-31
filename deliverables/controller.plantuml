@@ -2,46 +2,55 @@
 
 class Controller {
     -games : List<Game>
-    -nicknameVirtualViewMap : Map<String, VirtualView>
+    -registeredNicknames : Set<String>
 
-    +registerNickname(nickname : String, virtualView : VirtualView) : GameController
+    +registerNickname(nickname : String) : GameController
     +listGames() : List<GameListItem>
     +createGame(nickname: String, numberOfPlayers : int, expertMode : boolean) : GameController
     +joinGame(nickname : String, uuid : UUID) : GameController
+    +disconnect(nickname : String)
     +onGameUpdate(game : Game)
-    -checkIfNicknameRegistered(nickname : String)
+    +isRegistered(nickname : String) : boolean
+    -startAutoSaveTimer()
+    -saveGames()
+    -loadBackupIfPresent()
+    -findGameByNickname(nickname : String) : Game
+    -findPlayerInGame(nickname : String, game : Game) : Player
 }
 
 class GameController {
     -game : Game
     -listener : GameUpdateListener
     -player : Player
+    -lastUpdate : Game
+    +GameController(game : Game player : Player)
     +setOnGameUpdateListener(listener : GameUpdateListener)
     +onGameUpdate(game : Game)
-    +disconnect()
-    +leaveGame()
     +playAssistantCard(card : AssistantCard)
     +placeStudents(inSchool : StudentsContainer, inIslands : Map<Integer, StudentsContainer>)
     +playCharacterCard(reducedCard : ReducedCharacterCard)
     +moveMotherNature(steps : int)
     +selectCloud(cloud : StudentsContainer)
+    +disconnect()
+    +leaveGame()
 }
 
 class VirtualView {
     -communicator : ServerClientCommunicator
     -controller : Controller
     -gameController : GameController
-    -isConnected : boolean
     -nickname : String
 
     +VirtualView(Controller controller, Socket socket)
     +run()
+    +onGameUpdate(game : ReducedGame)
     +onRequest(request : Request)
     +processRequest(request : Request)
-    +processGameRequest(request : GameRequest)
     +onDisconnect()
+    +setGameController(gameController : GameController)
     +isConnected() : boolean
-    +onGameUpdate(game : ReducedGame)
+    +getNickname() : String
+    +setNickname(nickname : String)
 }
 
 class ServerClientCommunicator{
@@ -52,20 +61,36 @@ class ServerClientCommunicator{
     +ServerClientCommunicator(socket : Socket, listener : CommunicatorListener)
     +startListening()
     +send(response : Response)
+    -disconnect()
 }
 
 class ClientServerCommunicator{
     -socket : Socket
     -listener : CommunicatorListener
     -isConnected : boolean
+    -pendingRequests : Map<UUID, ListenersPair>
 
     +ServerClientCommunicator(socket : Socket, listener : CommunicatorListener)
     +startListening()
     +send(request : Request, Consumer<Reply> successListener, Consumer<Exception> errorListener)
+    -disconnect()
+    -processReply(re : Reply)
+    -startPinging()
 }
 
-class Client {
-    -communicator : ServerClientCommunicator
+interface ClientServerCommunicator.SuccessListener {
+    void onSuccess(reply : Reply)
+}
+
+interface ClientServerCommunicator.ErrorListener {
+    void onError(e : Exception)
+}
+
+class ClientServerCommunicator.ListenersPair {
+    -successListener : Consumer<Reply>
+    -errorListener : Consumer<Exception>
+
+    +ListenersPair(successListener : Consumer<Reply>, errorListener : Consumer<Exception>)
 }
 
 interface ClientServerCommunicator.CommunicatorListener{
@@ -85,6 +110,9 @@ VirtualView --|> ServerClientCommunicator.CommunicatorListener
 Controller --> GameController
 ServerClientCommunicator --> ServerClientCommunicator.CommunicatorListener
 ClientServerCommunicator --> ClientServerCommunicator.CommunicatorListener
+ClientServerCommunicator --> ClientServerCommunicator.SuccessListener
+ClientServerCommunicator --> ClientServerCommunicator.ErrorListener
+ClientServerCommunicator --> ClientServerCommunicator.ListenersPair
 Client --|> ClientServerCommunicator.CommunicatorListener
 
 @enduml

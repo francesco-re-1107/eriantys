@@ -6,7 +6,7 @@ abstract class Response
 abstract class Reply {
     -isSuccessful: boolean
     -throwable: Throwable
-    -requestId: UUID
+    -associatedRequestId: UUID
 
     +Reply(requestId : UUID, isSuccessful : boolean)
     +Reply(requestId : UUID, throwable : Throwable)
