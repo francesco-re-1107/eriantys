@@ -12,7 +12,7 @@ public enum InfoString {
     MY_TURN_MOVE_MOTHER_NATURE("È il tuo turno: muovi madre natura al più di %s passi"),
     MY_TURN_SELECT_CLOUD("È il tuo turno: seleziona una nuvola"),
     OTHER_PLAYER_WAIT_FOR_HIS_TURN("È il turno di %s: attendi"),
-    MY_TURN_SELECT_ISLAND_FOR_GRANDMA("NONNA: seleziona l'isola su cui porer il divieto di entrata."),
+    MY_TURN_SELECT_ISLAND_FOR_GRANDMA("NONNA: seleziona l'isola su cui porre il divieto di entrata."),
 
     MY_TURN_SELECT_ISLAND_FOR_HERALD("ARALDO: seleziona l'isola su cui calcolare l'influenza."),
     MY_TURN_SELECT_STUDENT_TO_SWAP_FROM_SCHOOL_TO_ENTRANCE("MENESTRELLO: rimuovi %s studenti dalla sala."),
