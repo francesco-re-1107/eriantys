@@ -1,39 +1,20 @@
 package it.polimi.ingsw.server.model;
 
-import it.polimi.ingsw.common.exceptions.InvalidOperationError;
-
 import java.io.Serializable;
-import java.util.*;
 
 /**
  * This class is used to represent a generic character card
  */
-public abstract class CharacterCard implements Serializable {
-
-    /**
-     * Generate a random deck of character cards without duplicates
-     * @param howManyCards number of cards to pick randomly
-     * @return the generated deck
-     */
-    public static List<Character> generateRandomDeck(int howManyCards) {
-        var list = new ArrayList<>(Arrays.asList(Character.values()));
-
-        if(howManyCards > list.size())
-            throw new InvalidOperationError("Too many cards");
-
-        Collections.shuffle(list);
-
-        return new LinkedList<>(list.subList(0, howManyCards));
-    }
+public interface CharacterCard extends Serializable {
 
     /**
      * @return the name (simple class name) of the card
      */
-    public abstract Character getCharacter();
+    Character getCharacter();
 
     /**
      * Apply the card's effect to the given game
-     * @param game
+     * @param game the game to apply the effect to
      */
-    public abstract void play(Game game);
+    void play(Game game);
 }

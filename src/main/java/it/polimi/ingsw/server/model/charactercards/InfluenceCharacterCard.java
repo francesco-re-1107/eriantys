@@ -8,7 +8,7 @@ import it.polimi.ingsw.server.model.Player;
 /**
  * This class is the supertype for all the character cards that affect influence calculation
  */
-public abstract class InfluenceCharacterCard extends CharacterCard {
+public abstract class InfluenceCharacterCard implements CharacterCard {
 
     /**
      * @param cardPlayer the player who played the card

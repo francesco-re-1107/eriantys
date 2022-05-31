@@ -10,7 +10,7 @@ import it.polimi.ingsw.server.model.Island;
  * This class models the grandma card
  * EFFECT: put a no entry tile on the selected island
  */
-public class GrandmaCharacterCard extends CharacterCard {
+public class GrandmaCharacterCard implements CharacterCard {
 
     private final Island island;
 

@@ -121,7 +121,7 @@ public class Game implements Serializable {
         this.listeners = new ArrayList<>();
         this.characterCards = new EnumMap<>(Character.class);
 
-        CharacterCard.generateRandomDeck(Constants.NUMBER_OF_CHARACTER_CARD)
+        Character.generateRandomDeck(Constants.NUMBER_OF_CHARACTER_CARD)
                 .forEach(s -> characterCards.put(s, 0));
         logger.log(Level.INFO, "Character cards -> " + characterCards.keySet());
 

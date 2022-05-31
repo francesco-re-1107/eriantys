@@ -14,12 +14,12 @@ class CharacterCardTest {
 
     @Test
     void generateRandomDeck() {
-        List<Character> d = CharacterCard.generateRandomDeck(6);
+        List<Character> d = Character.generateRandomDeck(6);
         assertEquals(6, d.size());
 
         assertThrows(
                 InvalidOperationError.class,
-                () -> CharacterCard.generateRandomDeck(16)
+                () -> Character.generateRandomDeck(16)
         );
     }
 

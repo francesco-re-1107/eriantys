@@ -10,7 +10,7 @@ import it.polimi.ingsw.server.model.StudentsContainer;
  * This class models the minstrel card
  * EFFECT: swap 1 or 2 students between entrance and school for the player that played the card
  */
-public class MinstrelCharacterCard extends CharacterCard {
+public class MinstrelCharacterCard implements CharacterCard {
 
     /**
      * Students to remove from school and add to entrance

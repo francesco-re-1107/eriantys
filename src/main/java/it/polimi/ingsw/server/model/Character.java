@@ -1,5 +1,9 @@
 package it.polimi.ingsw.server.model;
 
+import it.polimi.ingsw.common.exceptions.InvalidOperationError;
+
+import java.util.*;
+
 /**
  * This enum holds all the available character cards that can be randomly extracted
  */
@@ -33,9 +37,25 @@ public enum Character {
 
     /**
      * Get initial cost of the card
-     * @return
+     * @return the initial cost
      */
     public int getCost() {
         return cost;
+    }
+
+    /**
+     * Generate a random deck of characters without duplicates
+     * @param howMany number of characters to pick randomly
+     * @return the generated deck
+     */
+    public static List<Character> generateRandomDeck(int howMany) {
+        var list = new ArrayList<>(Arrays.asList(Character.values()));
+
+        if(howMany > list.size())
+            throw new InvalidOperationError("Too many cards");
+
+        Collections.shuffle(list);
+
+        return new LinkedList<>(list.subList(0, howMany));
     }
 }

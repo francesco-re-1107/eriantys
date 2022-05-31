@@ -9,7 +9,7 @@ import it.polimi.ingsw.server.model.Game;
  *
  * EFFECT: provides additional mother nature moves to the player that played the card
  */
-public class PostmanCharacterCard extends CharacterCard {
+public class PostmanCharacterCard implements CharacterCard {
 
     private static final int ADDITIONAL_MOTHER_NATURE_MOVES = 2;
 
