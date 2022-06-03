@@ -2,7 +2,6 @@ package it.polimi.ingsw.server.model;
 
 import it.polimi.ingsw.common.exceptions.InvalidOperationError;
 
-import java.io.Serial;
 import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
@@ -11,9 +10,6 @@ import java.util.Map;
  * This class models a player of the game, storing all the information of the board
  */
 public class Player implements StudentsContainer.StudentNumberReachedListener, Serializable {
-
-    @Serial
-    private static final long serialVersionUID = -4113260592445356345L;
 
     /**
      * Stores the nickname chose by the player during setup

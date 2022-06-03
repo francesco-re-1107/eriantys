@@ -6,16 +6,11 @@ import it.polimi.ingsw.server.model.CharacterCard;
 import it.polimi.ingsw.server.model.Game;
 import it.polimi.ingsw.server.model.Island;
 
-import java.io.Serial;
-
 /**
  * This class models the herald card
  * EFFECT: Calculate influence on the selected island regardless of mother nature
  */
 public class HeraldCharacterCard implements CharacterCard {
-
-    @Serial
-    private static final long serialVersionUID = 696518930881271947L;
 
     private final Island island;
 

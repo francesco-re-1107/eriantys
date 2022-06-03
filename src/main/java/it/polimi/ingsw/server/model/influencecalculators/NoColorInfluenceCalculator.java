@@ -4,7 +4,6 @@ import it.polimi.ingsw.server.model.Island;
 import it.polimi.ingsw.server.model.Player;
 import it.polimi.ingsw.server.model.Student;
 
-import java.io.Serial;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -12,9 +11,6 @@ import java.util.concurrent.atomic.AtomicInteger;
  * This calculator ignores the selected student color in the influence calculation process
  */
 public class NoColorInfluenceCalculator extends DefaultInfluenceCalculator {
-
-    @Serial
-    private static final long serialVersionUID = 3584931472310979093L;
 
     private final Student studentColorNotInfluencing;
 

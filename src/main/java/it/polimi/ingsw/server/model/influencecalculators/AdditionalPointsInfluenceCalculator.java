@@ -4,16 +4,12 @@ import it.polimi.ingsw.server.model.Island;
 import it.polimi.ingsw.server.model.Player;
 import it.polimi.ingsw.server.model.Student;
 
-import java.io.Serial;
 import java.util.Map;
 
 /**
  * This calculator provides additional points to the given player in the influence calculation
  */
 public class AdditionalPointsInfluenceCalculator extends DefaultInfluenceCalculator {
-
-    @Serial
-    private static final long serialVersionUID = 8207587773206558696L;
 
     private final Player privilegedPlayer;
 

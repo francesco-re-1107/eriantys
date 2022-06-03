@@ -6,12 +6,7 @@ import it.polimi.ingsw.server.model.Game;
 import it.polimi.ingsw.server.model.StudentsContainer;
 import it.polimi.ingsw.server.model.charactercards.MinstrelCharacterCard;
 
-import java.io.Serial;
-
 public class ReducedMinstrelCharacterCard extends ReducedCharacterCard {
-
-    @Serial
-    private static final long serialVersionUID = -2301467312197707131L;
 
     private final StudentsContainer studentsToAdd;
     private final StudentsContainer studentsToRemove;

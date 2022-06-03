@@ -1,6 +1,5 @@
 package it.polimi.ingsw.server.model;
 
-import java.io.Serial;
 import java.io.Serializable;
 import java.util.EnumMap;
 import java.util.Map;
@@ -10,9 +9,6 @@ import java.util.Objects;
  * This class represents a generic students container which cannot be modified
  */
 public abstract class AStudentsContainer implements Serializable {
-
-    @Serial
-    private static final long serialVersionUID = 2063985746502559014L;
 
     /**
      * Used internally to store the students

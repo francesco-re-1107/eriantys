@@ -5,15 +5,10 @@ import it.polimi.ingsw.server.model.Game;
 import it.polimi.ingsw.server.model.InfluenceCalculator;
 import it.polimi.ingsw.server.model.Player;
 
-import java.io.Serial;
-
 /**
  * This class is the supertype for all the character cards that affect influence calculation
  */
 public abstract class InfluenceCharacterCard implements CharacterCard {
-
-    @Serial
-    private static final long serialVersionUID = 7863976591165545747L;
 
     /**
      * @param cardPlayer the player who played the card

@@ -5,7 +5,6 @@ import it.polimi.ingsw.server.model.Island;
 import it.polimi.ingsw.server.model.Player;
 import it.polimi.ingsw.server.model.Student;
 
-import java.io.Serial;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -13,9 +12,6 @@ import java.util.concurrent.atomic.AtomicInteger;
  * This class implements the default algorithm for influence calculation
  */
 public class DefaultInfluenceCalculator implements InfluenceCalculator {
-
-    @Serial
-    private static final long serialVersionUID = -3492931437038561546L;
 
     /**
      * Calculate default influence which is the sum of towers influence and students influence

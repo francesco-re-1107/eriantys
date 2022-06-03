@@ -2,16 +2,12 @@ package it.polimi.ingsw.server.model;
 
 import it.polimi.ingsw.common.exceptions.InvalidOperationError;
 
-import java.io.Serial;
 import java.io.Serializable;
 
 /**
  * This class represents an island of the game.
  */
 public class Island implements Serializable {
-
-    @Serial
-    private static final long serialVersionUID = -6562820325317054238L;
 
     /**
      * Stores the students on this island

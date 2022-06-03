@@ -4,7 +4,6 @@ import it.polimi.ingsw.server.model.Island;
 import it.polimi.ingsw.server.model.Player;
 import it.polimi.ingsw.server.model.Student;
 
-import java.io.Serial;
 import java.util.EnumMap;
 import java.util.Map;
 
@@ -14,8 +13,6 @@ import java.util.Map;
  */
 public class ProfessorsControlInfluenceCalculator extends DefaultInfluenceCalculator {
 
-    @Serial
-    private static final long serialVersionUID = 7748194063358719583L;
     private final Player privilegedPlayer;
 
     public ProfessorsControlInfluenceCalculator(Player privilegedPlayer) {

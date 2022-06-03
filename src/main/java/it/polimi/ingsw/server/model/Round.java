@@ -1,15 +1,14 @@
 package it.polimi.ingsw.server.model;
 
+import it.polimi.ingsw.Utils;
 import it.polimi.ingsw.common.exceptions.InvalidOperationError;
 
-import java.io.Serial;
 import java.io.Serializable;
 import java.util.*;
+import java.util.logging.Logger;
 
 public class Round implements Serializable {
 
-    @Serial
-    private static final long serialVersionUID = 880655372283287983L;
     /**
      * Current stage of the round
      */
@@ -40,6 +39,7 @@ public class Round implements Serializable {
      */
     private int additionalMotherNatureMoves = 0;
 
+    private static final transient Logger logger = Utils.LOGGER;
 
     /**
      * @param players list of players ordered with respect to the assistant cards played in the previous round
@@ -113,8 +113,10 @@ public class Round implements Serializable {
 
         playedAssistantCards.add(card);
         player.playAssistantCard(card);
-
-        nextPlayer();
+        if (playedAssistantCards.size() == players.size()) //go to attack stage
+            nextStage();
+        else
+            currentPlayer++;
     }
 
     /**
@@ -122,21 +124,17 @@ public class Round implements Serializable {
      * @return true if the round is finished, false otherwise
      */
     public boolean nextPlayer(){
-        if(stage instanceof Stage.Plan){ //PLAN mode
-            if (playedAssistantCards.size() == players.size() - getNumberOfPlayersDisconnected()) //go to attack stage
-                nextStage();
-            else
-                currentPlayer++;
-        } else { //ATTACK mode
+        if(stage instanceof Stage.Plan)
+            throw new InvalidOperationError();
+        // TODO: further checks
 
-            // finished round check
-            if (currentPlayer == players.size() - 1)
-                return true;
+        // finished round check
+        if(currentPlayer == players.size() - 1)
+            return true;
 
-            // more players to come
-            currentPlayer++;
-            stage = Stage.Attack.STARTED;
-        }
+        // more players to come
+        currentPlayer++;
+        stage = Stage.Attack.STARTED;
         return false;
     }
 
@@ -203,21 +201,6 @@ public class Round implements Serializable {
      */
     public int getAdditionalMotherNatureMoves() {
         return additionalMotherNatureMoves;
-    }
-
-    /**
-     * If a player disconnects and the game continues check that the round of that player finishes
-     * @param player
-     * @return true if a new round needs to be created, false otherwise
-     */
-    public boolean setPlayerDisconnected(Player player) {
-        if(!players.get(currentPlayer).equals(player)) return false;
-
-        return nextPlayer();
-    }
-
-    private int getNumberOfPlayersDisconnected(){
-        return (int) players.stream().filter(p -> !p.isConnected()).count();
     }
 
     private record CardPair(Player first, AssistantCard second){ }
