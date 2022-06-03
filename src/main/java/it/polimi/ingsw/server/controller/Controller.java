@@ -234,9 +234,14 @@ public class Controller implements Game.GameUpdateListener {
                 var f = new FileInputStream(backupFile);
                 var o = new ObjectInputStream(f);
         ) {
+            //load games
             games = (ArrayList<Game>) o.readObject();
-            //games loaded
-            games.forEach(Game::initializeFromBackup);
+
+            //remove ended games or created games (i.e. games that were never started)
+            games.removeIf(g -> g.getGameState() == Game.State.TERMINATED ||
+                            g.getGameState() == Game.State.FINISHED ||
+                            g.getGameState() == Game.State.CREATED);
+
             for (var g : games) {
                 g.initializeFromBackup();
                 g.addGameUpdateListener(this);
