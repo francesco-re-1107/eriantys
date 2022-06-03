@@ -6,11 +6,16 @@ import it.polimi.ingsw.server.model.CharacterCard;
 import it.polimi.ingsw.server.model.Game;
 import it.polimi.ingsw.server.model.StudentsContainer;
 
+import java.io.Serial;
+
 /**
  * This class models the minstrel card
  * EFFECT: swap 1 or 2 students between entrance and school for the player that played the card
  */
 public class MinstrelCharacterCard implements CharacterCard {
+
+    @Serial
+    private static final long serialVersionUID = -3606524692311186657L;
 
     /**
      * Students to remove from school and add to entrance

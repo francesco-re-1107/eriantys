@@ -134,8 +134,10 @@ public class Game implements Serializable {
     public void initializeFromBackup() {
         //listeners list is not stored
         this.listeners = new ArrayList<>();
+
         //every player is disconnected
-        players.forEach(this::setPlayerDisconnected);
+        players.forEach(p -> p.setConnected(false));
+        this.gameState = State.PAUSED;
     }
 
     /**
@@ -777,8 +779,10 @@ public class Game implements Serializable {
         } else {
             player.setConnected(false);
 
-            //pause game
-            this.gameState = State.PAUSED;
+            if(players.stream().filter(Player::isConnected).count() < 2) //pause game
+                this.gameState = State.PAUSED;
+            else
+                currentRound.setPlayerDisconnected(player);
         }
 
         notifyUpdate();
@@ -794,8 +798,8 @@ public class Game implements Serializable {
         player.setConnected(true);
 
         //resume game if all players are connected
-        boolean allConnected = players.stream().allMatch(Player::isConnected);
-        if(allConnected)
+        boolean atLeastTwoConnected = players.stream().filter(Player::isConnected).count() >= 2;
+        if(atLeastTwoConnected)
             this.gameState = State.STARTED;
 
         notifyUpdate();
