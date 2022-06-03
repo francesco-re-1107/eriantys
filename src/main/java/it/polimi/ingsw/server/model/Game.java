@@ -134,8 +134,10 @@ public class Game implements Serializable {
     public void initializeFromBackup() {
         //listeners list is not stored
         this.listeners = new ArrayList<>();
+
         //every player is disconnected
-        players.forEach(this::setPlayerDisconnected);
+        players.forEach(p -> p.setConnected(false));
+        this.gameState = State.PAUSED;
     }
 
     /**

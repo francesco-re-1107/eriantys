@@ -7,12 +7,16 @@ import it.polimi.ingsw.server.VirtualView;
 import it.polimi.ingsw.server.controller.Controller;
 import it.polimi.ingsw.server.controller.GameController;
 
+import java.io.Serial;
 import java.util.UUID;
 
 /**
  * This class represents the request to join the game with the specified uuid
  */
 public class JoinGameRequest extends Request{
+
+    @Serial
+    private static final long serialVersionUID = -4701864954654590957L;
 
     private final UUID gameId;
 

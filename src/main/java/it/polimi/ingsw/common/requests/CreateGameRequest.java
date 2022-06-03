@@ -7,12 +7,16 @@ import it.polimi.ingsw.server.VirtualView;
 import it.polimi.ingsw.server.controller.Controller;
 import it.polimi.ingsw.server.controller.GameController;
 
+import java.io.Serial;
+
 /**
  * This class represents the request to create a game on the server with the specified parameters and automatically
  * join it.
  */
 public class CreateGameRequest extends Request{
 
+    @Serial
+    private static final long serialVersionUID = 3359387591981321264L;
     private final int numberOfPlayers;
 
     private final boolean expertMode;

@@ -2,6 +2,7 @@ package it.polimi.ingsw.server.model;
 
 import it.polimi.ingsw.common.exceptions.InvalidOperationError;
 
+import java.io.Serial;
 import java.security.SecureRandom;
 import java.util.Random;
 
@@ -10,6 +11,9 @@ import java.util.Random;
  * It is used, for example, to represents the students bag of the game
  */
 public class RandomizedStudentsContainer extends AStudentsContainer{
+
+    @Serial
+    private static final long serialVersionUID = 4797074922540670997L;
 
     /**
      * The random object used to pick random students

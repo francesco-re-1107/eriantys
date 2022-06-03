@@ -25,7 +25,7 @@ public interface Stage extends Serializable {
      * @param st2
      * @return true if st1 comes after st2, false otherwise
      */
-    public static boolean isEqualOrPost(Stage st1, Stage st2) {
+    static boolean isEqualOrPost(Stage st1, Stage st2) {
         if (st2 instanceof Stage.Plan)
             return true;
         return ((Attack) st1).ordinal() >= ((Attack) st2).ordinal();

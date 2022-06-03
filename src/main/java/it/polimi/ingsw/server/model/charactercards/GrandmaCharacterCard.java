@@ -6,11 +6,16 @@ import it.polimi.ingsw.server.model.CharacterCard;
 import it.polimi.ingsw.server.model.Game;
 import it.polimi.ingsw.server.model.Island;
 
+import java.io.Serial;
+
 /**
  * This class models the grandma card
  * EFFECT: put a no entry tile on the selected island
  */
 public class GrandmaCharacterCard implements CharacterCard {
+
+    @Serial
+    private static final long serialVersionUID = 5987933858737561284L;
 
     private final Island island;
 

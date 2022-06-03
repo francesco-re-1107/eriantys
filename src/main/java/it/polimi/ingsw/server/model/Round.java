@@ -3,11 +3,15 @@ package it.polimi.ingsw.server.model;
 import it.polimi.ingsw.Utils;
 import it.polimi.ingsw.common.exceptions.InvalidOperationError;
 
+import java.io.Serial;
 import java.io.Serializable;
 import java.util.*;
 import java.util.logging.Logger;
 
 public class Round implements Serializable {
+
+    @Serial
+    private static final long serialVersionUID = 4748110032539192683L;
 
     /**
      * Current stage of the round

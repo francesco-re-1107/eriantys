@@ -6,11 +6,16 @@ import it.polimi.ingsw.server.model.Player;
 import it.polimi.ingsw.server.model.Student;
 import it.polimi.ingsw.server.model.influencecalculators.NoColorInfluenceCalculator;
 
+import java.io.Serial;
+
 /**
  * This class models the mushroom man card
  * EFFECT: ignore the selected student color during influence calculation
  */
 public class MushroomManCharacterCard extends InfluenceCharacterCard {
+
+    @Serial
+    private static final long serialVersionUID = -68389996830129993L;
 
     /**
      * Student color selected by the user that will be ignored during influence calculation

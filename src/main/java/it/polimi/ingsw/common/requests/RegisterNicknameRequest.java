@@ -7,10 +7,15 @@ import it.polimi.ingsw.server.VirtualView;
 import it.polimi.ingsw.server.controller.Controller;
 import it.polimi.ingsw.server.controller.GameController;
 
+import java.io.Serial;
+
 /**
  * This class represents the request to register a nickname on the connected server, this should be the first request sent to the server
  */
 public class RegisterNicknameRequest extends Request{
+
+    @Serial
+    private static final long serialVersionUID = 2683909400431681674L;
 
     private final String nickname;
 

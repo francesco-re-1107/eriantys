@@ -5,6 +5,7 @@ import it.polimi.ingsw.server.VirtualView;
 import it.polimi.ingsw.server.controller.Controller;
 import it.polimi.ingsw.server.controller.GameController;
 
+import java.io.Serial;
 import java.io.Serializable;
 import java.util.UUID;
 
@@ -12,6 +13,10 @@ import java.util.UUID;
  * This class represents a generic Request from the client to the server
  */
 public abstract class Request implements Serializable {
+
+    @Serial
+    private static final long serialVersionUID = -6173046168193803850L;
+
     /**
      * The unique identifier of the request, generated randomly
      */

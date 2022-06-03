@@ -2,6 +2,7 @@ package it.polimi.ingsw.common.responses.replies;
 
 import it.polimi.ingsw.common.responses.Reply;
 
+import java.io.Serial;
 import java.util.UUID;
 
 /**
@@ -9,6 +10,9 @@ import java.util.UUID;
  * just to notify the client that the request has been correctly received and successfully processed.
  */
 public class AckReply extends Reply {
+
+    @Serial
+    private static final long serialVersionUID = -5929738774663736737L;
 
     public AckReply(UUID requestId) {
         super(requestId, true);

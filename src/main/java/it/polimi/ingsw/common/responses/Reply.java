@@ -1,5 +1,6 @@
 package it.polimi.ingsw.common.responses;
 
+import java.io.Serial;
 import java.util.UUID;
 
 /**
@@ -8,6 +9,9 @@ import java.util.UUID;
  */
 public abstract class Reply extends Response {
 
+    @Serial
+    private static final long serialVersionUID = -7388408940729115334L;
+    
     /**
      * Whether the associated request was successful or not.
      */

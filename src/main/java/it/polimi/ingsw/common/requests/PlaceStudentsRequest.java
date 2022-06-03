@@ -6,12 +6,16 @@ import it.polimi.ingsw.server.VirtualView;
 import it.polimi.ingsw.server.controller.GameController;
 import it.polimi.ingsw.server.model.StudentsContainer;
 
+import java.io.Serial;
 import java.util.Map;
 
 /**
  * This class represents the request to place students in school or on islands in the currently played game
  */
 public class PlaceStudentsRequest extends GameRequest{
+
+    @Serial
+    private static final long serialVersionUID = 3229348692306254734L;
 
     private final StudentsContainer inSchool;
 

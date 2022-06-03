@@ -3,6 +3,7 @@ package it.polimi.ingsw.server.model;
 import it.polimi.ingsw.common.exceptions.InvalidOperationError;
 import it.polimi.ingsw.common.exceptions.StudentsMaxReachedError;
 
+import java.io.Serial;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -13,6 +14,9 @@ import java.util.Map;
  * This class represents a students container that can be modified with methods like addStudent, removeStudent, addAll...
  */
 public class StudentsContainer extends AStudentsContainer {
+
+    @Serial
+    private static final long serialVersionUID = -9067015801443748133L;
 
     private final Map<Trigger, StudentNumberReachedListener> triggerListeners = new HashMap<>();
 
