@@ -29,16 +29,25 @@ Progetto di Ingegneria del Software A.A. 2021-2022
 Download the ```.jar``` file from the [release page](https://github.com/francesco-re-1107/ing-sw-2022-re-scopacasa-zappa/releases).
 
 #### Server
-```java -jar eriantys.jar server```
+```
+java -jar eriantys.jar server
+```
+
+Deployed server ```eriantys.francescore.dev:6001```
 
 #### Client CLI
-```java -jar eriantys.jar client --cli```
+```
+java -jar eriantys.jar client --cli
+```
 
 #### Client GUI
-```java -jar eriantys.jar client --gui```
+```
+java -jar eriantys.jar client --gui
+```
 
 #### NOTE for Windows
-Change OS [/s](https://www.urbandictionary.com/define.php?term=%2FS). For the best experience:
+For the best experience:
+- Change OS [/s](https://www.urbandictionary.com/define.php?term=%2FS)
 - [Enable UTF-8 support](https://stackoverflow.com/a/57134096) for command prompt
 - Download and install [Windows Terminal](https://apps.microsoft.com/store/detail/windows-terminal/9N0DX20HK701)
 - Set window size to 80x24
