@@ -226,7 +226,11 @@ public class Controller implements Game.GameUpdateListener {
      */
     @SuppressWarnings("unchecked")
     private synchronized void loadBackupIfPresent() {
-        var backupFile = new File(Utils.getServerConfig().backupFolder() + "/games.bak");
+        var backupFile = Utils.getServerConfig()
+                .backupFolder()
+                .resolve("games.bak")
+                .toAbsolutePath()
+                .toFile();
 
         if(!backupFile.isFile()) return;
 
@@ -258,12 +262,18 @@ public class Controller implements Game.GameUpdateListener {
      * Save games list to file
      */
     private synchronized void saveGames() {
+        var backupFile = Utils.getServerConfig()
+                .backupFolder()
+                .resolve("games.bak")
+                .toAbsolutePath()
+                .toFile();
+
         try (
-                var f = new FileOutputStream(Utils.getServerConfig().backupFolder() + "/games.bak");
+                var f = new FileOutputStream(backupFile);
                 var o = new ObjectOutputStream(f)
         ) {
             o.writeObject(games);
-            Utils.LOGGER.info("Games saved");
+            Utils.LOGGER.info("Games saved at " + backupFile.getAbsolutePath());
         } catch (IOException e) {
             Utils.LOGGER.warning("Error saving games: " + e.getMessage());
         }

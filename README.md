@@ -33,7 +33,14 @@ Download the ```.jar``` file from the [release page](https://github.com/francesc
 java -jar eriantys.jar server
 ```
 
-Deployed server ```eriantys.francescore.dev:6001```
+Deployed server: ```eriantys.francescore.dev:6001```
+
+Server configuration
+
+| Env variable                 | Description               | Default value                   |
+|------------------------------|---------------------------|---------------------------------|
+| ```ERIANTYS_SERVER_PORT```   | Server port               | ```6001```                      |
+| ```ERIANTYS_BACKUP_FOLDER``` | Persistence backup folder | ```Current Working Directory``` |
 
 #### Client CLI
 ```

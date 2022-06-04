@@ -1,11 +1,11 @@
 package it.polimi.ingsw;
 
-import java.io.InputStream;
+import java.nio.file.InvalidPathException;
+import java.nio.file.Paths;
 import java.security.SecureRandom;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Properties;
 import java.util.logging.ConsoleHandler;
 import java.util.logging.Level;
 import java.util.logging.LogManager;
@@ -48,27 +48,43 @@ public class Utils {
     }
 
     /**
-     * Loads server config properties from file if present, otherwise loads default values
+     * Loads server config properties from environment variables if present, otherwise loads default values
      * @return ServerConfig object read from file
      */
     public static ServerConfig getServerConfig(){
-        Properties prop = new Properties();
-        try {
-            InputStream is = Utils.class.getClassLoader().getResourceAsStream(Constants.SERVER_CONFIG_FILE_NAME);
-            prop.load(is);
-        } catch (Exception e) {
-            LOGGER.info("Server config file not found, using default values");
-            return new ServerConfig(
-                    Constants.DEFAULT_SERVER_PORT,
-                    Constants.DEFAULT_BACKUP_FOLDER
-            );
-        }
-        return new ServerConfig(
-            Integer.parseInt(prop.getProperty("server.port")),
-            prop.getProperty("server.backupFolder")
-        );
+        var port = Constants.DEFAULT_SERVER_PORT;
+        var portEnv = System.getenv().get(Constants.SERVER_PORT_ENV_KEY);
+
+        var backupFolder = Constants.DEFAULT_BACKUP_FOLDER;
+        var backupFolderEnv = System.getenv().get(Constants.BACKUP_FOLDER_ENV_KEY);
+
+        //check if the port is ok
+        if(isInteger(portEnv))
+            port = Integer.parseInt(portEnv);
+
+        //check if the backup folder is ok
+        if(isValidPath(backupFolderEnv))
+            backupFolder = Paths.get(backupFolderEnv);
+
+        return new ServerConfig(port, backupFolder);
     }
 
+    /**
+     * Check if a given string is a valid path
+     *
+     * @param path the path to check
+     * @return true if the path is valid, false otherwise
+     */
+    public static boolean isValidPath(String path) {
+        if(path == null) return false;
+
+        try {
+            var p = Paths.get(path);
+            return true;
+        } catch (InvalidPathException | NullPointerException ex) {
+            return false;
+        }
+    }
 
     /**
      * Check if two lists are equal
@@ -126,6 +142,8 @@ public class Utils {
      * @return true if the string is an integer, false otherwise
      */
     public static boolean isInteger(String string) {
+        if(string == null) return false;
+
         try {
             Integer.parseInt(string);
             return true;
