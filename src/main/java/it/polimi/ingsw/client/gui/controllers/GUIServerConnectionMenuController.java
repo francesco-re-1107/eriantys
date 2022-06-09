@@ -3,6 +3,7 @@ package it.polimi.ingsw.client.gui.controllers;
 import it.polimi.ingsw.Constants;
 import it.polimi.ingsw.client.Client;
 import it.polimi.ingsw.client.ScreenController;
+import it.polimi.ingsw.client.gui.customviews.WhiteProgressIndicator;
 import it.polimi.ingsw.common.exceptions.DuplicatedNicknameException;
 import it.polimi.ingsw.common.exceptions.NicknameNotValidException;
 import javafx.application.Platform;
@@ -26,15 +27,17 @@ public class GUIServerConnectionMenuController implements ScreenController {
     @FXML
     public Label registrationError;
     @FXML
+    public WhiteProgressIndicator connectionProgressIndicator;
+    @FXML
     private TextField hostTextField;
     @FXML
     private TextField portTextField;
     @FXML
     private TextField nicknameTextField;
     @FXML
-    private Button connectButton;
-    @FXML
     public Button registerButton;
+
+    private boolean isConnecting;
 
     public void initialize() {
         //set nickname text field max length
@@ -51,6 +54,8 @@ public class GUIServerConnectionMenuController implements ScreenController {
         connectionBox.requestFocus();
         connectionError.setVisible(false);
         registrationError.setVisible(false);
+        connectionProgressIndicator.setVisible(false);
+        connectionProgressIndicator.setManaged(false);
         showConnectionBox();
     }
 
@@ -78,7 +83,6 @@ public class GUIServerConnectionMenuController implements ScreenController {
         registrationBox.setVisible(true);
         registrationBox.setManaged(true);
 
-        connectButton.setDisable(false);
         registerButton.setDisable(false);
 
         registrationBox.requestFocus();
@@ -88,20 +92,29 @@ public class GUIServerConnectionMenuController implements ScreenController {
      * Callback for the connect button.
      */
     public void connect() {
-        connectButton.setDisable(true);
+        if(isConnecting) return;
+
+        isConnecting = true;
+        showConnectionError("");
+        connectionProgressIndicator.setVisible(true);
+        connectionProgressIndicator.setManaged(true);
 
         Client.getInstance()
                 .connect(
                         hostTextField.getText(),
                         portTextField.getText(),
-                        () -> {
+                        () -> Platform.runLater(() -> {
+                            isConnecting = false;
+                            connectionProgressIndicator.setVisible(false);
+                            connectionProgressIndicator.setManaged(false);
                             showRegistrationBox();
-                            connectButton.setDisable(false);
-                        },
-                        e -> {
-                            showConnectionError(e.getMessage());
-                            connectButton.setDisable(false);
-                        }
+                        }),
+                        e -> Platform.runLater(() -> {
+                            isConnecting = false;
+                            connectionProgressIndicator.setVisible(false);
+                            connectionProgressIndicator.setManaged(false);
+                            showConnectionError("Impossibile connettersi al server");
+                        })
                 );
     }
 

@@ -165,6 +165,11 @@ public final class Constants {
     public static final String BACKUP_FOLDER_ENV_KEY = "ERIANTYS_BACKUP_FOLDER";
 
     /**
+     * Timeout for the server connection
+     */
+    public static final int CONNECTION_TIMEOUT = 8000;
+
+    /**
      * These constants are used in a game with 2 players (commented only once)
      */
     public static final class TwoPlayers {
