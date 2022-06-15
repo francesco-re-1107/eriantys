@@ -33,7 +33,7 @@ Download the ```.jar``` file from the [release page](https://github.com/francesc
 java -jar eriantys.jar server
 ```
 
-Deployed server: ```eriantys.francescore.dev:6001```
+Deployed server: ```eriantys.francescore.dev:6001``` ![Uptime Robot status](https://img.shields.io/uptimerobot/status/m792016027-a3a6d8ca3c90667d373c5137)
 
 Server configuration
 
