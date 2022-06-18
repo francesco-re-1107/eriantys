@@ -202,6 +202,7 @@ public class PlayerBoardView extends BaseView {
                 .fg(Palette.WHITE)
                 .bg(Palette.DASHBOARD_BACKGROUND)
                 .a(isMyPlayer ? "Tu" : player.nickname())
+                .a(!player.isConnected()? " †" : "")
                 .reset());
 
         cursor.restoreCursorPosition();

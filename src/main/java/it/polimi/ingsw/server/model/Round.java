@@ -49,6 +49,7 @@ public class Round implements Serializable {
         this.clouds = clouds;
         this.players = players;
         this.playedAssistantCards = new ArrayList<>();
+        skipInactivePlayer();
     }
 
     /**
@@ -113,10 +114,11 @@ public class Round implements Serializable {
 
         playedAssistantCards.add(card);
         player.playAssistantCard(card);
-        if (playedAssistantCards.size() == players.size()) //go to attack stage
+        //go to attack stage
+        if (playedAssistantCards.size() == getActivePlayers().size()) // TODO: pair cards with player
             nextStage();
         else
-            currentPlayer++;
+            nextActivePlayer();
     }
 
     /**
@@ -133,11 +135,27 @@ public class Round implements Serializable {
             return true;
 
         // more players to come
-        currentPlayer++;
+        nextActivePlayer();
+        // finished round check
+        if(currentPlayer >= players.size())
+            return true;
+
         stage = Stage.Attack.STARTED;
         return false;
     }
 
+    public void nextActivePlayer() {
+        currentPlayer++;
+        skipInactivePlayer();
+    }
+
+    private void skipInactivePlayer() {
+        if (!players.get(currentPlayer).isConnected()){
+            logger.info("skipping %d, %s".formatted(currentPlayer, players.get(currentPlayer).getNickname()));
+            currentPlayer++;
+        }
+    }
+    
     /**
      * @return the curent stage
      */
@@ -201,6 +219,14 @@ public class Round implements Serializable {
      */
     public int getAdditionalMotherNatureMoves() {
         return additionalMotherNatureMoves;
+    }
+
+        /**
+     * @return a copy of the players list of this game
+     */
+    public List<Player> getActivePlayers() {
+        // return a copy
+        return players.stream().filter(Player::isConnected).toList();
     }
 
     private record CardPair(Player first, AssistantCard second){ }

@@ -702,6 +702,13 @@ public class Game implements Serializable {
     }
 
     /**
+     * @return a copy of the players list of this game
+     */
+    public List<Player> getActivePlayers() {
+        // return a copy
+        return players.stream().filter(Player::isConnected).toList();
+    }
+    /**
      * If game is started, this will return the same as getCurrentNumberOfPlayers()
      *
      * @return the desired number of players
@@ -771,14 +778,18 @@ public class Game implements Serializable {
      */
     public synchronized void setPlayerDisconnected(Player player){
         checkIfValidPlayer(player);
-
+        logger.info("%s disconnecteed".formatted(player.getNickname()));
         if(gameState == State.CREATED) {
             players.remove(player);
         } else {
             player.setConnected(false);
-
-            //pause game
-            this.gameState = State.PAUSED;
+            if (getActivePlayers().size() < 2) {
+                //pause game
+                this.gameState = State.PAUSED;
+            }
+            if (currentRound.getCurrentPlayer().getNickname() == player.getNickname()) {
+                currentRound.nextActivePlayer();
+            }
         }
 
         notifyUpdate();
@@ -793,10 +804,10 @@ public class Game implements Serializable {
 
         player.setConnected(true);
 
-        //resume game if all players are connected
-        boolean allConnected = players.stream().allMatch(Player::isConnected);
-        if(allConnected)
+        //resume game if enough players
+        if (getActivePlayers().size() >= 2) {
             this.gameState = State.STARTED;
+        }
 
         notifyUpdate();
     }
