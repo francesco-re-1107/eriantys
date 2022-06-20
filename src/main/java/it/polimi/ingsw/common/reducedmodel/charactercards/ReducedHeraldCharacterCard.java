@@ -5,7 +5,12 @@ import it.polimi.ingsw.server.model.CharacterCard;
 import it.polimi.ingsw.server.model.Game;
 import it.polimi.ingsw.server.model.charactercards.HeraldCharacterCard;
 
+import java.io.Serial;
+
 public class ReducedHeraldCharacterCard extends ReducedCharacterCard {
+
+    @Serial
+    private static final long serialVersionUID = -5351718358500432879L;
 
     private final int islandIndex;
 

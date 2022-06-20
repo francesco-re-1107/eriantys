@@ -11,10 +11,12 @@ import it.polimi.ingsw.common.responses.Update;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
+import java.util.function.Consumer;
 
 /**
  * This class handles the low level communication from client to server
@@ -23,7 +25,7 @@ public class ClientServerCommunicator {
     /**
      * Server socket
      */
-    private final Socket socket;
+    private Socket socket;
 
     /**
      * Stores the listener for every request received
@@ -47,11 +49,9 @@ public class ClientServerCommunicator {
 
     /**
      * Instantiates a communicator
-     * @param socket the server socket
      * @param listener response listener
      */
-    public ClientServerCommunicator(Socket socket, CommunicatorListener listener) {
-        this.socket = socket;
+    public ClientServerCommunicator(CommunicatorListener listener) {
         this.communicatorListener = listener;
         this.pendingRequests = new HashMap<>();
     }
@@ -59,32 +59,32 @@ public class ClientServerCommunicator {
     /**
      * This method binds to the socket input stream and listens for response from the server on a new thread
      */
-    public void startListening() {
+    private void startListening() {
+        if(!isConnected) return;
+
         startPinging();
-        new Thread(() -> {
-            try {
-                this.socket.setSoTimeout(Constants.DISCONNECTION_TIMEOUT);
-                var in = new ObjectInputStream(socket.getInputStream());
+        try {
+            this.socket.setSoTimeout(Constants.DISCONNECTION_TIMEOUT);
+            var in = new ObjectInputStream(socket.getInputStream());
 
-                while (socket.isConnected()) {
-                    var r = (Response) in.readObject();
+            while (socket.isConnected()) {
+                var r = (Response) in.readObject();
 
-                    //it's an update response
-                    if (r instanceof Update u) {
-                        communicatorListener.onUpdate(u);
-                    } else if (r instanceof Reply re) { //it's a request reply
-                        processReply(re);
-                    }
+                //it's an update response
+                if (r instanceof Update u) {
+                    communicatorListener.onUpdate(u);
+                } else if (r instanceof Reply re) { //it's a request reply
+                    processReply(re);
                 }
-
-                disconnect();
-            } catch (IOException e) {
-                disconnect();
-            } catch (ClassNotFoundException e) {
-                Utils.LOGGER.warning("Server transmitted something illegal");
-                e.printStackTrace();
             }
-        }).start();
+
+            disconnect();
+        } catch (IOException e) {
+            disconnect();
+        } catch (ClassNotFoundException e) {
+            Utils.LOGGER.warning("Server transmitted something illegal");
+            e.printStackTrace();
+        }
     }
 
     /**
@@ -184,6 +184,21 @@ public class ClientServerCommunicator {
             errorListener.onError(e);
             disconnect();
         }
+    }
+
+    public void connect(String host, int port, Runnable successListener, Consumer<Throwable> errorListener) {
+        new Thread(() -> {
+            try {
+                this.socket = new Socket();
+                this.socket.connect(new InetSocketAddress(host, port), Constants.CONNECTION_TIMEOUT);
+
+                successListener.run();
+
+                this.startListening();
+            }catch (IOException e) {
+                errorListener.accept(e);
+            }
+        }).start();
     }
 
     /**

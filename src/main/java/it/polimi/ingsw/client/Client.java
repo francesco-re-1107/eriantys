@@ -14,8 +14,6 @@ import it.polimi.ingsw.common.responses.updates.GameUpdate;
 import it.polimi.ingsw.server.model.Game;
 import javafx.stage.Stage;
 
-import java.io.IOException;
-import java.net.Socket;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -169,14 +167,8 @@ public class Client implements CommunicatorListener {
                 return;
             }
 
-        try {
-            communicator = new ClientServerCommunicator(new Socket(newHost, newPort), this);
-            communicator.startListening();
-
-            successListener.run();
-        } catch (IOException e) {
-            errorListener.accept(new Error("Impossibile connettersi al server"));
-        }
+        communicator = new ClientServerCommunicator(this);
+        communicator.connect(newHost, newPort, successListener, errorListener);
     }
 
     /**

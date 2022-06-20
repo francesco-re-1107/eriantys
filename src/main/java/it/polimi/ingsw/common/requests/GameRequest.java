@@ -6,10 +6,15 @@ import it.polimi.ingsw.server.VirtualView;
 import it.polimi.ingsw.server.controller.Controller;
 import it.polimi.ingsw.server.controller.GameController;
 
+import java.io.Serial;
+
 /**
  * This class represents a generic request regarding a specific game.
  */
 public abstract class GameRequest extends Request{
+
+    @Serial
+    private static final long serialVersionUID = 2723707173376379269L;
 
     public abstract Reply handleGameRequest(VirtualView vw, GameController gameController);
 

@@ -255,6 +255,16 @@ public class Cursor {
     }
 
     /**
+     * Clear the specified cell by resetting it to default values
+     * @param x x coordinate of the cell to clear
+     * @param y y coordinate of the cell to clear
+     */
+    public void clearCell(int x, int y) {
+        moveToXY(x, y);
+        print(ansi().fgDefault().bgDefault().a(" ").reset());
+    }
+
+    /**
      * Move the cursor relative to the current position.
      * @param xOffset the x offset, positive means right, negative means left
      * @param yOffset the y offset, positive means down, negative means up

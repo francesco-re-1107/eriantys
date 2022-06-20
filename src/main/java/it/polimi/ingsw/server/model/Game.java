@@ -100,7 +100,7 @@ public class Game implements Serializable {
      */
     private transient ArrayList<GameUpdateListener> listeners;
 
-    private static transient Logger logger = Utils.LOGGER;
+    private static final Logger logger = Utils.LOGGER;
 
     /**
      * Create a new game
@@ -134,8 +134,10 @@ public class Game implements Serializable {
     public void initializeFromBackup() {
         //listeners list is not stored
         this.listeners = new ArrayList<>();
+
         //every player is disconnected
-        players.forEach(this::setPlayerDisconnected);
+        players.forEach(p -> p.setConnected(false));
+        this.gameState = State.PAUSED;
     }
 
     /**
@@ -406,8 +408,9 @@ public class Game implements Serializable {
     }
 
     /**
-     * @param player
-     * @param card
+     * Play an assistant card for the given player
+     * @param player the player who plays the card
+     * @param card the card to play
      */
     public synchronized void playAssistantCard(Player player, AssistantCard card) {
         if (gameState != State.STARTED) return;

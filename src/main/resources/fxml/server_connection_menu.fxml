@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import it.polimi.ingsw.client.gui.customviews.WhiteProgressIndicator?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.image.Image?>
 <?import javafx.scene.image.ImageView?>
@@ -25,8 +26,15 @@
 
             <TextField fx:id="portTextField" prefHeight="70.0" maxWidth="450.0" alignment="CENTER" promptText="Porta [6001]"/>
 
-            <Button fx:id="connectButton" onMouseClicked="#connect" prefHeight="70.0" prefWidth="450.0" text="CONNETTI"
-                    textAlignment="CENTER"/>
+            <Button fx:id="connectButton" onMouseClicked="#connect" prefHeight="70.0" prefWidth="450.0"
+                    textAlignment="CENTER">
+                <graphic>
+                    <HBox prefHeight="70.0" alignment="CENTER" spacing="15">
+                        <Label text="CONNETTI"/>
+                        <WhiteProgressIndicator fx:id="connectionProgressIndicator" prefHeight="25" prefWidth="30"/>
+                    </HBox>
+                </graphic>
+            </Button>
         </VBox>
 
         <VBox fx:id="registrationBox" spacing="30" alignment="CENTER">

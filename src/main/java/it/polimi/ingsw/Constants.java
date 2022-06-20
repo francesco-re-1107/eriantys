@@ -2,6 +2,8 @@ package it.polimi.ingsw;
 
 import it.polimi.ingsw.server.model.Character;
 
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.List;
 import java.util.Map;
 
@@ -24,12 +26,6 @@ public final class Constants {
      * Number of character cards selected at the beginning of the game
      */
     public static final int NUMBER_OF_CHARACTER_CARD = 3;
-
-    /**
-     * Represents the path for the configuration file used
-     */
-    public static final String CONFIG_FILE_PATH = "server.config";
-
 
     /**
      * Hostname used by default by the client
@@ -66,11 +62,6 @@ public final class Constants {
      * Max length of the nickname to be valid
      */
     public static final int MAX_NICKNAME_LENGTH = 20;
-
-    /**
-     * Default configuration file used
-     */
-    public static final String SERVER_CONFIG_FILE_NAME = "server.config";
 
     /**
      * Adjectives words used to create random nicknames
@@ -159,8 +150,24 @@ public final class Constants {
 
     /**
      * Default folder used by the server to store backups
+     * Same folder as CWD
      */
-    public static final String DEFAULT_BACKUP_FOLDER = "";
+    public static final Path DEFAULT_BACKUP_FOLDER = Paths.get("");
+
+    /**
+     * Environment variable for server port
+     */
+    public static final String SERVER_PORT_ENV_KEY = "ERIANTYS_SERVER_PORT";
+
+    /**
+     * Environment variable for backup folder
+     */
+    public static final String BACKUP_FOLDER_ENV_KEY = "ERIANTYS_BACKUP_FOLDER";
+
+    /**
+     * Timeout for the server connection
+     */
+    public static final int CONNECTION_TIMEOUT = 8000;
 
     /**
      * These constants are used in a game with 2 players (commented only once)

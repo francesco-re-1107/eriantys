@@ -226,7 +226,11 @@ public class Controller implements Game.GameUpdateListener {
      */
     @SuppressWarnings("unchecked")
     private synchronized void loadBackupIfPresent() {
-        var backupFile = new File(Utils.getServerConfig().backupFolder() + "/games.bak");
+        var backupFile = Utils.getServerConfig()
+                .backupFolder()
+                .resolve("games.bak")
+                .toAbsolutePath()
+                .toFile();
 
         if(!backupFile.isFile()) return;
 
@@ -234,9 +238,14 @@ public class Controller implements Game.GameUpdateListener {
                 var f = new FileInputStream(backupFile);
                 var o = new ObjectInputStream(f);
         ) {
+            //load games
             games = (ArrayList<Game>) o.readObject();
-            //games loaded
-            games.forEach(Game::initializeFromBackup);
+
+            //remove ended games or created games (i.e. games that were never started)
+            games.removeIf(g -> g.getGameState() == Game.State.TERMINATED ||
+                            g.getGameState() == Game.State.FINISHED ||
+                            g.getGameState() == Game.State.CREATED);
+
             for (var g : games) {
                 g.initializeFromBackup();
                 g.addGameUpdateListener(this);
@@ -244,6 +253,7 @@ public class Controller implements Game.GameUpdateListener {
 
             Utils.LOGGER.info(games.size() + " games loaded from backup");
         } catch (Exception e) {
+            e.printStackTrace();
             Utils.LOGGER.warning("Error loading games backup, probably corrupted file");
         }
     }
@@ -252,12 +262,18 @@ public class Controller implements Game.GameUpdateListener {
      * Save games list to file
      */
     private synchronized void saveGames() {
+        var backupFile = Utils.getServerConfig()
+                .backupFolder()
+                .resolve("games.bak")
+                .toAbsolutePath()
+                .toFile();
+
         try (
-                var f = new FileOutputStream(Utils.getServerConfig().backupFolder() + "/games.bak");
+                var f = new FileOutputStream(backupFile);
                 var o = new ObjectOutputStream(f)
         ) {
             o.writeObject(games);
-            Utils.LOGGER.info("Games saved");
+            Utils.LOGGER.info("Games saved at " + backupFile.getAbsolutePath());
         } catch (IOException e) {
             Utils.LOGGER.warning("Error saving games: " + e.getMessage());
         }

@@ -3,6 +3,7 @@ package it.polimi.ingsw.client.cli.controllers;
 import it.polimi.ingsw.client.Client;
 import it.polimi.ingsw.client.ScreenController;
 import it.polimi.ingsw.client.cli.Cursor;
+import it.polimi.ingsw.client.cli.views.ProgressIndicatorView;
 import it.polimi.ingsw.client.cli.views.SimpleInputView;
 import it.polimi.ingsw.client.cli.views.TitleView;
 import it.polimi.ingsw.common.exceptions.DuplicatedNicknameException;
@@ -22,11 +23,15 @@ public class CLIServerConnectionMenuController implements ScreenController {
      */
     private SimpleInputView nicknameView;
 
+    private ProgressIndicatorView connectionProgressIndicator;
+
     @Override
     public void onShow() {
         Cursor.getInstance().clearScreen();
 
         new TitleView(TitleView.Title.ERIANTYS).draw();
+
+        connectionProgressIndicator = new ProgressIndicatorView(Cursor.WIDTH - 1, 22);
 
         connectionParamsView = new SimpleInputView("Inserisci hostname:port [default localhost:6001]:");
         connectionParamsView.setListener(this::processConnectionParams);
@@ -53,11 +58,18 @@ public class CLIServerConnectionMenuController implements ScreenController {
             }
         }
 
+        connectionProgressIndicator.startLoading();
         Client.getInstance().connect(
                 ip,
                 port,
-                this::askNickname,
-                e -> connectionParamsView.showError(e.getMessage())
+                () -> {
+                    connectionProgressIndicator.stopLoading();
+                    askNickname();
+                },
+                e -> {
+                    connectionProgressIndicator.stopLoading();
+                    connectionParamsView.showError("Impossibile connettersi al server");
+                }
         );
     }
 
