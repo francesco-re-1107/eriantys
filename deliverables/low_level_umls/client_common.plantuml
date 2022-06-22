@@ -1,0 +1,112 @@
+@startuml
+
+class Client {
+    -instance : Client
+    -communicator : ClientServerCommunicator
+    -navigationManager : NavigationManager
+    -List<GameUpdateListener> gameUpdateListeners : List<GameUpdateListener>
+    -nickname : String
+    -inGame : boolean
+
+    -Client()
+    -Client(stage : Stage)
+    +initCLI()
+    +initGUI(stage : Stage)
+    +getInstance() : Client
+    +connect(host : String, port : int, successListener : Runnable, errorListener : Consumer<Throwable>)
+    +registerNickname(nickname : String, errorListener : Consumer<Throwable>)
+    +goToGameCreation()
+    +goToGameJoiningMenu()
+    +createGame(numberOfPlayers : int, expertMode : boolean, errorListener : Consumer<Throwable>)
+    +exitApp()
+    +goBack()
+    +joinGame(gameId : int, errorListener : Consumer<Throwable>)
+    +leaveGame()
+    +addGameUpdateListener(listener : GameUpdateListener)
+    +removeGameUpdateListener(listener : GameUpdateListener)
+    +goToGame()
+    +getGameList(successListener : Consumer<List<GameListItem>>, errorListener : Consumer<Throwable>)
+    +forwardGameRequest(request : GameRequest, successListener : Runnable, errorListener : Consumer<Throwable>)
+    +getNickname() : String
+    +getNavigationManager() : NavigationManager
+}
+
+class ClientServerCommunicator {
+    -socket : Socket
+    -isConnected : boolean
+    -communicatorListener : CommunicatorListener
+    -pendingRequests : Map<UUID, ListenersPair>
+
+    +ClientServerCommunicator(communicatorListener : CommunicatorListener)
+    +connect(host : string, port : int) : boolean
+    -disconnect() : void
+    +send(request : Request) : void
+    +send(request : Request, successListener : SuccessListener, errorListener : ErrorListener) : void
+    -startListening() : void
+    -startPinging() : void
+}
+
+interface NavigationManager {
+    +navigateTo(dest: Screen): void
+    +navigateTo(dest: Screen, withBackStack : boolean): void
+    +clearBackStack(): void
+    +goBack(): void
+    +exitApp(): void
+    +getCurrentScreen(): Screen
+}
+
+class CLINavigationManager {
+    -currentScreen : Screen
+    -screenControllers : Map<Screen, ScreenController>
+    -backStack : Deque<Screen>
+}
+
+class GUINavigationManager {
+    -scene : Scene
+    -stage : Stage
+    -root : Parent
+    -currentScreen : Screen
+    -backStack : Deque<BackstackEntry>
+    -screens : Map<Screen, Parent>
+    -screenControllers : Map<Screen, ScreenController>
+    -currentlyNavigating : boolean
+}
+
+interface ScreenController {
+    +onShow(): void
+    +onHide(): void
+}
+
+
+class CLI {
+    +start() : void
+}
+
+class GUI {
+    +start(stage : Stage) : void
+}
+
+enum Screen {
+    SERVER_CONNECTION_MENU
+    MAIN_MENU
+    GAME_CREATION_MENU
+    GAME_JOINING_MENU
+    WAITING_ROOM
+    GAME
+}
+
+CLINavigationManager --|> NavigationManager
+GUINavigationManager --|> NavigationManager
+
+NavigationManager --> ScreenController
+NavigationManager --> Screen
+
+Client --> NavigationManager
+Client --> ClientServerCommunicator
+
+
+CLI --> Client
+GUI --> Client
+
+
+@enduml

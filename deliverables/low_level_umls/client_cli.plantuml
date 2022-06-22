@@ -1,0 +1,178 @@
+@startuml
+top to bottom direction
+
+interface ScreenController {
+    +onShow(): void
+    +onHide(): void
+}
+
+class AssistantCardsView {
+  + draw(): void
+}
+class BaseView {
+  + draw(): void
+}
+class BooleanInputView {
+  + showError(String): void
+  + draw(): void
+  + setListener(Consumer<Boolean>): void
+}
+class CLIGameController {
+  + onGameUpdate(ReducedGame): void
+  + onShow(): void
+  + onHide(): void
+}
+class CLIGameCreationMenuController {
+  + onHide(): void
+  + onShow(): void
+}
+class CLIGameJoiningMenuController {
+  + onHide(): void
+  + onShow(): void
+}
+class CLIMainMenuScreenController {
+  + onShow(): void
+  + onHide(): void
+}
+
+class CLIServerConnectionMenuController {
+  + onHide(): void
+  + onShow(): void
+}
+class CLIWaitingRoomController {
+  + onShow(): void
+  + onGameUpdate(ReducedGame): void
+  + onHide(): void
+}
+class CharacterCardsView {
+  + setListener(Consumer<Character>): void
+  + draw(): void
+}
+class CloudView {
+  + draw(): void
+}
+class CloudsLayoutView {
+  + draw(): void
+}
+class CloudsLayouts {
+  + getPointForCloud(int, int): Point
+}
+
+class CommandInputView {
+  + showError(String): void
+  + addCommandListener(String, String, CommandListener): void
+  + draw(): void
+  + setMessageAndRedraw(String): void
+  + removeCommandListener(String): void
+}
+class Cursor {
+  + WIDTH: int
+  + HEIGHT: int
+  + print(Ansi, int, int): void
+  + restoreCursorPosition(): void
+  + printCentered(String, int): void
+  + paintBackground(int, int, int): void
+  + printCentered(Ansi, int): void
+  + clearInput(): void
+  + paintBackground(int, int, int, int, int): void
+  + realLength(String): int
+  + eraseScreen(): void
+  + clearScreen(): void
+  + print(String): void
+  + moveRelative(int, int): void
+  + input(): String
+  + print(Ansi): void
+  + clearRow(int): void
+  + moveToXY(int, int): void
+  + saveCursorPosition(): void
+  + input(int, int): String
+  + print(String, int, int): void
+  + clearCell(int, int): void
+  + getInstance(): Cursor
+  + uninstall(): void
+  + realLength(Ansi): int
+}
+class DashboardView {
+  + draw(): void
+}
+
+class InfoLabelView {
+  + draw(): void
+}
+class IntegerInputView {
+  + setListener(IntConsumer): void
+  + showError(String): void
+  + draw(): void
+}
+class IslandView {
+  + ISLAND_WIDTH: int
+  + ISLAND_HEIGHT: int
+  + draw(): void
+}
+class IslandsLayoutView {
+  + draw(): void
+}
+class IslandsLayouts {
+  + getPointForIsland(int, int): Point
+}
+class ListView<T> {
+  + showError(String): void
+  + setOnSelectionListener(BiConsumer<T, Integer>): void
+  + setListItems(List<T>): void
+  + draw(): void
+}
+class MinstrelInputView {
+  + draw(): void
+}
+
+class PlayerBoardView {
+  + draw(): void
+}
+class ProgressIndicatorView {
+  + LOADING_ANIMATION_PERIOD: long
+  + LOADING_ANIMATION_CHARACTERS: List<String>
+  + startLoading(): void
+  + stopLoading(): void
+  + draw(): void
+}
+class SimpleInputView {
+  + setMessage(String): void
+  + draw(): void
+  + setListener(Consumer<String>): void
+  + showError(String): void
+}
+class TitleView {
+  + draw(): void
+}
+
+AssistantCardsView                 -[#000082,plain]-^  BaseView
+BooleanInputView                   -[#000082,plain]-^  BaseView
+CharacterCardsView                 -[#000082,plain]-^  BaseView
+CloudView                          -[#000082,plain]-^  BaseView
+CloudsLayoutView                   -[#000082,plain]-^  BaseView
+CloudsLayoutView                   -[#000082,plain]->  CloudsLayouts
+CommandInputView                   -[#000082,plain]-^  BaseView
+DashboardView                      -[#000082,plain]-^  BaseView
+InfoLabelView                      -[#000082,plain]-^  BaseView
+IntegerInputView                   -[#000082,plain]-^  BaseView
+IslandView                         -[#000082,plain]-^  BaseView
+IslandsLayoutView                  -[#000082,plain]-^  BaseView
+IslandsLayoutView                  -[#000082,plain]->  IslandsLayouts
+ListView                           -[#000082,plain]-^  BaseView
+MinstrelInputView                  -[#000082,plain]-^  BaseView
+PlayerBoardView                    -[#000082,plain]-^  BaseView
+ProgressIndicatorView              -[#000082,plain]-^  BaseView
+SimpleInputView                    -[#000082,plain]-^  BaseView
+TitleView                          -[#000082,plain]-^  BaseView
+
+BaseView --> Cursor
+
+CLIGameController -[#000082,plain]-^  ScreenController
+CLIGameCreationMenuController -[#000082,plain]-^  ScreenController
+CLIGameJoiningMenuController -[#000082,plain]-^  ScreenController
+CLIMainMenuScreenController -[#000082,plain]-^  ScreenController
+CLIServerConnectionMenuController -[#000082,plain]-^  ScreenController
+CLIWaitingRoomController -[#000082,plain]-^  ScreenController
+
+
+@enduml

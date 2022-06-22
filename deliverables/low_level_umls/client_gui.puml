@@ -1,0 +1,207 @@
+@startuml
+top to bottom direction
+
+class AssistantCardDeckView {
+  + AssistantCardDeckView():
+  + setDeck(Map<AssistantCard, Boolean>): void
+  + showError(String): void
+  + setOnCardSelectedListener(Consumer<AssistantCard>): void
+}
+class AssistantCardView {
+  + AssistantCardView(AssistantCard):
+  + AssistantCardView():
+  + setCard(AssistantCard): void
+  + getCard(): Optional<AssistantCard>
+  + handle(MouseEvent): void
+  + setGrayedOut(boolean): void
+}
+class CharacterCardInformationPopup {
+  + CharacterCardInformationPopup(Character, int):
+}
+class CharacterCardView {
+  + CharacterCardView():
+  + CharacterCardView(Character):
+  + setGrayedOut(boolean): void
+  + handle(MouseEvent): void
+  + setCharacter(Character, int): void
+}
+class CloudView {
+  + CloudView(StudentsContainer):
+  + CloudView():
+}
+class CloudsPane {
+  + CloudsPane(List<StudentsContainer>):
+  + CloudsPane():
+  + setClouds(List<StudentsContainer>, Consumer<StudentsContainer>): void
+}
+class GUIGameController {
+  + GUIGameController():
+  + myPlayerBoardView: PlayerBoardView
+  + onGameUpdate(ReducedGame): void
+  + setVisibilityForNumberOfPlayers(int): void
+  + endPeekGame(): void
+  + onHide(): void
+  + onShow(): void
+  + startPeekGame(): void
+  + setVisibilityForExpertMode(boolean): void
+}
+class GUIGameCreationMenuController {
+  + GUIGameCreationMenuController():
+  + expertGroup: ToggleGroup
+  + nicknameLabel: Label
+  + creationError: Label
+  + playersGroup: ToggleGroup
+  + goBack(): void
+  + onHide(): void
+  + createGame(): void
+  + onShow(): void
+  + initialize(): void
+}
+class GUIGameJoiningMenuController {
+  + GUIGameJoiningMenuController():
+  + joiningError: Label
+  + gamesList: VBox
+  + nicknameLabel: Label
+  + setGamesList(List<GameListItem>): void
+  + goBack(): void
+  + onHide(): void
+  + onShow(): void
+  + onLeavePressed(): void
+}
+class GUIMainMenuController {
+  + GUIMainMenuController():
+  + nicknameLabel: Label
+  + onShow(): void
+  + createGame(): void
+  + joinGame(): void
+  + onHide(): void
+}
+class GUIServerConnectionMenuController {
+  + GUIServerConnectionMenuController():
+  + registrationBox: VBox
+  + connectionError: Label
+  + connectionProgressIndicator: WhiteProgressIndicator
+  + registerButton: Button
+  + connectionBox: VBox
+  + registrationError: Label
+  + initialize(): void
+  + connect(): void
+  + onLeavePressed(): void
+  + register(): void
+  + onShow(): void
+  + onHide(): void
+}
+class GUIWaitingRoomController {
+  + GUIWaitingRoomController():
+  + nicknameLabel: Label
+  + waitingLabel: Label
+  + leaveGame(): void
+  + onGameUpdate(ReducedGame): void
+  + onShow(): void
+  + onHide(): void
+}
+class GameListItemView {
+  + GameListItemView(GameListItem):
+  + GameListItemView():
+  + setOnJoinButtonClicked(EventHandler<MouseEvent>): void
+}
+class GameTitlePopupView {
+  + GameTitlePopupView():
+  + show(): void
+  + setState(State, String): void
+  + hide(): void
+}
+class InfoLabel {
+  + InfoLabel():
+  + setInfoString(InfoString, Object[]): void
+}
+class IslandView {
+  + IslandView(ReducedIsland, int):
+  + IslandView():
+  + getMotherNatureView(): MotherNatureView
+  + addStudent(Student): void
+  + getIndex(): int
+}
+class IslandsCircularPane {
+  + IslandsCircularPane(List<ReducedIsland>):
+  + IslandsCircularPane():
+  + arrangeIslandsForPlacingStudents(ReducedPlayer, BiConsumer<Student, IslandView>): void
+  + setIslands(List<ReducedIsland>): void
+  + setMotherNaturePosition(int): void
+  + arrangeIslandsForPlayingCharacterCard(Consumer<IslandView>): void
+  + arrangeIslandsForMotherNatureMovement(int, int, IntConsumer): void
+}
+class MotherNatureView {
+  + MotherNatureView():
+  + MotherNatureView(State):
+  + getState(): State
+  + setState(State): void
+}
+class PlayerBoardView {
+  + PlayerBoardView():
+  + PlayerBoardView(boolean):
+  + myBoard: boolean
+  + setPlayedCard(AssistantCard): void
+  + setProfessors(Map<Student, String>): void
+  + setVisibilityForExpertMode(boolean): void
+  + setPlayer(ReducedPlayer): void
+}
+class StudentSelectContextMenu {
+  + StudentSelectContextMenu(Consumer<Student>):
+  + StudentSelectContextMenu(StudentsContainer, Consumer<Student>):
+  + StudentSelectContextMenu():
+}
+class StudentView {
+  + StudentView(Student, boolean):
+  + StudentView(Student):
+  + StudentView():
+  + getStudent(): Student
+  + setProfessor(boolean): void
+  + setStudent(Student): void
+}
+class StudentsBoardView {
+  + StudentsBoardView():
+  + setOnStudentClickListener(Consumer<Student>): void
+  + setStudentsClickDisable(boolean): void
+  + setProfessors(Map<Student, String>): void
+  + setPlayer(ReducedPlayer): void
+}
+class TowerView {
+  + TowerView(Tower):
+  + TowerView():
+  + setTowerColor(Tower): void
+  + getTowerColor(): Tower
+}
+class WhiteProgressIndicator {
+  + WhiteProgressIndicator(double):
+  + WhiteProgressIndicator():
+}
+
+GUIGameController -[#000082,plain]-^  ScreenController
+GUIGameCreationMenuController -[#000082,plain]-^  ScreenController
+GUIGameJoiningMenuController -[#000082,plain]-^  ScreenController
+GUIMainMenuController -[#000082,plain]-^  ScreenController
+GUIServerConnectionMenuController -[#000082,plain]-^  ScreenController
+GUIWaitingRoomController -[#000082,plain]-^  ScreenController
+
+AssistantCardDeckView                 -[#000082,plain]-^  Pane
+AssistantCardView                   -[#000082,plain]-^  Pane
+CharacterCardInformationPopup                 -[#000082,plain]-^  ContextMenu
+CharacterCardView                          -[#000082,plain]-^  Pane
+CloudsPane                   -[#000082,plain]-^  Pane
+CloudView                   -[#000082,plain]->  Pane
+GameListItemView                   -[#000082,plain]-^  Pane
+GameTitlePopupView                      -[#000082,plain]-^  Pane
+InfoLabel                      -[#000082,plain]-^  Pane
+IslandsCircularPane                   -[#000082,plain]-^  Pane
+IslandView                         -[#000082,plain]-^  Pane
+MotherNatureView                  -[#000082,plain]-^  Pane
+PlayerBoardView                  -[#000082,plain]->  Pane
+StudentsBoardView                           -[#000082,plain]-^  Pane
+StudentSelectContextMenu                  -[#000082,plain]-^  ContextMenu
+StudentView                    -[#000082,plain]-^  Pane
+TowerView              -[#000082,plain]-^  Pane
+WhiteProgressIndicator                    -[#000082,plain]-^  Pane
+TitleView                          -[#000082,plain]-^  Pane
+
+@enduml

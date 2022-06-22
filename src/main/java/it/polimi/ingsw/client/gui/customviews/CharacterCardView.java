@@ -1,6 +1,5 @@
 package it.polimi.ingsw.client.gui.customviews;
 
-import it.polimi.ingsw.client.gui.CharacterCardInformationPopup;
 import it.polimi.ingsw.server.model.Character;
 import javafx.event.EventHandler;
 import javafx.scene.effect.ColorAdjust;

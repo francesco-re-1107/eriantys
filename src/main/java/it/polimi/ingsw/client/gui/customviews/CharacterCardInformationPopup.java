@@ -1,4 +1,4 @@
-package it.polimi.ingsw.client.gui;
+package it.polimi.ingsw.client.gui.customviews;
 
 import it.polimi.ingsw.Constants;
 import it.polimi.ingsw.server.model.Character;
