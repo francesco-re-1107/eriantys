@@ -117,7 +117,7 @@ public class Round implements Serializable {
     }
 
     /**
-     * Go to next player in ATTACK mode
+     * Go to next player
      * @return true if the round is finished, false otherwise
      */
     public boolean nextPlayer(){
@@ -259,6 +259,10 @@ public class Round implements Serializable {
         return nextPlayer();
     }
 
+    /**
+     * Get the assistant cards played so far
+     * @return
+     */
     public Map<Player, AssistantCard> getPlayedAssistantCards() {
         return playedAssistantCards;
     }

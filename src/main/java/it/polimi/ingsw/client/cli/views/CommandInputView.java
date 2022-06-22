@@ -87,7 +87,6 @@ public class CommandInputView extends BaseView {
 
         cursor.moveToXY(1, 23);
 
-        //TODO improve
         new Thread(() -> {
             try {
                 var cmd = cursor.input().trim().toLowerCase();

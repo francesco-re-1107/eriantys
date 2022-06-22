@@ -326,7 +326,6 @@ public class CLIGameController implements ScreenController, Client.GameUpdateLis
     /**
      * Ask user where to place students
      * @param game the game update
-     * TODO: maybe move in a separate view
      */
     private void processPlaceStudents(ReducedGame game) {
         finishedPlacingStudents = false;

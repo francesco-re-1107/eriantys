@@ -18,7 +18,6 @@ public class CLIMainMenuScreenController implements ScreenController {
         new TitleView(TitleView.Title.ERIANTYS, "Connesso come " + Client.getInstance().getNickname())
                 .draw();
 
-        //TODO strings
         var commandInputView = new CommandInputView("Scegli opzione");
         commandInputView.addCommandListener(
                 "0",

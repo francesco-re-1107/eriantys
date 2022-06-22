@@ -78,7 +78,6 @@ public class IntegerInputView extends BaseView{
         cursor.print(message, 1, 22);
         cursor.moveToXY(1, 23);
 
-        //TODO improve
         new Thread(() -> {
             try {
                 var input = cursor.input();

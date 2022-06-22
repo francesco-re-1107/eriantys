@@ -43,7 +43,6 @@ public class SimpleInputView extends BaseView {
         cursor.print(message, 1, 22);
         cursor.moveToXY(1, 23);
 
-        //ask for input on a new thread TODO: improve
         new Thread(() -> {
             try {
                 listener.accept(cursor.input());

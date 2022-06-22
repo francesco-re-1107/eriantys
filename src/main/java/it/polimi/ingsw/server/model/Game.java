@@ -131,7 +131,7 @@ public class Game implements Serializable {
     /**
      * This method must be called when a game is loaded from backup
      */
-    public void initializeFromBackup() {
+    public synchronized void initializeFromBackup() {
         //listeners list is not stored
         this.listeners = new ArrayList<>();
 
@@ -579,7 +579,7 @@ public class Game implements Serializable {
     /**
      * @return the island on which mother nature is located
      */
-    public Island getCurrentIsland() {
+    public synchronized Island getCurrentIsland() {
         return islands.get(this.motherNaturePosition);
     }
 
@@ -616,13 +616,6 @@ public class Game implements Serializable {
     }
 
     /**
-     * Remove all listeners
-     */
-    public void clearGameUpdateListeners() {
-        listeners.clear();
-    }
-
-    /**
      * This method is called whenever there's a change to be notified to the listeners
      */
     private void notifyUpdate() {
@@ -635,7 +628,7 @@ public class Game implements Serializable {
      * Calculate current professors
      * If two players have the same number of students nothing changes for that student
      */
-    public void updateProfessors() {
+    public synchronized void updateProfessors() {
         Arrays.stream(Student.values()).forEach(s -> {
             List<Player> sortedPlayers = players.stream()
                     .sorted(
@@ -702,7 +695,7 @@ public class Game implements Serializable {
     /**
      * @return a copy of the players list of this game
      */
-    public List<Player> getPlayers() {
+    public synchronized List<Player> getPlayers() {
         //return a copy
         return new ArrayList<>(players);
     }
@@ -710,7 +703,7 @@ public class Game implements Serializable {
     /**
      * @return a copy of the players list of this game
      */
-    public List<Player> getActivePlayers() {
+    public synchronized List<Player> getActivePlayers() {
         // return a copy
         return players.stream().filter(Player::isConnected).toList();
     }
@@ -735,7 +728,7 @@ public class Game implements Serializable {
     /**
      * @return a copy of the islands list
      */
-    public List<Island> getIslands() {
+    public synchronized List<Island> getIslands() {
         //return a copy
         return new ArrayList<>(islands);
     }
@@ -757,7 +750,7 @@ public class Game implements Serializable {
     /**
      * @return a copy of the character cards selected for this game
      */
-    public Map<Character, Integer> getCharacterCards() {
+    public synchronized Map<Character, Integer> getCharacterCards() {
         //return a copy
         return new EnumMap<>(characterCards);
     }
@@ -765,7 +758,7 @@ public class Game implements Serializable {
     /**
      * @return a copy of the current professors
      */
-    public Map<Student, Player> getProfessors() {
+    public synchronized Map<Student, Player> getProfessors() {
         //return a copy
         return new EnumMap<>(professors);
     }
@@ -878,7 +871,7 @@ public class Game implements Serializable {
     /**
      * @return students bag copy
      */
-    public RandomizedStudentsContainer getStudentsBag() {
+    public synchronized RandomizedStudentsContainer getStudentsBag() {
         return new RandomizedStudentsContainer(studentsBag);
     }
 
