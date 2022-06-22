@@ -69,6 +69,7 @@ public class Palette {
      */
     public static final int WHITE = 15;
     public static final List<Integer> RAINBOW = List.of(196, 214, 226, 46, 39);
+    public static final int PLAYER_OFFLINE = 220;
 
     private Palette() {}
 }

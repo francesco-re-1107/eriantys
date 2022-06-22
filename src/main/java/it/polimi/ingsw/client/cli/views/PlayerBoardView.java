@@ -199,7 +199,7 @@ public class PlayerBoardView extends BaseView {
 
         cursor.moveRelative(1, 0);
         cursor.print(ansi()
-                .fg(Palette.WHITE)
+                .fg(player.isConnected() ? Palette.WHITE : Palette.PLAYER_OFFLINE)
                 .bg(Palette.DASHBOARD_BACKGROUND)
                 .a(isMyPlayer ? "Tu" : player.nickname())
                 .a(!player.isConnected()? " †" : "")

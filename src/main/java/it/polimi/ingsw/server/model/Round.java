@@ -6,7 +6,6 @@ import it.polimi.ingsw.common.exceptions.InvalidOperationError;
 import java.io.Serial;
 import java.io.Serializable;
 import java.util.*;
-import java.util.logging.Logger;
 
 public class Round implements Serializable {
 
@@ -21,12 +20,17 @@ public class Round implements Serializable {
     /**
      * List of players, always ordered by turn priority
      */
-    private final List<Player> players;
+    private List<Player> players;
 
     /**
-     * List of played cards, it's bound 1 to 1 to the players list
+     * List of played cards
      */
-    private final List<AssistantCard> playedAssistantCards;
+    private final HashMap<Player, AssistantCard> playedAssistantCards;
+
+    /**
+     * This list contains all players that didn't select a cloud
+     */
+    private List<Player> playersWithoutCloud;
 
     /**
      * List of clouds for this game
@@ -34,16 +38,14 @@ public class Round implements Serializable {
     private final List<StudentsContainer> clouds;
 
     /**
-     * Index of the current player with respect to the players list
+     * Current player
      */
-    private int currentPlayer = 0;
+    private Player currentPlayer;
 
     /**
      * Additional mother nature moves for the current turn
      */
     private int additionalMotherNatureMoves = 0;
-
-    private static final transient Logger logger = Utils.LOGGER;
 
     /**
      * @param players list of players ordered with respect to the assistant cards played in the previous round
@@ -52,77 +54,66 @@ public class Round implements Serializable {
     public Round(List<Player> players, List<StudentsContainer> clouds) {
         this.clouds = clouds;
         this.players = players;
-        this.playedAssistantCards = new ArrayList<>();
-        skipInactivePlayer();
+        this.playedAssistantCards = new HashMap<>();
+        this.playersWithoutCloud = new ArrayList<>(players);
+
+        //if the first player is offline go to the second one
+        currentPlayer = players.get(0).isConnected() ? players.get(0) : players.get(1);
     }
 
     /**
      * Go to the next stage (from PLAN to ATTACK), called internally
      */
     private void nextStage(){
-        //TODO: improve this shitty code
+        //ordered players by turn priority, if a player hasn't played any card it has the lowest priority
+        players = players.stream()
+                .sorted(Comparator.comparingInt(p -> getCardPlayedBy(p) == null ? 100 : getCardPlayedBy(p).turnPriority()))
+                .toList();
 
-        //sort players and cards together by turn priority
-        List<CardPair> cardPairs = new ArrayList<>();
-
-        for(int i = 0; i < players.size(); i++)
-            cardPairs.add(new CardPair(players.get(i), playedAssistantCards.get(i)));
-
-        cardPairs.sort(Comparator.comparingInt(cardPair -> cardPair.second.turnPriority()));
-
-        players.clear();
-        players.addAll(cardPairs.stream()
-                .map(cardPair -> cardPair.first)
-                .toList()
-        );
-
-        playedAssistantCards.clear();
-        playedAssistantCards.addAll(cardPairs.stream()
-                .map(cardPair -> cardPair.second)
-                .toList()
-        );
+        playersWithoutCloud = new ArrayList<>(players);
 
         stage = Stage.Attack.STARTED;
-        currentPlayer = 0;
+
+        //if the first player is offline go to the second one
+        currentPlayer = players.get(0).isConnected() ? players.get(0) : players.get(1);
     }
 
+    /**
+     * Set the new attack substage (e.g. MOTHER_NATURE_MOVED -> SELECTED_CLOUD)
+     * @param newStage the new stage
+     */
     public void setAttackSubstage(Stage.Attack newStage){
         if(Stage.isEqualOrPost(stage, newStage))
             throw new InvalidOperationError("newStage must be post to current stage");
         stage = newStage;
     }
+
     /**
      * Play the given card for the given player
-     * @param player
-     * @param card
+     * @param player the player who plays the card
+     * @param card the card to play
      */
     public void playAssistantCard(Player player, AssistantCard card){
         if(stage instanceof Stage.Attack)
             throw new InvalidOperationError("In attack mode cannot play assistantCard");
 
-        boolean alreadyPlayed =
-                playedAssistantCards.stream().anyMatch(c -> c.equals(card));
+        if(playedAssistantCards.get(player) != null)
+            throw new InvalidOperationError("This player already played his card");
 
-        if(alreadyPlayed){
+        if(playedAssistantCards.containsValue(card)){
+
             //check if the player has other cards to play
-            boolean canPlayOtherCards = player.getDeck()
-                    .entrySet()
+            var canPlayOtherCards = player.getDeck().entrySet()
                     .stream()
-                    .filter(e -> !e.getValue())
-                    .map(Map.Entry::getKey)
-                    .anyMatch(c -> !playedAssistantCards.contains(c));
+                    .anyMatch(e -> !e.getValue() && !playedAssistantCards.containsValue(e.getKey()));
 
             if (canPlayOtherCards)
                 throw new InvalidOperationError("Card already played by another player");
         }
 
-        playedAssistantCards.add(card);
         player.playAssistantCard(card);
-        //go to attack stage
-        if (playedAssistantCards.size() == getActivePlayers().size()) // TODO: pair cards with player
-            nextStage();
-        else
-            nextActivePlayer();
+        playedAssistantCards.put(player, card);
+        nextPlayer();
     }
 
     /**
@@ -130,34 +121,62 @@ public class Round implements Serializable {
      * @return true if the round is finished, false otherwise
      */
     public boolean nextPlayer(){
-        if(stage instanceof Stage.Plan)
-            throw new InvalidOperationError();
-        // TODO: further checks
+        Utils.LOGGER.info("Next player called, " + stage.getClass().getSimpleName());
+        if(stage instanceof Stage.Plan){ //PLAN mode
+            var nextActivePlayer = getNextActivePlayer();
 
-        // finished round check
-        if(currentPlayer == players.size() - 1)
-            return true;
+            if (nextActivePlayer == null) //go to attack stage
+                nextStage();
+            else
+                currentPlayer = nextActivePlayer;
 
-        // more players to come
-        nextActivePlayer();
-        // finished round check
-        if(currentPlayer >= players.size())
-            return true;
+        } else { //ATTACK mode
 
-        stage = Stage.Attack.STARTED;
+            var nextActivePlayer = getNextAttackActivePlayer();
+
+            Utils.LOGGER.info("Next attack active player is " + nextActivePlayer);
+
+            // finished round check
+            if (nextActivePlayer == null){
+
+                //check if any cloud is left, this means that one or more offline players didn't choose it
+                if(!clouds.isEmpty())
+                    playersWithoutCloud.forEach(p -> p.addCloudToEntrance(clouds.remove(0)));
+
+                return true;
+            }
+
+            currentPlayer = nextActivePlayer;
+
+            // more players to come
+            stage = Stage.Attack.STARTED;
+        }
         return false;
     }
 
-    public void nextActivePlayer() {
-        currentPlayer++;
-        skipInactivePlayer();
+    /**
+     * Get the next active player which has played its card in plan stage
+     * @return the player or null
+     */
+    private Player getNextAttackActivePlayer() {
+        return players.stream()
+                .filter(p -> players.indexOf(p) > players.indexOf(currentPlayer))
+                .filter(Player::isConnected)
+                .filter(p -> getCardPlayedBy(p) != null)
+                .findFirst()
+                .orElse(null);
     }
 
-    private void skipInactivePlayer() {
-        if (!players.get(currentPlayer).isConnected()){
-            logger.info("skipping %d, %s".formatted(currentPlayer, players.get(currentPlayer).getNickname()));
-            currentPlayer++;
-        }
+    /**
+     * Get next active player or null if it does not exist
+     * @return the next player
+     */
+    private Player getNextActivePlayer() {
+        return players.stream()
+                .filter(p -> players.indexOf(p) > players.indexOf(currentPlayer))
+                .filter(Player::isConnected)
+                .findFirst()
+                .orElse(null);
     }
     
     /**
@@ -179,20 +198,15 @@ public class Round implements Serializable {
      * @param player
      * @return the assistant card of the given player, returns empty if the player hasn't played yet
      */
-    public Optional<AssistantCard> getCardPlayedBy(Player player){
-        int index = players.indexOf(player);
-
-        if(index != -1 && index < playedAssistantCards.size())
-            return Optional.of(playedAssistantCards.get(index));
-        else
-            return Optional.empty();
+    public AssistantCard getCardPlayedBy(Player player){
+        return playedAssistantCards.get(player);
     }
 
     /**
      * @return the current player, both in PLAN and ATTACK mode
      */
     public Player getCurrentPlayer() {
-        return players.get(currentPlayer);
+        return currentPlayer;
     }
 
     /**
@@ -206,8 +220,9 @@ public class Round implements Serializable {
      * Remove a cloud from the cloud list
      * @param cloud the cloud to remove
      */
-    public void removeCloud(StudentsContainer cloud) {
+    public void selectCloud(Player player, StudentsContainer cloud) {
         clouds.remove(cloud);
+        playersWithoutCloud.remove(player);
     }
 
     /**
@@ -225,7 +240,7 @@ public class Round implements Serializable {
         return additionalMotherNatureMoves;
     }
 
-        /**
+    /**
      * @return a copy of the players list of this game
      */
     public List<Player> getActivePlayers() {
@@ -233,6 +248,19 @@ public class Round implements Serializable {
         return players.stream().filter(Player::isConnected).toList();
     }
 
-    private record CardPair(Player first, AssistantCard second){ }
+    /**
+     * If a player disconnects and the game continues check that the round of that player finishes
+     * @param player
+     * @return true if a new round needs to be created, false otherwise
+     */
+    public boolean setPlayerDisconnected(Player player) {
+        if(!currentPlayer.equals(player)) return false;
+
+        return nextPlayer();
+    }
+
+    public Map<Player, AssistantCard> getPlayedAssistantCards() {
+        return playedAssistantCards;
+    }
 }
 

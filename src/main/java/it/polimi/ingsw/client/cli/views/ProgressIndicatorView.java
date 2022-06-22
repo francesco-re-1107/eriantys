@@ -26,14 +26,6 @@ public class ProgressIndicatorView extends BaseView {
     private int currentCharacterDisplayed = 0;
 
     public static final List<String> LOADING_ANIMATION_CHARACTERS = List.of(
-            /*"⡿",
-            "⣟",
-            "⣯",
-            "⣷",
-            "⣾",
-            "⣽",
-            "⣻",
-            "⢿"*/
             "⠟",
             "⠯",
             "⠷",

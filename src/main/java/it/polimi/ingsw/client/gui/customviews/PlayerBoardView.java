@@ -10,6 +10,8 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
+import javafx.scene.paint.Color;
+import javafx.scene.paint.Paint;
 
 import java.util.EnumMap;
 import java.util.Map;
@@ -118,7 +120,13 @@ public class PlayerBoardView extends VBox {
 
         this.player = player;
 
-        nicknameLabel.setText(player.nickname());
+        if (!player.isConnected()) {
+            nicknameLabel.setText(player.nickname());
+            nicknameLabel.setTextFill(Paint.valueOf("#ffea00"));
+        } else {
+            nicknameLabel.setText(player.nickname());
+            nicknameLabel.setTextFill(Color.WHITE);
+        }
 
         for (Student s : Student.values()) {
             var text = player.school().getCountForStudent(s) + "(" + player.entrance().getCountForStudent(s) + ")";

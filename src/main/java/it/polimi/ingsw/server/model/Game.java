@@ -252,7 +252,7 @@ public class Game implements Serializable {
             throw new InvalidOperationError("Cannot find selected cloud");
 
         player.addCloudToEntrance(cloud);
-        currentRound.removeCloud(cloud);
+        currentRound.selectCloud(player, cloud);
         currentRound.setAttackSubstage(Stage.Attack.SELECTED_CLOUD);
 
         //go to next player or new round if necessary
@@ -324,7 +324,10 @@ public class Game implements Serializable {
             throw new InvalidOperationError("Not currently in ATTACK mode");
 
         //use get directly cause in attack stage every player has played its card
-        AssistantCard card = currentRound.getCardPlayedBy(player).orElseThrow();
+        var card = currentRound.getCardPlayedBy(player);
+
+        if(card == null)
+            throw new InvalidOperationError("This player hasn't played its card, therefore it's not playing this round");
 
         if (steps > card.motherNatureMaxMoves() + currentRound.getAdditionalMotherNatureMoves())
             throw new InvalidOperationError("Cannot move mother nature that far");
@@ -781,7 +784,8 @@ public class Game implements Serializable {
      */
     public synchronized void setPlayerDisconnected(Player player){
         checkIfValidPlayer(player);
-        logger.info("%s disconnecteed".formatted(player.getNickname()));
+
+        logger.info("%s disconnected".formatted(player.getNickname()));
         if(gameState == State.CREATED) {
             players.remove(player);
         } else {
@@ -789,9 +793,9 @@ public class Game implements Serializable {
             if (getActivePlayers().size() < 2) {
                 //pause game
                 this.gameState = State.PAUSED;
-            }
-            if (currentRound.getCurrentPlayer().getNickname() == player.getNickname()) {
-                currentRound.nextActivePlayer();
+            } else {
+                if(currentRound.setPlayerDisconnected(player))
+                    newRound();
             }
         }
 

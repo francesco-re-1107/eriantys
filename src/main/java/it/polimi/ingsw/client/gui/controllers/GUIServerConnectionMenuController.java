@@ -1,6 +1,7 @@
 package it.polimi.ingsw.client.gui.controllers;
 
 import it.polimi.ingsw.Constants;
+import it.polimi.ingsw.Utils;
 import it.polimi.ingsw.client.Client;
 import it.polimi.ingsw.client.ScreenController;
 import it.polimi.ingsw.client.gui.customviews.WhiteProgressIndicator;
@@ -124,8 +125,12 @@ public class GUIServerConnectionMenuController implements ScreenController {
     public void register() {
         registerButton.setDisable(true);
 
+        Utils.LOGGER.info("Sending registration request");
+
         Client.getInstance()
                 .registerNickname(nicknameTextField.getText(), e -> {
+                    Utils.LOGGER.info("Registration request response");
+
                     if(e instanceof DuplicatedNicknameException) {
                         showRegistrationError("Nickname già presente sul server");
                     } else if(e instanceof NicknameNotValidException){

@@ -80,6 +80,7 @@ public class GameController implements Game.GameUpdateListener {
      */
     public void disconnect() {
         game.setPlayerDisconnected(player);
+        game.removeGameUpdateListener(this);
     }
 
     /**

@@ -75,6 +75,7 @@ public class VirtualView implements ServerClientCommunicator.CommunicatorListene
         try {
             communicator.send(request.handleRequest(this, controller, gameController));
         } catch (Exception | Error e) {
+            e.printStackTrace();
             communicator.send(new NackReply(rId, e));
         }
     }

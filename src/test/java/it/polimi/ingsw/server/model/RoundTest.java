@@ -74,12 +74,6 @@ class RoundTest {
 
     @Test
     void nextPlayer() {
-        //next player in PLAN stage
-        assertThrows(
-                InvalidOperationError.class,
-                () -> r.nextPlayer()
-        );
-
         r.playAssistantCard(players.get(0), AssistantCard.getDefaultDeck().get(0));
         r.playAssistantCard(players.get(1), AssistantCard.getDefaultDeck().get(1));
 
@@ -101,11 +95,11 @@ class RoundTest {
 
     @Test
     void getCardPlayedBy() {
-        assertFalse(r.getCardPlayedBy(players.get(0)).isPresent());
+        assertNull(r.getCardPlayedBy(players.get(0)));
 
         r.playAssistantCard(players.get(0), AssistantCard.getDefaultDeck().get(0));
 
-        assertTrue(r.getCardPlayedBy(players.get(0)).isPresent());
+        assertNotNull(r.getCardPlayedBy(players.get(0)));
     }
 
     @Test
@@ -125,8 +119,8 @@ class RoundTest {
     }
 
     @Test
-    void removeCloud() {
-        r.removeCloud(clouds.get(0));
+    void selectCloud() {
+        r.selectCloud(players.get(0), clouds.get(0));
 
         assertEquals(2, r.getClouds().size());
     }

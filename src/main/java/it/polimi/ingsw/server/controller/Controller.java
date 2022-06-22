@@ -253,8 +253,7 @@ public class Controller implements Game.GameUpdateListener {
 
             Utils.LOGGER.info(games.size() + " games loaded from backup");
         } catch (Exception e) {
-            e.printStackTrace();
-            Utils.LOGGER.warning("Error loading games backup, probably corrupted file");
+            Utils.LOGGER.warning("Error loading games backup: either the file is corrupted or the version is not compatible");
         }
     }
 
