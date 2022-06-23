@@ -1,0 +1,289 @@
+@startuml eriantys
+left to right direction
+hide members
+hide methods
+
+package Model <<Folder>> #FFE0E0 {
+    class AssistantCard
+    class Game
+    class Round
+    abstract AStudentsContainer
+    class RandomizedStudentsContainer
+    class StudentsContainer
+    class Player
+    class Island
+    interface InfluenceCalculator
+    class DefaultInfluenceCalculator
+    class NoTowersInfluenceCalculator
+    class AdditionalPointsInfluenceCalculator
+    class NoColorInfluenceCalculator
+    class ProfessorsControlInfluenceCalculator
+    interface CharacterCard
+    abstract class InfluenceCharacterCard
+    class FarmerCharacterCard
+    class HeraldCharacterCard
+    class PostmanCharacterCard
+    class GrandmaCharacterCard
+    class CentaurCharacterCard
+    class MinstrelCharacterCard
+    class KnightCharacterCard
+    class MushroomManCharacterCard
+    enum Tower
+    enum Student
+    enum Character
+
+    Game *-- Player
+    Game *-- RandomizedStudentsContainer
+    Game *-- Island
+    Game *-- Round
+    Game *-- CharacterCard
+
+    Player *-- AssistantCard
+    Player *-- StudentsContainer
+
+    StudentsContainer --|> AStudentsContainer
+    RandomizedStudentsContainer --|> AStudentsContainer
+
+    Island *-- StudentsContainer
+
+    CharacterCard --> Character
+
+    InfluenceCharacterCard --> InfluenceCalculator
+    InfluenceCharacterCard --|> CharacterCard
+
+    FarmerCharacterCard --|> InfluenceCharacterCard
+    CentaurCharacterCard --|> InfluenceCharacterCard
+    KnightCharacterCard --|> InfluenceCharacterCard
+    MushroomManCharacterCard --|> InfluenceCharacterCard
+
+    HeraldCharacterCard --|> CharacterCard
+    PostmanCharacterCard --|> CharacterCard
+    GrandmaCharacterCard --|> CharacterCard
+    MinstrelCharacterCard --|> CharacterCard
+
+    DefaultInfluenceCalculator ..|> InfluenceCalculator
+
+    NoTowersInfluenceCalculator --|> DefaultInfluenceCalculator
+    AdditionalPointsInfluenceCalculator --|> DefaultInfluenceCalculator
+    NoColorInfluenceCalculator --|> DefaultInfluenceCalculator
+    ProfessorsControlInfluenceCalculator --|> DefaultInfluenceCalculator
+}
+
+
+
+package "Controller" as Controller_pkg <<Folder>> #D6E8D4 {
+    class Controller
+    class GameController
+    class VirtualView
+    class ServerClientCommunicator
+    interface ServerClientCommunicator.CommunicatorListener
+
+    VirtualView *-- GameController
+    VirtualView *-- Controller
+    VirtualView *-- ServerClientCommunicator
+    VirtualView --|> ServerClientCommunicator.CommunicatorListener
+    Controller --> GameController
+    ServerClientCommunicator --> ServerClientCommunicator.CommunicatorListener
+}
+
+package Network <<Folder>> #DAE8FC {
+    package Requests <<Folder>> #B4DDFC {
+        abstract class Request
+        abstract class GameRequest
+        class CreateGameRequest
+        class JoinGameRequest
+        class LeaveGameRequest
+        class ListGamesRequest
+        class MoveMotherNatureRequest
+        class PingRequest
+        class PlaceStudentsRequest
+        class PlayAssistantCardRequest
+        class PlayCharacterCardRequest
+        class RegisterNicknameRequest
+        class SelectCloudRequest
+
+        CreateGameRequest         --^  Request
+        GameRequest               --^  Request
+        JoinGameRequest           --^  Request
+        LeaveGameRequest          --^  GameRequest
+        ListGamesRequest          --^  Request
+        MoveMotherNatureRequest   --^  GameRequest
+        PingRequest               --^  Request
+        PlaceStudentsRequest      --^  GameRequest
+        PlayAssistantCardRequest  --^  GameRequest
+        PlayCharacterCardRequest  --^  GameRequest
+        RegisterNicknameRequest   --^  Request
+        SelectCloudRequest        --^  GameRequest
+    }
+
+    package Responses <<Folder>> #B4DDFC {
+        abstract class Response
+        abstract class Reply
+        abstract class Update
+        class GameUpdate
+        class GamesListReply
+        class AckReply
+        class NackReply
+
+        Reply     --^  Response
+        Update    --^  Response
+        GameUpdate    --^  Update
+        AckReply      --^  Reply
+        NackReply     --^  Reply
+        GamesListReply     --^  Reply
+    }
+
+}
+
+package "Client" as Client_pkg <<Folder>> #FFF2CC {
+
+    class Client
+    class ClientServerCommunicator
+    interface NavigationManager
+    class CLINavigationManager
+    class GUINavigationManager
+    interface ScreenController
+    class CLI
+    class GUI
+    class App
+    enum Screen
+    class ClientServerCommunicator
+    interface ClientServerCommunicator.SuccessListener
+    interface ClientServerCommunicator.ErrorListener
+    interface ClientServerCommunicator.CommunicatorListener
+    interface ServerClientCommunicator.CommunicatorListener
+
+    ClientServerCommunicator --> ClientServerCommunicator.CommunicatorListener
+    ClientServerCommunicator --> ClientServerCommunicator.SuccessListener
+    ClientServerCommunicator --> ClientServerCommunicator.ErrorListener
+
+    CLINavigationManager --|> NavigationManager
+    GUINavigationManager --|> NavigationManager
+
+    NavigationManager --> ScreenController
+    NavigationManager --> Screen
+
+    Client --> NavigationManager
+    Client --> ClientServerCommunicator
+
+    CLI --> Client
+    GUI --> Client
+
+    App --> CLI
+    App --> GUI
+
+    package ClientGUI <<Folder>> #FFD38F {
+
+        class AssistantCardDeckView
+        class AssistantCardView
+        class CharacterCardInformationPopup
+        class CharacterCardView
+        class CloudView
+        class CloudsPane
+        class GUIGameController
+        class GUIGameCreationMenuController
+        class GUIGameJoiningMenuController
+        class GUIMainMenuController
+        class GUIServerConnectionMenuController
+        class GUIWaitingRoomController
+        class GameListItemView
+        class GameTitlePopupView
+        class InfoLabel
+        class IslandView
+        class IslandsCircularPane
+        class MotherNatureView
+        class PlayerBoardView
+        class StudentSelectContextMenu
+        class StudentView
+        class StudentsBoardView
+        class TowerView
+        class WhiteProgressIndicator
+
+        GUIGameController --^  ScreenController
+        GUIGameCreationMenuController --^  ScreenController
+        GUIGameJoiningMenuController --^  ScreenController
+        GUIMainMenuController --^  ScreenController
+        GUIServerConnectionMenuController --^  ScreenController
+        GUIWaitingRoomController --^  ScreenController
+
+        AssistantCardDeckView --^  Pane
+        AssistantCardView --^  Pane
+        CharacterCardInformationPopup --^  ContextMenu
+        CharacterCardView --^  Pane
+        CloudsPane --^  Pane
+        CloudView -->  Pane
+        GameListItemView --^  Pane
+        GameTitlePopupView --^  Pane
+        InfoLabel --^  Pane
+        IslandsCircularPane --^  Pane
+        IslandView --^  Pane
+        MotherNatureView --^  Pane
+        PlayerBoardView -->  Pane
+        StudentsBoardView --^  Pane
+        StudentSelectContextMenu --^  ContextMenu
+        StudentView --^  Pane
+        TowerView --^  Pane
+        WhiteProgressIndicator --^  Pane
+        TitleView --^  Pane
+    }
+
+    package ClientCLI <<Folder>> #FFD38F {
+        class BaseView
+        class Cursor
+        class CloudsLayouts
+        class IslandsLayouts
+        class "AssistantCardsView" as AssistantCardsView_cli
+        class "BooleanInputView" as BooleanInputView_cli
+        class "CLIGameController" as CLIGameController_cli
+        class "CLIGameCreationMenuController" as CLIGameCreationMenuController_cli
+        class "CLIGameJoiningMenuController" as CLIGameJoiningMenuController_cli
+        class "CLIMainMenuScreenController" as CLIMainMenuScreenController_cli
+        class "CLIServerConnectionMenuController" as CLIServerConnectionMenuController_cli
+        class "CLIWaitingRoomController" as CLIWaitingRoomController_cli
+        class "CharacterCardsView" as CharacterCardsView_cli
+        class "CloudView" as CloudView_cli
+        class "CloudsLayoutView" as CloudsLayoutView_cli
+        class "CommandInputView" as CommandInputView_cli
+        class "DashboardView" as DashboardView_cli
+        class "InfoLabelView" as InfoLabelView_cli
+        class "IntegerInputView" as IntegerInputView_cli
+        class "IslandView" as IslandView_cli
+        class "IslandsLayoutView" as IslandsLayoutView_cli
+        class "ListView" as ListView_cli
+        class "MinstrelInputView" as MinstrelInputView_cli
+        class "PlayerBoardView" as PlayerBoardView_cli
+        class "ProgressIndicatorView" as ProgressIndicatorView_cli
+        class "SimpleInputView" as SimpleInputView_cli
+        class "TitleView" as TitleView_cli
+
+        AssistantCardsView_cli                 --^  BaseView
+        BooleanInputView_cli                   --^  BaseView
+        CharacterCardsView_cli                 --^  BaseView
+        CloudView_cli                          --^  BaseView
+        CloudsLayoutView_cli                   --^  BaseView
+        CloudsLayoutView_cli                   -->  CloudsLayouts
+        CommandInputView_cli                   --^  BaseView
+        DashboardView_cli                      --^  BaseView
+        InfoLabelView_cli                      --^  BaseView
+        IntegerInputView_cli                   --^  BaseView
+        IslandView_cli                         --^  BaseView
+        IslandsLayoutView_cli                  --^  BaseView
+        IslandsLayoutView_cli                  -->  IslandsLayouts
+        ListView_cli                           --^  BaseView
+        MinstrelInputView_cli                  --^  BaseView
+        PlayerBoardView_cli                    --^  BaseView
+        ProgressIndicatorView_cli              --^  BaseView
+        SimpleInputView_cli                    --^  BaseView
+        TitleView_cli                          --^  BaseView
+
+        BaseView --> Cursor
+        CLIGameController_cli --^  ScreenController
+        CLIGameCreationMenuController_cli --^  ScreenController
+        CLIGameJoiningMenuController_cli --^  ScreenController
+        CLIMainMenuScreenController_cli --^  ScreenController
+        CLIServerConnectionMenuController_cli --^  ScreenController
+        CLIWaitingRoomController_cli --^  ScreenController
+    }
+}
+
+@enduml
