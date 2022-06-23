@@ -69,8 +69,6 @@ package Model <<Folder>> #FFE0E0 {
     ProfessorsControlInfluenceCalculator --|> DefaultInfluenceCalculator
 }
 
-
-
 package "Controller" as Controller_pkg <<Folder>> #D6E8D4 {
     class Controller
     class GameController
@@ -133,6 +131,33 @@ package Network <<Folder>> #DAE8FC {
         GamesListReply     --^  Reply
     }
 
+}
+
+package ReducedModel <<Folder>> #E1D5E7 {
+
+    entity GameListItem << record >>
+    class ReducedCentaurCharacterCard
+    class ReducedCharacterCard
+    class ReducedFarmerCharacterCard
+    entity ReducedGame << record >>
+    class ReducedGrandmaCharacterCard
+    class ReducedHeraldCharacterCard
+    entity ReducedIsland << record >>
+    class ReducedKnightCharacterCard
+    class ReducedMinstrelCharacterCard
+    class ReducedMushroomManCharacterCard
+    entity ReducedPlayer << record >>
+    class ReducedPostmanCharacterCard
+    entity ReducedRound << record >>
+
+    ReducedCentaurCharacterCard      --^  ReducedCharacterCard
+    ReducedFarmerCharacterCard       --^  ReducedCharacterCard
+    ReducedGrandmaCharacterCard      --^  ReducedCharacterCard
+    ReducedHeraldCharacterCard       --^  ReducedCharacterCard
+    ReducedKnightCharacterCard       --^  ReducedCharacterCard
+    ReducedMinstrelCharacterCard     --^  ReducedCharacterCard
+    ReducedMushroomManCharacterCard  --^  ReducedCharacterCard
+    ReducedPostmanCharacterCard      --^  ReducedCharacterCard
 }
 
 package "Client" as Client_pkg <<Folder>> #FFF2CC {
