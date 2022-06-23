@@ -1,5 +1,5 @@
 @startuml
-top to bottom direction
+left to right direction
 
 class AssistantCardDeckView {
   + AssistantCardDeckView():
@@ -177,31 +177,31 @@ class WhiteProgressIndicator {
   + WhiteProgressIndicator():
 }
 
-GUIGameController -[#000082,plain]-^  ScreenController
-GUIGameCreationMenuController -[#000082,plain]-^  ScreenController
-GUIGameJoiningMenuController -[#000082,plain]-^  ScreenController
-GUIMainMenuController -[#000082,plain]-^  ScreenController
-GUIServerConnectionMenuController -[#000082,plain]-^  ScreenController
-GUIWaitingRoomController -[#000082,plain]-^  ScreenController
+GUIGameController --^  ScreenController
+GUIGameCreationMenuController --^  ScreenController
+GUIGameJoiningMenuController --^  ScreenController
+GUIMainMenuController --^  ScreenController
+GUIServerConnectionMenuController --^  ScreenController
+GUIWaitingRoomController --^  ScreenController
 
-AssistantCardDeckView                 -[#000082,plain]-^  Pane
-AssistantCardView                   -[#000082,plain]-^  Pane
-CharacterCardInformationPopup                 -[#000082,plain]-^  ContextMenu
-CharacterCardView                          -[#000082,plain]-^  Pane
-CloudsPane                   -[#000082,plain]-^  Pane
-CloudView                   -[#000082,plain]->  Pane
-GameListItemView                   -[#000082,plain]-^  Pane
-GameTitlePopupView                      -[#000082,plain]-^  Pane
-InfoLabel                      -[#000082,plain]-^  Pane
-IslandsCircularPane                   -[#000082,plain]-^  Pane
-IslandView                         -[#000082,plain]-^  Pane
-MotherNatureView                  -[#000082,plain]-^  Pane
-PlayerBoardView                  -[#000082,plain]->  Pane
-StudentsBoardView                           -[#000082,plain]-^  Pane
-StudentSelectContextMenu                  -[#000082,plain]-^  ContextMenu
-StudentView                    -[#000082,plain]-^  Pane
-TowerView              -[#000082,plain]-^  Pane
-WhiteProgressIndicator                    -[#000082,plain]-^  Pane
-TitleView                          -[#000082,plain]-^  Pane
+AssistantCardDeckView                 --^  Pane
+AssistantCardView                   --^  Pane
+CharacterCardInformationPopup                 --^  ContextMenu
+CharacterCardView                          --^  Pane
+CloudsPane                   --^  Pane
+CloudView                   -->  Pane
+GameListItemView                   --^  Pane
+GameTitlePopupView                      --^  Pane
+InfoLabel                      --^  Pane
+IslandsCircularPane                   --^  Pane
+IslandView                         --^  Pane
+MotherNatureView                  --^  Pane
+PlayerBoardView                  -->  Pane
+StudentsBoardView                           --^  Pane
+StudentSelectContextMenu                  --^  ContextMenu
+StudentView                    --^  Pane
+TowerView              --^  Pane
+WhiteProgressIndicator                    --^  Pane
+TitleView                          --^  Pane
 
 @enduml

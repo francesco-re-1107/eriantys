@@ -1,5 +1,5 @@
 @startuml
-top to bottom direction
+left to right direction
 
 interface ScreenController {
     +onShow(): void
@@ -145,34 +145,34 @@ class TitleView {
   + draw(): void
 }
 
-AssistantCardsView                 -[#000082,plain]-^  BaseView
-BooleanInputView                   -[#000082,plain]-^  BaseView
-CharacterCardsView                 -[#000082,plain]-^  BaseView
-CloudView                          -[#000082,plain]-^  BaseView
-CloudsLayoutView                   -[#000082,plain]-^  BaseView
-CloudsLayoutView                   -[#000082,plain]->  CloudsLayouts
-CommandInputView                   -[#000082,plain]-^  BaseView
-DashboardView                      -[#000082,plain]-^  BaseView
-InfoLabelView                      -[#000082,plain]-^  BaseView
-IntegerInputView                   -[#000082,plain]-^  BaseView
-IslandView                         -[#000082,plain]-^  BaseView
-IslandsLayoutView                  -[#000082,plain]-^  BaseView
-IslandsLayoutView                  -[#000082,plain]->  IslandsLayouts
-ListView                           -[#000082,plain]-^  BaseView
-MinstrelInputView                  -[#000082,plain]-^  BaseView
-PlayerBoardView                    -[#000082,plain]-^  BaseView
-ProgressIndicatorView              -[#000082,plain]-^  BaseView
-SimpleInputView                    -[#000082,plain]-^  BaseView
-TitleView                          -[#000082,plain]-^  BaseView
+AssistantCardsView                 --^  BaseView
+BooleanInputView                   --^  BaseView
+CharacterCardsView                 --^  BaseView
+CloudView                          --^  BaseView
+CloudsLayoutView                   --^  BaseView
+CloudsLayoutView                   -->  CloudsLayouts
+CommandInputView                   --^  BaseView
+DashboardView                      --^  BaseView
+InfoLabelView                      --^  BaseView
+IntegerInputView                   --^  BaseView
+IslandView                         --^  BaseView
+IslandsLayoutView                  --^  BaseView
+IslandsLayoutView                  -->  IslandsLayouts
+ListView                           --^  BaseView
+MinstrelInputView                  --^  BaseView
+PlayerBoardView                    --^  BaseView
+ProgressIndicatorView              --^  BaseView
+SimpleInputView                    --^  BaseView
+TitleView                          --^  BaseView
 
 BaseView --> Cursor
 
-CLIGameController -[#000082,plain]-^  ScreenController
-CLIGameCreationMenuController -[#000082,plain]-^  ScreenController
-CLIGameJoiningMenuController -[#000082,plain]-^  ScreenController
-CLIMainMenuScreenController -[#000082,plain]-^  ScreenController
-CLIServerConnectionMenuController -[#000082,plain]-^  ScreenController
-CLIWaitingRoomController -[#000082,plain]-^  ScreenController
+CLIGameController --^  ScreenController
+CLIGameCreationMenuController --^  ScreenController
+CLIGameJoiningMenuController --^  ScreenController
+CLIMainMenuScreenController --^  ScreenController
+CLIServerConnectionMenuController --^  ScreenController
+CLIWaitingRoomController --^  ScreenController
 
 
 @enduml
