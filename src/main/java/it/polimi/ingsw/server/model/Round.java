@@ -241,14 +241,6 @@ public class Round implements Serializable {
     }
 
     /**
-     * @return a copy of the players list of this game
-     */
-    public List<Player> getActivePlayers() {
-        // return a copy
-        return players.stream().filter(Player::isConnected).toList();
-    }
-
-    /**
      * If a player disconnects and the game continues check that the round of that player finishes
      * @param player
      * @return true if a new round needs to be created, false otherwise

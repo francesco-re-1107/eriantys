@@ -260,7 +260,7 @@ public class Controller implements Game.GameUpdateListener {
     /**
      * Save games list to file
      */
-    private synchronized void saveGames() {
+    public synchronized void saveGames() {
         var backupFile = Utils.getServerConfig()
                 .backupFolder()
                 .resolve("games.bak")

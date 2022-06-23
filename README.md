@@ -18,7 +18,7 @@ Progetto di Ingegneria del Software A.A. 2021-2022
 | Package    | Line coverage |
 |------------|---------------|
 | model      | **95%**       |
-| controller | **88%**       |
+| controller | **89%**       |
 
 ## How to run
 
