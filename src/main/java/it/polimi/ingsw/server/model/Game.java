@@ -470,7 +470,7 @@ public class Game implements Serializable {
     /**
      * Move students of a player from entrance to school or islands
      *
-     * @param player
+     * @param player the player who moves the students
      * @param inSchool students to add to school
      * @param inIsland students to add to the relative island
      */
@@ -597,7 +597,7 @@ public class Game implements Serializable {
     /**
      * Add a game update listener for this game
      *
-     * @param listener
+     * @param listener the listener to add to this game
      */
     public synchronized void addGameUpdateListener(GameUpdateListener listener) {
         listeners.add(listener);
@@ -609,7 +609,7 @@ public class Game implements Serializable {
     /**
      * Remove a previously added listener
      *
-     * @param listener
+     * @param listener the listener to remove from this game
      */
     public synchronized void removeGameUpdateListener(GameUpdateListener listener) {
         listeners.remove(listener);
@@ -649,7 +649,7 @@ public class Game implements Serializable {
     /**
      * Utility method to retrieve the number of professors held by a given player
      *
-     * @param player
+     * @param player the player to retrieve the number of professors for
      * @return the number of professors held by the player
      */
     public int getProfessorsCountForPlayer(Player player) {
@@ -659,7 +659,7 @@ public class Game implements Serializable {
     /**
      * Utility method to retrieve the professors of a given player
      *
-     * @param player
+     * @param player the player to retrieve the professors for
      * @return a list of student for which the player has the professor
      */
     private List<Student> getProfessorsForPlayer(Player player) {
@@ -670,6 +670,11 @@ public class Game implements Serializable {
                 .toList();
     }
 
+    /**
+     * Set the temporary influence calculator for this game
+     * It is one shot and will be disposed after use
+     * @param influenceCalculator the influence calculator to set
+     */
     public synchronized void setTemporaryInfluenceCalculator(InfluenceCalculator influenceCalculator) {
         temporaryInfluenceCalculator = influenceCalculator;
     }
@@ -797,7 +802,7 @@ public class Game implements Serializable {
 
     /**
      * This method is called when a player (previously disconnected) reconnects
-     * @param player
+     * @param player the player reconnecting
      */
     public synchronized void setPlayerReconnected(Player player){
         checkIfValidPlayer(player);
@@ -815,7 +820,7 @@ public class Game implements Serializable {
     /**
      * This method is called when a player explicitly left the game.
      * The game is terminated for all and there is no winner.
-     * @param player
+     * @param player the player who left the game
      */
     public synchronized void leaveGame(Player player) {
         checkIfValidPlayer(player);
@@ -838,7 +843,7 @@ public class Game implements Serializable {
 
     /**
      * Check if the given player is a valid player for this game
-     * @param player
+     * @param player the player to check
      */
     private void checkIfValidPlayer(Player player) {
         if(!players.contains(player))

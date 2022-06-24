@@ -29,7 +29,7 @@ public class CloudsPane extends FlowPane {
 
     /**
      * Set the clouds to show
-     * @param clouds
+     * @param clouds clouds to show
      */
     public void setClouds(List<StudentsContainer> clouds, Consumer<StudentsContainer> listener) {
         getChildren().clear();

@@ -41,8 +41,8 @@ public class GameTitlePopupView extends VBox {
 
     /**
      * Set state of the title
-     * @param state
-     * @param description
+     * @param state the GameTitlePopupView.State to set
+     * @param description the description to set for this title
      */
     public void setState(State state, String description){
         switch (state) {

@@ -53,7 +53,7 @@ public class CharacterCardView extends ImageView implements EventHandler<MouseEv
 
     /**
      * Set character to show
-     * @param character
+     * @param character character to show
      */
     public void setCharacter(Character character, int usedTimes) {
         this.character = character;
@@ -70,7 +70,7 @@ public class CharacterCardView extends ImageView implements EventHandler<MouseEv
 
     /**
      * Set the card as grayed out
-     * @param grayedOut
+     * @param grayedOut true if the card should be grayed out, false otherwise
      */
     public void setGrayedOut(boolean grayedOut) {
         var desaturate = new ColorAdjust();

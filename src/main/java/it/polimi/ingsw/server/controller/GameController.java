@@ -48,7 +48,7 @@ public class GameController implements Game.GameUpdateListener {
 
     /**
      * Set a listener for every game update
-     * @param listener
+     * @param listener the listener to set
      */
     public void setOnGameUpdateListener(GameUpdateListener listener) {
         this.listener = Optional.of(listener);
@@ -93,7 +93,7 @@ public class GameController implements Game.GameUpdateListener {
 
     /**
      * Play assistant card for this player
-     * @param card
+     * @param card the card to play
      */
     public void playAssistantCard(AssistantCard card) {
         game.playAssistantCard(player, card);
@@ -101,8 +101,8 @@ public class GameController implements Game.GameUpdateListener {
 
     /**
      * Place students for this player
-     * @param inSchool
-     * @param inIslands
+     * @param inSchool students to place in school
+     * @param inIslands students to place on islands
      */
     public void placeStudents(StudentsContainer inSchool, Map<Integer, StudentsContainer> inIslands) {
         game.placeStudents(
@@ -119,7 +119,7 @@ public class GameController implements Game.GameUpdateListener {
 
     /**
      * Play the given character card
-     * @param reducedCard
+     * @param reducedCard the card to play
      */
     public void playCharacterCard(ReducedCharacterCard reducedCard) {
         game.playCharacterCard(player, reducedCard.toCharacterCard(game));
@@ -127,7 +127,7 @@ public class GameController implements Game.GameUpdateListener {
 
     /**
      * Move mother nature for this player
-     * @param steps
+     * @param steps the number of steps to move
      */
     public void moveMotherNature(int steps) {
         game.moveMotherNature(player, steps);
@@ -135,7 +135,7 @@ public class GameController implements Game.GameUpdateListener {
 
     /**
      * Select cloud for this player
-     * @param cloud
+     * @param cloud the cloud to select
      */
     public void selectCloud(StudentsContainer cloud) {
         game.selectCloud(player, cloud);

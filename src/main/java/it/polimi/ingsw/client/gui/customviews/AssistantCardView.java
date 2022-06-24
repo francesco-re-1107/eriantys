@@ -87,7 +87,7 @@ public class AssistantCardView extends StackPane implements EventHandler<MouseEv
 
     /**
      * Set the card as greyed out
-     * @param grayedOut
+     * @param grayedOut true if the card should be greyed out, false otherwise
      */
     public void setGrayedOut(boolean grayedOut) {
         var desaturate = new ColorAdjust();
@@ -132,7 +132,7 @@ public class AssistantCardView extends StackPane implements EventHandler<MouseEv
     /**
      * This method is called when the mouse enters and exits this view
      * It is used to show and hide the description
-     * @param mouseEvent
+     * @param mouseEvent the mouse event that triggered this method
      */
     @Override
     public void handle(MouseEvent mouseEvent) {

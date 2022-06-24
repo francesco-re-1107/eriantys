@@ -62,7 +62,7 @@ public abstract class AStudentsContainer implements Serializable {
 
     /**
      * Set the maximum number of students that this container can hold, if not set it is Integer.MAX_VALUE
-     * @param maxSize
+     * @param maxSize the maximum number of students that this container can hold
      */
     public void setMaxSize(int maxSize){
         this.maxSize = maxSize;

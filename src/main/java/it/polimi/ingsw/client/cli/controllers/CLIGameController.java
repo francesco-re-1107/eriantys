@@ -76,7 +76,7 @@ public class CLIGameController implements ScreenController, Client.GameUpdateLis
 
     /**
      * Processes the game update just received based on the game state
-     * @param game
+     * @param game the game update just received
      */
     private void processGameState(ReducedGame game) {
         switch (game.currentState()) {
@@ -277,7 +277,7 @@ public class CLIGameController implements ScreenController, Client.GameUpdateLis
 
     /**
      * Ask user where to vove mother nature
-     * @param game
+     * @param game the game update
      */
     private void processMoveMotherNature(ReducedGame game) {
         var maxSteps = game.calculateMaxMotherNatureSteps();

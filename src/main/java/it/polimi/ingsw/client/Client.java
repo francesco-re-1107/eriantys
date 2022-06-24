@@ -173,7 +173,7 @@ public class Client implements CommunicatorListener {
 
     /**
      * Register nickname to the connected server (if connected)
-     * @param nickname
+     * @param nickname the nickname to register
      * @param errorListener called if an error occurs or the request is not successful
      */
     public void registerNickname(String nickname, Consumer<Throwable> errorListener) {
@@ -209,8 +209,8 @@ public class Client implements CommunicatorListener {
 
     /**
      * Create a new game with the given number of players and expert mode
-     * @param numberOfPlayers
-     * @param expertMode
+     * @param numberOfPlayers the number of players of the game
+     * @param expertMode whether the game should be in expert mode or not
      * @param errorListener called if an error occurs or the request is not successful
      */
     public void createGame(int numberOfPlayers, boolean expertMode, Consumer<Throwable> errorListener) {

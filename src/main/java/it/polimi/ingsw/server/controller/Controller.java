@@ -43,8 +43,7 @@ public class Controller implements Game.GameUpdateListener {
      * Register nickname of a player.
      * This method must be called as soon as a player connects to this server.
      *
-     * @param nickname
-     * @param nickname
+     * @param nickname the nickname of the player to register
      * @return the gameController if this player was in a game before disconnecting, null otherwise
      * @throws DuplicatedNicknameException if the nickname is already in use by another player
      * @throws NicknameNotValidException   if the nickname does not meet all the criteria
@@ -179,7 +178,7 @@ public class Controller implements Game.GameUpdateListener {
      * This callback is called for every game on this server.
      * If a game finishes this will be removed from the list
      *
-     * @param game
+     * @param game the game update
      */
     @Override
     public synchronized void onGameUpdate(Game game) {
@@ -280,7 +279,7 @@ public class Controller implements Game.GameUpdateListener {
 
     /**
      * Called when a registered client disconnects
-     * @param nickname
+     * @param nickname the player nickname to disconnect
      */
     public synchronized void disconnect(String nickname) {
         registeredNicknames.remove(nickname);

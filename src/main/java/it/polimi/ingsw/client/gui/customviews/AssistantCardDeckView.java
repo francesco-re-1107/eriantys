@@ -69,7 +69,7 @@ public class AssistantCardDeckView extends VBox {
 
     /**
      * Set deck to show
-     * @param deck
+     * @param deck deck to show
      */
     public void setDeck(Map<AssistantCard, Boolean> deck) {
         hideError();
@@ -83,7 +83,7 @@ public class AssistantCardDeckView extends VBox {
 
     /**
      * Set the listener for the card selection
-     * @param listener
+     * @param listener called when a card is selected
      */
     public void setOnCardSelectedListener(Consumer<AssistantCard> listener) {
         this.listener = listener;
@@ -91,7 +91,7 @@ public class AssistantCardDeckView extends VBox {
 
     /**
      * Show an error message
-     * @param message
+     * @param message error message to show
      */
     public void showError(String message) {
         Platform.runLater(() -> {
