@@ -109,6 +109,7 @@ public class Island implements Serializable {
 
         students.addAll(anotherIsland.students);
         towersCount += anotherIsland.towersCount;
+        noEntry = noEntry || anotherIsland.noEntry;
     }
 
     /**
