@@ -27,6 +27,9 @@ public abstract class InfluenceCharacterCard implements CharacterCard {
      */
     @Override
     public void play(Game game) {
-        game.setTemporaryInfluenceCalculator(getInfluenceCalculator(game.getCurrentRound().getCurrentPlayer()));
+        game.getCurrentRound()
+                .setTemporaryInfluenceCalculator(
+                        getInfluenceCalculator(game.getCurrentRound().getCurrentPlayer())
+                );
     }
 }

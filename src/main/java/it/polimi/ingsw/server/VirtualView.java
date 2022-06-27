@@ -83,7 +83,7 @@ public class VirtualView implements ServerClientCommunicator.CommunicatorListene
 
     /**
      * Update the current game controller to the given one
-     * @param gc
+     * @param gc the new game controller, null if there's no game currently played
      */
     public void setGameController(GameController gc) {
         if(gc == null){

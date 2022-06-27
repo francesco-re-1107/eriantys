@@ -26,6 +26,9 @@ public class Controller implements Game.GameUpdateListener {
      */
     private List<Game> games;
 
+    /**
+     * Stores all the currently registered nicknames
+     */
     private final Set<String> registeredNicknames;
 
     /**
@@ -191,12 +194,6 @@ public class Controller implements Game.GameUpdateListener {
         //finished games are removed from the list
         if (state == Game.State.TERMINATED || state == Game.State.FINISHED)
             games.remove(game);
-
-        //TODO: fix when games are loaded from backup
-        //if all players get disconnected (not because of a server crash), remove the game
-        /*if(state == Game.State.PAUSED &&
-                game.getPlayers().stream().noneMatch(Player::isConnected))
-            games.remove(game);*/
     }
 
     /**

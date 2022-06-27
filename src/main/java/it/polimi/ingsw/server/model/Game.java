@@ -75,12 +75,6 @@ public class Game implements Serializable {
     private final InfluenceCalculator defaultInfluenceCalculator = new DefaultInfluenceCalculator();
 
     /**
-     * One-shot InfluenceCalculator used when calculating influence of a player on an island
-     * under a character card effect. It has higher priority than defaultInfluenceCalculator
-     */
-    private InfluenceCalculator temporaryInfluenceCalculator = null;
-
-    /**
      * Used to retrieve the winner of this game, it is null until the game comes in the FINISHED state
      */
     private Player winner = null;
@@ -369,7 +363,7 @@ public class Game implements Serializable {
         Optional<Player> maxP = Optional.empty();
 
         var calc =
-                Objects.requireNonNullElse(temporaryInfluenceCalculator, defaultInfluenceCalculator);
+                Objects.requireNonNullElse(currentRound.getTemporaryInfluenceCalculator(), defaultInfluenceCalculator);
 
         for (Player p : players) {
             int infl = calc.calculateInfluence(p, island, getProfessors());
@@ -407,7 +401,7 @@ public class Game implements Serializable {
         }
 
         //remove temporary after use
-        temporaryInfluenceCalculator = null;
+        currentRound.setTemporaryInfluenceCalculator(null);
     }
 
     /**
@@ -668,15 +662,6 @@ public class Game implements Serializable {
                 .filter(e -> e.getValue().equals(player))
                 .map(Map.Entry::getKey)
                 .toList();
-    }
-
-    /**
-     * Set the temporary influence calculator for this game
-     * It is one shot and will be disposed after use
-     * @param influenceCalculator the influence calculator to set
-     */
-    public synchronized void setTemporaryInfluenceCalculator(InfluenceCalculator influenceCalculator) {
-        temporaryInfluenceCalculator = influenceCalculator;
     }
 
     /**

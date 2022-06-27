@@ -48,6 +48,12 @@ public class Round implements Serializable {
     private int additionalMotherNatureMoves = 0;
 
     /**
+     * One-shot InfluenceCalculator used when calculating influence of a player on an island
+     * under a character card effect. It has higher priority than defaultInfluenceCalculator
+     */
+    private InfluenceCalculator temporaryInfluenceCalculator = null;
+
+    /**
      * @param players list of players ordered with respect to the assistant cards played in the previous round
      * @param clouds randomly generated clouds
      */
@@ -234,10 +240,26 @@ public class Round implements Serializable {
     }
 
     /**
+     * Set the temporary influence calculator for this game
+     * It is one shot and will be disposed after use
+     * @param influenceCalculator the influence calculator to set
+     */
+    public synchronized void setTemporaryInfluenceCalculator(InfluenceCalculator influenceCalculator) {
+        temporaryInfluenceCalculator = influenceCalculator;
+    }
+
+    /**
      * @return the additional mother nature moves for this turn
      */
     public int getAdditionalMotherNatureMoves() {
         return additionalMotherNatureMoves;
+    }
+
+    /**
+     * @return the temporary influence calculator or null if it doesn't exist
+     */
+    public InfluenceCalculator getTemporaryInfluenceCalculator() {
+        return temporaryInfluenceCalculator;
     }
 
     /**
@@ -247,6 +269,11 @@ public class Round implements Serializable {
      */
     public boolean setPlayerDisconnected(Player player) {
         if(!currentPlayer.equals(player)) return false;
+
+        //if a character card was played reset it
+        setAdditionalMotherNatureMoves(0);
+        setTemporaryInfluenceCalculator(null);
+
 
         return nextPlayer();
     }

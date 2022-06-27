@@ -80,6 +80,8 @@ class IslandTest {
         i1.setConquered(Tower.BLACK);
         i2.setConquered(Tower.BLACK);
 
+        i1.setNoEntry(true);
+
         int studentsPrevSize = i1.getStudents().getSize();
         int towersPrevCount = i1.getTowersCount();
         i1.merge(i2);
@@ -101,6 +103,9 @@ class IslandTest {
                 towersPrevCount + i2.getTowersCount(),
                 i1.getTowersCount()
         );
+
+        //noEntry
+        assertTrue(i1.isNoEntry());
     }
 
     @Test
