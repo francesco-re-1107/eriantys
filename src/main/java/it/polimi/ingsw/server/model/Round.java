@@ -127,7 +127,7 @@ public class Round implements Serializable {
      * @return true if the round is finished, false otherwise
      */
     public boolean nextPlayer(){
-        Utils.LOGGER.info("Next player called, " + stage.getClass().getSimpleName());
+        Utils.LOGGER.fine("Next player called, " + stage.getClass().getSimpleName());
         if(stage instanceof Stage.Plan){ //PLAN mode
             var nextActivePlayer = getNextActivePlayer();
 
@@ -140,7 +140,7 @@ public class Round implements Serializable {
 
             var nextActivePlayer = getNextAttackActivePlayer();
 
-            Utils.LOGGER.info("Next attack active player is " + nextActivePlayer);
+            Utils.LOGGER.fine("Next attack active player is " + nextActivePlayer);
 
             // finished round check
             if (nextActivePlayer == null){

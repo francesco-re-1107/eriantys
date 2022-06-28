@@ -63,7 +63,7 @@ public class ServerClientCommunicator {
                 if (r instanceof PingRequest) {
                     send(new AckReply(r.getRequestId()));
                 } else { //otherwise, the request is forwarded to the listener
-                    Utils.LOGGER.info("Request received: " + r.getClass().getSimpleName());
+                    Utils.LOGGER.fine("Request received: " + r.getClass().getSimpleName());
                     communicatorListener.onRequest(r);
                 }
             }
@@ -102,7 +102,7 @@ public class ServerClientCommunicator {
      */
     public void send(Response r) {
         if (!isConnected) {
-            Utils.LOGGER.info("Cannot send response, client is not connected");
+            Utils.LOGGER.fine("Cannot send response, client is not connected");
             return;
         }
 

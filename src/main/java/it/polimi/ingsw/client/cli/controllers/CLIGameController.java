@@ -314,7 +314,7 @@ public class CLIGameController implements ScreenController, Client.GameUpdateLis
                                     studentsPlacedInSchool,
                                     studentsPlacedInIslands
                             ),
-                            err -> Utils.LOGGER.info("Error placing students: " + err)
+                            err -> Utils.LOGGER.fine("Error placing students: " + err)
                     );
         } else {
             drawGameView(game);

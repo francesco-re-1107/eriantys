@@ -79,7 +79,7 @@ public class GUINavigationManager implements NavigationManager {
             for (Screen s : Arrays.stream(Screen.values()).filter(s -> s != Screen.SERVER_CONNECTION_MENU).toList()) {
                 screens.put(s, loadScreen(s));
             }
-            Utils.LOGGER.info("Finished loading screens");
+            Utils.LOGGER.fine("Finished loading screens");
         }).start();
     }
 
@@ -118,7 +118,7 @@ public class GUINavigationManager implements NavigationManager {
             return;
         }
 
-        Utils.LOGGER.info("Navigate to destination " + destination.name());
+        Utils.LOGGER.fine("Navigate to destination " + destination.name());
 
         var lastScreen = currentScreen;
 
@@ -198,7 +198,7 @@ public class GUINavigationManager implements NavigationManager {
             });
             ft.play();
         }
-        Utils.LOGGER.info("Go back");
+        Utils.LOGGER.fine("Go back");
     }
 
     @Override

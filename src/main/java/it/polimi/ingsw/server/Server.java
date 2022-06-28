@@ -8,7 +8,6 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.logging.Level;
 
 /**
  * This class binds to the socket at the given port and listens for connections
@@ -56,12 +55,12 @@ public class Server {
             Utils.LOGGER.severe(e.getMessage()); //port not available
             System.exit(0);
         }
-        Utils.LOGGER.log(Level.INFO, "Server listening on port %s".formatted(port));
+        Utils.LOGGER.info("Server listening on port %s".formatted(port));
 
         while (true){
             try{
                 Socket socket = serverSocket.accept();
-                Utils.LOGGER.log(Level.INFO, "New client connected");
+                Utils.LOGGER.info("Client connected (IP: %s)".formatted(socket.getInetAddress().getHostAddress()));
                 executor.submit(new VirtualView(controller, socket));
             }catch(IOException e){
                 Utils.LOGGER.severe(e.getMessage()); //socket closed

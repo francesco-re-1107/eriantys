@@ -64,7 +64,7 @@ public class GUIGameJoiningMenuController implements ScreenController {
             public void run() {
                 Client.getInstance().getGameList(
                         list -> Platform.runLater(() -> setGamesList(list)),
-                        e -> Utils.LOGGER.info(e.getMessage())
+                        e -> Utils.LOGGER.fine(e.getMessage())
                 );
             }
         }, 0, Constants.GAMES_LIST_REFRESH_INTERVAL);
@@ -104,7 +104,7 @@ public class GUIGameJoiningMenuController implements ScreenController {
      * @param item game list item clicked
      */
     private void joinGame(GameListItem item) {
-        Utils.LOGGER.info("Joining game " + item.uuid());
+        Utils.LOGGER.fine("Joining game " + item.uuid());
 
         Client.getInstance().joinGame(item.uuid(), e -> showError(e.getMessage()));
     }

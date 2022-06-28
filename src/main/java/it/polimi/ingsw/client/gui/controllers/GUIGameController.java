@@ -136,7 +136,7 @@ public class GUIGameController implements ScreenController, Client.GameUpdateLis
                                     studentsPlacedInSchool,
                                     studentsPlacedInIslands
                             ),
-                            err -> Utils.LOGGER.info("Error placing students: " + err)
+                            err -> Utils.LOGGER.fine("Error placing students: " + err)
                     );
         } else {
             infoLabel.setInfoString(InfoString.MY_TURN_PLACE_STUDENTS, studentsToMove-count);
@@ -222,7 +222,7 @@ public class GUIGameController implements ScreenController, Client.GameUpdateLis
         cloudsPane.setClouds(game.currentRound().clouds(), c -> client
                 .forwardGameRequest(
                         new SelectCloudRequest(c),
-                        err -> Utils.LOGGER.info("Error selecting cloud " + err.getMessage())
+                        err -> Utils.LOGGER.fine("Error selecting cloud " + err.getMessage())
                 ));
 
         //set character cards
@@ -513,7 +513,7 @@ public class GUIGameController implements ScreenController, Client.GameUpdateLis
         islandsPane.arrangeIslandsForMotherNatureMovement(motherNaturePosition, maxMotherNatureSteps,
                 s -> client.forwardGameRequest(
                         new MoveMotherNatureRequest(s),
-                        err -> Utils.LOGGER.info("Error moving mother nature: " + err.getMessage())
+                        err -> Utils.LOGGER.fine("Error moving mother nature: " + err.getMessage())
                 ));
     }
 

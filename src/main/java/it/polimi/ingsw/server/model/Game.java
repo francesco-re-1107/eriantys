@@ -106,7 +106,7 @@ public class Game implements Serializable {
         if(numberOfPlayers < 2 || numberOfPlayers > 3)
             throw new InvalidOperationError("NumberOfPlayers must be 2 or 3");
 
-        logger.log(Level.INFO, "Creating game with {0} players and expert = {1}", new Object[]{numberOfPlayers, expertMode});
+        logger.log(Level.FINE, "Creating game with {0} players and expert = {1}", new Object[]{numberOfPlayers, expertMode});
         this.numberOfPlayers = numberOfPlayers;
         this.studentsBag = new RandomizedStudentsContainer(Constants.STUDENTS_BAG_NUMBER_PER_COLOR);
         this.players = new ArrayList<>();
@@ -117,7 +117,7 @@ public class Game implements Serializable {
 
         Character.generateRandomDeck(Constants.NUMBER_OF_CHARACTER_CARD)
                 .forEach(s -> characterCards.put(s, 0));
-        logger.log(Level.INFO, "Character cards -> " + characterCards.keySet());
+        logger.fine("Character cards -> " + characterCards.keySet());
 
         initializeIslands();
     }
@@ -172,7 +172,7 @@ public class Game implements Serializable {
                     MessageFormat.format("Game already started (gameState is {0})", gameState)
             );
 
-        logger.info("game starting...");
+        logger.fine("Game started");
         newRound();
 
         this.gameState = State.STARTED;
@@ -185,7 +185,7 @@ public class Game implements Serializable {
      * Generate automatically the clouds.
      */
     private void newRound() {
-        logger.info("round started");
+        logger.fine("Round started");
 
         //if the bag is empty the game is finished
         var requiredStudents = numberOfPlayers == 2 ?
@@ -193,7 +193,7 @@ public class Game implements Serializable {
                 Constants.ThreePlayers.STUDENTS_PER_CLOUD * 3;
 
         if (studentsBag.getSize() < requiredStudents) {
-            logger.info("StudentsBag is empty, game finished");
+            logger.fine("StudentsBag is empty, game finished");
             setGameFinished(calculateCurrentWinner());
             return;
         }
@@ -201,7 +201,7 @@ public class Game implements Serializable {
         //check if players have any card left
         boolean playersWithZeroCardsLeft = players.stream().anyMatch(p -> p.getAssistantCardsLeftCount() == 0);
         if (playersWithZeroCardsLeft) {
-            logger.info("There's a player with zero cards left, game finished");
+            logger.fine("There's a player with zero cards left, game finished");
             setGameFinished(calculateCurrentWinner());
             return;
         }
@@ -217,7 +217,7 @@ public class Game implements Serializable {
             );
         }
 
-        logger.log(Level.FINE, "generated clouds: {0}", clouds);
+        logger.fine("generated clouds: " + clouds);
         List<Player> tmpPlayers;
 
         //if it's not the first round, use the previous players order for the new round
@@ -293,7 +293,7 @@ public class Game implements Serializable {
                 studentsBag.pickManyRandom(entranceSize)
         );
 
-        logger.log(Level.INFO, "added player {0}", p.getNickname());
+        logger.fine("Added player " + p.getNickname());
         players.add(p);
 
         notifyUpdate();
@@ -394,7 +394,7 @@ public class Game implements Serializable {
                 player.decrementTowersCount(island.getTowersCount());
 
                 if (player.getTowersCount() <= 0) {
-                    logger.info(player.getNickname() + " with 0 towers left, game finished");
+                    logger.fine(player.getNickname() + " with 0 towers left, game finished");
                     setGameFinished(player);
                 }
             }
@@ -416,7 +416,7 @@ public class Game implements Serializable {
         if (!player.canPlayAssistantCard(card))
             throw new InvalidOperationError();
 
-        logger.log(Level.INFO, MessageFormat.format("{0} played assistant card with priority {1} and max moves {2} ",
+        logger.fine(MessageFormat.format("{0} played assistant card with priority {1} and max moves {2} ",
                 player.getNickname(), card.turnPriority(), card.motherNatureMaxMoves()));
         currentRound.playAssistantCard(player, card);
 
@@ -448,7 +448,7 @@ public class Game implements Serializable {
         if (player.getCoins() < cost)
             throw new InvalidOperationError("Player cannot buy the card");
 
-        logger.log(Level.INFO,  MessageFormat.format("playing character card {0} at {1}c", card.getCharacter().name(), cost));
+        logger.fine(MessageFormat.format("Played character card {0} at {1}c", card.getCharacter().name(), cost));
 
         //play card
         card.play(this);
@@ -507,19 +507,19 @@ public class Game implements Serializable {
         Island next = islands.get(calculateMotherNatureIndex(1));
 
         if (curr.isMergeCompatible(prev)) {
-            logger.info("island merged with previous one");
+            logger.fine("island merged with previous one");
             curr.merge(prev);
             islands.remove(prev);
         }
 
         if (curr.isMergeCompatible(next)) {
-            logger.info("island merged with next one");
+            logger.fine("island merged with next one");
             curr.merge(next);
             islands.remove(next);
         }
 
         if (islands.size() <= 3) {
-            logger.info("Less than 4 islands left, game finished");
+            logger.fine("Less than 4 islands left, game finished");
             setGameFinished(calculateCurrentWinner());
         }
 
@@ -671,9 +671,9 @@ public class Game implements Serializable {
      */
     private void setGameFinished(Player winner) {
         if(winner != null)
-            logger.log(Level.INFO, "Game finished! {} won", winner.getNickname());
+            logger.fine("Game finished! " + winner.getNickname() + " won!");
         else
-            logger.log(Level.INFO, "Game finished! No winner");
+            logger.fine("Game finished! No winner");
 
         gameState = State.FINISHED;
 
@@ -768,7 +768,7 @@ public class Game implements Serializable {
     public synchronized void setPlayerDisconnected(Player player){
         checkIfValidPlayer(player);
 
-        logger.info("%s disconnected".formatted(player.getNickname()));
+        logger.fine("%s disconnected".formatted(player.getNickname()));
         if(gameState == State.CREATED) {
             players.remove(player);
         } else {

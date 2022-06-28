@@ -12,7 +12,7 @@ public class PrettyLogFormatter extends Formatter {
         public String format(LogRecord r) {
             return String.format(FORMAT,
                     r.getMillis(),
-                    r.getSourceClassName(),
+                    r.getSourceClassName().replace("it.polimi.ingsw.", ""),
                     r.getLevel().getName(),
                     r.getMessage());
         }

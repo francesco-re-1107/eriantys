@@ -247,9 +247,9 @@ public class Controller implements Game.GameUpdateListener {
                 g.addGameUpdateListener(this);
             }
 
-            Utils.LOGGER.info(games.size() + " games loaded from backup");
+            Utils.LOGGER.warning(games.size() + " games loaded from backup");
         } catch (Exception e) {
-            Utils.LOGGER.warning("Error loading games backup: either the file is corrupted or the version is not compatible");
+            Utils.LOGGER.warning("Cannot load games from backup, either the file is corrupted or the backup is not compatible");
         }
     }
 
@@ -268,9 +268,9 @@ public class Controller implements Game.GameUpdateListener {
                 var o = new ObjectOutputStream(f)
         ) {
             o.writeObject(games);
-            Utils.LOGGER.info("Games saved at " + backupFile.getAbsolutePath());
+            Utils.LOGGER.info("Games backup saved at " + backupFile.getAbsolutePath());
         } catch (IOException e) {
-            Utils.LOGGER.warning("Error saving games: " + e.getMessage());
+            Utils.LOGGER.warning("Cannot save games: " + e.getMessage());
         }
     }
 

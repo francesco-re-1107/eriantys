@@ -92,7 +92,7 @@ public class CLIGameJoiningMenuController implements ScreenController {
             public void run() {
                 Client.getInstance().getGameList(
                         CLIGameJoiningMenuController.this::updateGamesList,
-                        e -> Utils.LOGGER.info(e.getMessage())
+                        e -> Utils.LOGGER.fine(e.getMessage())
                 );
             }
         }, 0, Constants.GAMES_LIST_REFRESH_INTERVAL);

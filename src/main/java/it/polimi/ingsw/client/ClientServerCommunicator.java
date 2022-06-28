@@ -96,7 +96,7 @@ public class ClientServerCommunicator {
             pendingRequests.get(re.getAssociatedRequestId()).successListener.onSuccess(re);
             pendingRequests.remove(re.getAssociatedRequestId());
         } catch (NullPointerException e) {
-            Utils.LOGGER.info("Request reply received but no listener was bound to it");
+            Utils.LOGGER.fine("Request reply received but no listener was bound to it");
         }
     }
 
@@ -122,7 +122,7 @@ public class ClientServerCommunicator {
     private void disconnect() {
         if(!isConnected) return;
 
-        Utils.LOGGER.info("Server disconnected");
+        Utils.LOGGER.fine("Server disconnected");
         isConnected = false;
         communicatorListener.onDisconnect();
 
@@ -170,7 +170,7 @@ public class ClientServerCommunicator {
     public void send(Request request, SuccessListener successListener, ErrorListener errorListener) {
         if(!isConnected) {
             errorListener.onError(new Exception("Server not connected"));
-            Utils.LOGGER.info("Cannot send request, client is not connected");
+            Utils.LOGGER.fine("Cannot send request, client is not connected");
             return;
         }
 
