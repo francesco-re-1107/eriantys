@@ -52,7 +52,7 @@ public class Server {
         try{
             serverSocket = new ServerSocket(port);
         }catch (IOException e){
-            Utils.LOGGER.severe(e.getMessage()); //port not available
+            Utils.LOGGER.severe("Cannot start server at port %s: %s".formatted(port, e.getMessage())); //port not available
             System.exit(0);
         }
         Utils.LOGGER.info("Server listening on port %s".formatted(port));

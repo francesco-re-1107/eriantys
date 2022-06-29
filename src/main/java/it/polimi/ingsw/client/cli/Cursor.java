@@ -32,7 +32,7 @@ public class Cursor {
     /**
      * Last user input string
      */
-    private String inputString;
+    private String inputString = "";
 
     /**
      * Used to keep track of the cursor movements, used by saveCursorPosition() and restoreCursorPosition().
@@ -61,6 +61,10 @@ public class Cursor {
             while (true) {
                 try {
                     inputString = new BufferedReader(new InputStreamReader(System.in)).readLine();
+
+                    if(inputString == null)
+                        inputString = "";
+
                 } catch (IOException e) {}
 
                 //when user input is received, notify all the waiting threads

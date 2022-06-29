@@ -55,11 +55,14 @@ java -jar eriantys.jar client --gui
 #### NOTE for Windows
 For the best experience:
 - Change OS [/s](https://www.urbandictionary.com/define.php?term=%2FS)
-- [Enable UTF-8 support](https://stackoverflow.com/a/57134096) for command prompt
-- Download and install [Windows Terminal](https://apps.microsoft.com/store/detail/windows-terminal/9N0DX20HK701)
-- Set window size to 80x24
-- Increase font size
-- Colors may differ from the ones in macOS/Linux
+- CLI
+  - [Enable UTF-8 support](https://stackoverflow.com/a/57134096) for command prompt
+  - Download and install [Windows Terminal](https://apps.microsoft.com/store/detail/windows-terminal/9N0DX20HK701)
+  - Set window size to 80x24
+  - Increase font size
+  - Colors may differ from the ones in macOS/Linux
+- GUI
+  - Set Display scaling to 100%
 
 ## Screenshots
 
